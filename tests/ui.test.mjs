@@ -67,12 +67,6 @@ test('home forces the approved light palette and keeps tool art secondary', asyn
   assert.match(css, /\.hero-card[^}]*min-height:\s*210px/s);
 });
 
-test('bottom collaboration link leaves the centered add action unobstructed', async () => {
-  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
-  assert.match(css, /\.bottom-bar \.collab-pill[^}]*width:\s*calc\(50% - 54px\)/s);
-  assert.match(css, /\.collab-pill strong[^}]*overflow:\s*hidden/s);
-});
-
 test('quick file picker keeps the original user gesture and primary targets stay touch friendly', async () => {
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
@@ -97,4 +91,14 @@ test('home hero stays compact and greeting text wraps within its own column', as
   assert.match(css, /#greeting-text[^}]*display:\s*block/s);
   assert.match(css, /\.view\.active \.hero-card[^}]*min-height:\s*0!important/s);
   assert.match(css, /\.view\.active \.hero-card[^}]*padding:\s*16px 20px!important/s);
+});
+
+test('Samsung-compatible light scheme and collaboration do not occupy fixed navigation', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(html, /name="color-scheme" content="only light"/);
+  assert.match(css, /color-scheme:\s*only light/);
+  const fixedFooter = html.match(/<footer class="bottom-bar">([\s\S]*?)<\/footer>/)?.[1] ?? '';
+  assert.doesNotMatch(fixedFooter, /notizieartificiali/);
+  assert.match(html, /class="home-collab"[^>]*instagram\.com\/notizieartificiali\.ai/);
 });
