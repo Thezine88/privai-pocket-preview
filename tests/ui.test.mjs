@@ -90,3 +90,11 @@ test('greeting separates the emoji from its wrapping text', async () => {
   assert.match(app, /greeting-emoji/);
   assert.match(app, /greeting-text/);
 });
+
+test('home hero stays compact and greeting text wraps within its own column', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /#page-title[^}]*display:\s*flex!important/s);
+  assert.match(css, /#greeting-text[^}]*display:\s*block/s);
+  assert.match(css, /\.view\.active \.hero-card[^}]*min-height:\s*0!important/s);
+  assert.match(css, /\.view\.active \.hero-card[^}]*padding:\s*16px 20px!important/s);
+});

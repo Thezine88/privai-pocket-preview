@@ -14,7 +14,7 @@ export const en = Object.freeze({
   'convert.sourcePlaceholder': 'Paste a message, note, or document text…',
   'convert.title': 'Convert',
   'home.deviceOnly': 'On this device only',
-  'home.heroBody': 'Turn any text into Markdown and check sensitive data before sharing it.',
+  'home.heroBody': 'Tidy your text and check sensitive data, all on your phone.',
   'home.heroTitle': 'Protect it first. Then ask AI.',
   'home.privateSpace': 'YOUR PRIVATE SPACE',
   'home.quickActions': 'QUICK ACTIONS',

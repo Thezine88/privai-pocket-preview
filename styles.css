@@ -1,4 +1,13 @@
 :root{--paper:#FFF8F1;--orange:#FF6B00;--ink:#111114;--muted:#68635F;--green:#20A464;--cream:#FFE0BF;--white:#fff;--radius:30px;--shadow:0 14px 34px rgba(35,20,9,.11)}
+/* Final compact mobile hierarchy. Important rules intentionally defeat older cascade layers. */
+#page-title{display:flex!important;align-items:flex-start!important;gap:7px!important}
+#greeting-emoji{flex:0 0 auto}
+#greeting-text{display:block;min-width:0;max-width:150px;line-height:1.02}
+.view.active .hero-card{min-height:0!important;padding:16px 20px!important;border-radius:30px!important}
+.view.active .hero-card .privacy-chip{padding:6px 10px!important;font-size:11px!important}
+.view.active .hero-card h2{font-size:26px!important;line-height:1!important;margin:10px 0 6px!important}
+.view.active .hero-card p{font-size:12px!important;line-height:1.35!important;margin:0 0 10px!important;max-width:310px!important}
+.view.active .hero-card .primary-button{min-height:42px!important}
 /* Narrow-phone safety, branding, and accessible touch targets. */
 #page-title{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;column-gap:7px}
 #greeting-text{min-width:0}
