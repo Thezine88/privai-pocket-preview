@@ -114,3 +114,8 @@ test('protect and prepare accept independent local documents', async () => {
   assert.match(app, /prepare-file-input/);
   assert.match(app, /\$\('#prepare-input'\)\.value/);
 });
+
+test('tool card titles share the same two-line alignment area', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.tool-card\.tool-card strong[^}]*min-height:\s*36px/s);
+});
