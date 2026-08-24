@@ -4,6 +4,7 @@ import { createStore } from './domain/storage.mjs';
 import { greetingForHour } from './domain/greeting.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
 import { containsWebLinks, removeWebLinks } from './domain/share.mjs';
+import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -93,9 +94,23 @@ $('#convert-button').addEventListener('click', () => {
 async function importLocalFile(event, targetSelector) {
   const [file] = event.target.files;
   if (!file) return;
-  if (file.size > 2_000_000) return toast(state.translator.t('dynamic.fileTooLarge'));
-  $(targetSelector).value = await file.text();
-  toast(state.translator.t('dynamic.fileImported'));
+  try {
+    if (isPdfFile(file)) {
+      toast(state.translator.t('pdf.reading'));
+      const result = await extractTextFromPdf(file);
+      $(targetSelector).value = result.text;
+      toast(state.translator.t('pdf.imported', { count: result.pages }));
+      return;
+    }
+    if (file.size > 2_000_000) return toast(state.translator.t('dynamic.fileTooLarge'));
+    $(targetSelector).value = await file.text();
+    toast(state.translator.t('dynamic.fileImported'));
+  } catch (error) {
+    const code = error instanceof PdfImportError ? error.code : 'PDF_INVALID';
+    toast(state.translator.t(`pdf.error.${code}`));
+  } finally {
+    event.target.value = '';
+  }
 }
 
 $('#file-input').addEventListener('change', (event) => importLocalFile(event, '#source-input'));

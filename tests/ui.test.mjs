@@ -115,6 +115,16 @@ test('protect and prepare accept independent local documents', async () => {
   assert.match(app, /\$\('#prepare-input'\)\.value/);
 });
 
+test('every document picker accepts local PDFs and the quick menu names them', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const id of ['file-input', 'protect-file-input', 'prepare-file-input']) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*accept="[^"]*\\.pdf`));
+  }
+  assert.match(html, /data-i18n="quick\.file"/);
+  assert.match(app, /extractTextFromPdf/);
+});
+
 test('tool card titles share the same two-line alignment area', async () => {
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.tool-card\.tool-card strong[^}]*min-height:\s*36px/s);

@@ -18,9 +18,9 @@ npm test
 
 ## Stato delle funzioni
 
-- Operative: interfaccia italiano/inglese, conversione testuale Markdown, rilevazione locale strutturata, mascheramento selettivo, preparazione prompt, scelta della lingua del risultato, copia/condivisione, cronologia locale, punti e configurazione API dimostrativa.
+- Operative: interfaccia italiano/inglese, importazione locale di `.txt`, `.md` e PDF con testo selezionabile, conversione Markdown, rilevazione locale strutturata, protezione selettiva, preparazione prompt, scelta della lingua del risultato, copia/condivisione, cronologia locale, punti e configurazione API dimostrativa.
 - Prototipo: ricezione di testo dalla condivisione Android dipende dal supporto Web Share Target del browser.
-- Non ancora collegate: chiamate reali ai provider, OCR di immagini, PDF, trascrizione audio, Google Login/Drive, acquisti in-app.
+- Non ancora collegate: chiamate reali ai provider, OCR di immagini e PDF scansionati, trascrizione audio, Google Login/Drive, acquisti in-app.
 
 ## Progetto Android
 
@@ -41,6 +41,8 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ## Privacy
 
 Il flusso predefinito non invia documenti a server. Questa versione non garantisce anonimizzazione: usa rilevatori deterministici e richiede sempre revisione umana. Le chiavi API sono conservate soltanto nella sessione del browser; il pacchetto nativo dovrà usare Android Keystore e iOS Keychain.
+
+Il lettore PDF è incluso nell'app e lavora localmente. La prima versione accetta documenti fino a 15 MB e 50 pagine; i PDF protetti da password e quelli composti soltanto da immagini vengono rifiutati con una spiegazione. PDF.js 5.6.205 è incluso secondo licenza Apache-2.0, conservata in `vendor/PDFJS-LICENSE.txt`.
 
 ## Riferimenti
 

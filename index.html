@@ -52,7 +52,7 @@
         <p class="screen-intro" data-i18n="convert.intro">Incolla un testo o importa un file. La conversione avviene qui, senza invii esterni.</p>
         <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="convert.exampleBefore">Prima: testo copiato da WhatsApp, con righe spezzate e simboli.</p><p data-i18n="convert.exampleAfter">Dopo: titoli e liste ordinati, pronti per ChatGPT o Claude.</p><strong data-i18n="convert.benefit">Vantaggio: niente sistemazioni manuali.</strong></article>
         <label class="editor-card"><span data-i18n="convert.original">Contenuto originale</span><textarea id="source-input" data-i18n-placeholder="convert.sourcePlaceholder" placeholder="Incolla un messaggio, una nota o il testo di un documento…"></textarea></label>
-        <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Importa file</span><input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
+        <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Importa file</span><input id="file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
         <article class="editor-card output"><div class="result-header"><span data-i18n="convert.clean">Markdown pulito</span><div class="result-actions"><button data-copy-result="markdown-output" data-i18n="action.copy">Copia</button><button data-share-result="markdown-output" data-i18n="action.share">Condividi</button></div></div><textarea id="markdown-output" data-i18n-placeholder="convert.outputPlaceholder" placeholder="Il risultato apparirà qui…" aria-label="Markdown pulito"></textarea></article>
         <button class="wide-action" id="to-protect"><span data-i18n="convert.continue">Continua con Proteggi</span> <span>→</span></button>
       </section>
@@ -64,7 +64,7 @@
         <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="protect.exampleBefore">Prima: “Scrivi a mario@email.it o chiama +39 333 123 4567”.</p><p data-i18n="protect.exampleAfter">Dopo: “Scrivi a [EMAIL_1] o chiama [TELEPHONENUM_1]”.</p><strong data-i18n="protect.benefit">Vantaggio: condividi meno dati personali con l’IA.</strong></article>
         <p class="source-question" data-i18n="source.question">Da dove vuoi iniziare?</p>
         <label class="editor-card"><span data-i18n="protect.input">Incolla il testo da controllare</span><textarea id="protect-input" data-i18n-placeholder="protect.inputPlaceholder" placeholder="Incolla qui il testo…"></textarea></label>
-        <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Oppure scegli un file</span><input id="protect-file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label>
+        <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Oppure sfoglia i file</span><input id="protect-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
         <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Cerca dati sensibili</button>
         <div id="findings" class="findings"><p class="empty-state" data-i18n="protect.notScanned">Nessuna analisi eseguita.</p></div>
         <article class="editor-card output"><div class="result-header"><span data-i18n="protect.output">Versione protetta</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="protect.openAI">Apri nell’IA</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona quali dati nascondere…" aria-label="Versione protetta"></textarea></article>
@@ -87,7 +87,7 @@
         <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="prepare.exampleBefore">Prima: un lungo messaggio del cliente.</p><p data-i18n="prepare.exampleAfter">Dopo: un prompt che chiede attività, responsabili e scadenze senza inventare nulla.</p><strong data-i18n="prepare.benefit">Vantaggio: risposte più utili senza saper scrivere prompt.</strong></article>
         <p class="source-question" data-i18n="source.question">Da dove vuoi iniziare?</p>
         <label class="editor-card"><span data-i18n="prepare.input">Incolla il contenuto</span><textarea id="prepare-input" data-i18n-placeholder="prepare.inputPlaceholder" placeholder="Incolla qui il testo da preparare…"></textarea></label>
-        <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Oppure scegli un file</span><input id="prepare-file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label>
+        <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Oppure sfoglia i file</span><input id="prepare-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
         <div class="template-chips" id="template-chips">
           <button data-goal="Crea una checklist operativa">Checklist</button><button data-goal="Prepara una risposta email professionale">Email</button><button data-goal="Crea un riassunto fedele e conciso">Riassunto</button><button data-goal="Trasforma il contenuto in un post social">Post</button>
         </div>
@@ -186,7 +186,7 @@ Mantieni date e scadenze</textarea></label>
   <dialog id="quick-add-dialog" class="quick-add-dialog" aria-label="Aggiungi contenuto">
     <form method="dialog" class="quick-add-card">
       <button id="quick-paste" value="cancel"><span aria-hidden="true">✎</span><strong data-i18n="quick.paste">Incolla un testo</strong></button>
-      <button id="quick-file" value="cancel"><span aria-hidden="true">▤</span><strong data-i18n="quick.file">Scegli un file</strong></button>
+      <button id="quick-file" value="cancel"><span aria-hidden="true">▤</span><strong data-i18n="quick.file">Sfoglia file</strong></button>
       <button class="text-button" value="cancel" data-i18n="share.cancel">Annulla</button>
     </form>
   </dialog>
