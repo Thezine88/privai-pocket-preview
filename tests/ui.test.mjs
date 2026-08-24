@@ -104,3 +104,13 @@ test('Samsung-compatible light scheme and compact collaboration stay in fixed na
   assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
   assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*width:\s*calc\(50% - 54px\)/s);
 });
+
+test('protect and prepare accept independent local documents', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const id of ['protect-file-input', 'prepare-file-input', 'prepare-input']) assert.match(html, new RegExp(`id="${id}"`));
+  assert.match(html, /data-i18n="source\.question"/);
+  assert.match(app, /protect-file-input/);
+  assert.match(app, /prepare-file-input/);
+  assert.match(app, /\$\('#prepare-input'\)\.value/);
+});

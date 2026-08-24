@@ -71,13 +71,17 @@ $('#convert-button').addEventListener('click', () => {
   award(5); toast(state.translator.t('dynamic.markdownCreated'));
 });
 
-$('#file-input').addEventListener('change', async (event) => {
+async function importLocalFile(event, targetSelector) {
   const [file] = event.target.files;
   if (!file) return;
   if (file.size > 2_000_000) return toast(state.translator.t('dynamic.fileTooLarge'));
-  $('#source-input').value = await file.text();
+  $(targetSelector).value = await file.text();
   toast(state.translator.t('dynamic.fileImported'));
-});
+}
+
+$('#file-input').addEventListener('change', (event) => importLocalFile(event, '#source-input'));
+$('#protect-file-input').addEventListener('change', (event) => importLocalFile(event, '#protect-input'));
+$('#prepare-file-input').addEventListener('change', (event) => importLocalFile(event, '#prepare-input'));
 
 $('#to-protect').addEventListener('click', () => {
   $('#protect-input').value = $('#markdown-output').value || $('#source-input').value;
@@ -104,13 +108,13 @@ $('#scan-button').addEventListener('click', () => {
   award(10); toast(state.translator.t('scan.count', { count: state.findings.length }));
 });
 
-$('#to-prepare').addEventListener('click', () => { showView('prepare'); });
+$('#to-prepare').addEventListener('click', () => { $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value; showView('prepare'); });
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
   $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = button.dataset.goal;
 }));
 
 $('#prepare-button').addEventListener('click', () => {
-  const content = state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value;
+  const content = $('#prepare-input').value || state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value;
   if (!content.trim()) return toast(state.translator.t('dynamic.convertFirst'));
   const result = buildPromptPack({ goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
   $('#prompt-output').value = result;
