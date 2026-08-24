@@ -12,7 +12,7 @@ test('manifest provides standalone Android install metadata', async () => {
 
 test('service worker precaches the complete app shell', async () => {
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  for (const asset of ['./index.html', './styles.css', './src/app.mjs', './manifest.webmanifest']) {
+  for (const asset of ['./index.html', './styles.css', './src/app.mjs', './src/domain/share.mjs', './src/locales/it.mjs', './src/locales/en.mjs', './manifest.webmanifest', './assets/hero-privacy.webp', './assets/reward-token.webp', './assets/tool-markdown.webp', './assets/tool-protect.webp', './assets/tool-prepare.webp', './assets/tool-history.webp']) {
     assert.match(worker, new RegExp(asset.replaceAll('.', '\\.')));
   }
 });

@@ -17,9 +17,11 @@
         <p class="eyebrow" data-i18n="home.privateSpace">IL TUO SPAZIO PRIVATO</p>
         <h1 id="page-title">👋 Buongiorno</h1>
       </div>
-      <button class="icon-button" data-view="settings" aria-label="Apri impostazioni">
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.37a1.7 1.7 0 0 0-1 .63 1.7 1.7 0 0 0-.37 1.08V21h-4v-.08A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.23 15a1.7 1.7 0 0 0-.63-1 1.7 1.7 0 0 0-1.08-.37H2v-4h.52A1.7 1.7 0 0 0 4.23 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.6 3.6 1.7 1.7 0 0 0 9.63 2H14v.08A1.7 1.7 0 0 0 15.4 3.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.77 8c.12.42.34.76.63 1 .3.24.67.37 1.08.37H22v4h-.52A1.7 1.7 0 0 0 19.4 15Z"/></svg>
-      </button>
+      <div class="top-actions">
+        <div class="token-balance" aria-label="Saldo gettoni"><img src="assets/reward-token.webp" alt=""><strong id="points-value">0</strong></div>
+        <button class="info-button" id="points-info" aria-label="Informazioni sui gettoni"><i>i</i></button>
+        <button class="icon-button" data-view="settings" aria-label="Apri impostazioni"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.37a1.7 1.7 0 0 0-1 .63 1.7 1.7 0 0 0-.37 1.08V21h-4v-.08A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.23 15a1.7 1.7 0 0 0-.63-1 1.7 1.7 0 0 0-1.08-.37H2v-4h.52A1.7 1.7 0 0 0 4.23 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.6 3.6 1.7 1.7 0 0 0 9.63 2H14v.08A1.7 1.7 0 0 0 15.4 3.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.77 8c.12.42.34.76.63 1 .3.24.67.37 1.08.37H22v4h-.52A1.7 1.7 0 0 0 19.4 15Z"/></svg></button>
+      </div>
     </header>
 
     <main>
@@ -31,22 +33,16 @@
             <p data-i18n="home.heroBody">Trasforma qualsiasi testo in Markdown e controlla i dati sensibili prima di condividerlo.</p>
             <button class="primary-button" data-view="convert"><span data-i18n="home.start">Inizia ora</span> <span>→</span></button>
           </div>
-          <div class="hero-art" aria-hidden="true"><div class="shield">✓</div><i></i><b></b></div>
+          <img class="hero-product" src="assets/hero-privacy.webp" alt="Lucchetto e scudo di protezione">
         </article>
 
         <div class="section-heading"><div><p class="eyebrow" data-i18n="home.quickActions">AZIONI RAPIDE</p><h2 data-i18n="home.tools">I tuoi strumenti</h2></div></div>
         <div class="tool-grid">
-          <button class="tool-card orange" data-view="convert"><span class="tool-icon">#</span><small data-i18n="tool.format">FORMATO</small><strong data-i18n="tool.convert">Converti in Markdown</strong><span class="arrow">↗</span></button>
-          <button class="tool-card dark" data-view="protect"><span class="tool-icon">◉</span><small>PRIVACY</small><strong data-i18n="tool.protect">Proteggi i dati</strong><span class="arrow">↗</span></button>
-          <button class="tool-card cream" data-view="prepare"><span class="tool-icon">✦</span><small data-i18n="tool.context">CONTESTO</small><strong data-i18n="tool.prepare">Prepara per l’IA</strong><span class="arrow">↗</span></button>
-          <button class="tool-card white" data-view="history"><span class="tool-icon">↺</span><small data-i18n="tool.local">LOCALE</small><strong data-i18n="tool.history">Cronologia</strong><span class="arrow">↗</span></button>
+          <button class="tool-card orange" data-view="convert"><img src="assets/tool-markdown.webp" alt=""><strong data-i18n="tool.convert">Converti in Markdown</strong><small data-i18n="tool.convertBenefit">Testi ordinati in un tocco</small></button>
+          <button class="tool-card dark" data-view="protect"><img src="assets/tool-protect.webp" alt=""><strong data-i18n="tool.protect">Proteggi i dati</strong><small data-i18n="tool.protectBenefit">Riduci i dati da condividere</small></button>
+          <button class="tool-card cream" data-view="prepare"><img src="assets/tool-prepare.webp" alt=""><strong data-i18n="tool.prepare">Prepara per l’IA</strong><small data-i18n="tool.prepareBenefit">Richieste più chiare e utili</small></button>
+          <button class="tool-card white" data-view="history"><img src="assets/tool-history.webp" alt=""><strong data-i18n="tool.history">Cronologia</strong><small data-i18n="tool.historyBenefit">Ritrova i lavori sul telefono</small></button>
         </div>
-
-        <article class="points-card">
-          <div class="points-ring"><span id="points-value">0</span><small>pt</small></div>
-          <div><small data-i18n="points.path">IL TUO PERCORSO</small><h3 data-i18n="points.title">Proteggi e sblocca</h3><p data-i18n="points.body">Completa azioni utili per ottenere nuovi template.</p></div>
-          <span>›</span>
-        </article>
         <article class="pro-card"><div><span class="pro-badge">PRO</span><h3 data-i18n="pro.homeTitle">Più lavori, meno passaggi</h3><p data-i18n="pro.homeBody">Batch di documenti, regole personali, cronologia completa e Drive cifrato.</p></div><button data-view="plans" data-i18n="pro.discover">Scopri Pro</button></article>
       </section>
 
@@ -151,6 +147,17 @@ Mantieni date e scadenze</textarea></label>
       <p data-i18n="share.linksBody">WhatsApp e altre app potrebbero mostrare un’anteprima. Scegli cosa inviare.</p>
       <div class="dialog-actions"><button class="secondary-button" value="keep" data-i18n="share.keepLinks">Mantieni i link</button><button class="primary-button" value="remove" data-i18n="share.removeLinks">Condividi senza link</button></div>
       <button class="text-button" value="cancel" data-i18n="share.cancel">Annulla</button>
+    </form>
+  </dialog>
+
+  <dialog id="points-dialog">
+    <form method="dialog" class="dialog-card">
+      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
+      <img class="dialog-token" src="assets/reward-token.webp" alt="Gettone premio">
+      <p class="eyebrow" data-i18n="points.infoEyebrow">I TUOI GETTONI</p>
+      <h2 data-i18n="points.infoTitle">Usa l’app, sblocca vantaggi</h2>
+      <p data-i18n="points.infoBody">Ottieni gettoni completando azioni utili. In futuro sbloccheranno template e funzioni. Non sono denaro e in questo prototipo restano solo sul telefono.</p>
+      <button class="primary-button full" value="cancel" data-i18n="points.understood">Ho capito</button>
     </form>
   </dialog>
 

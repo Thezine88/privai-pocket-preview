@@ -1,4 +1,4 @@
-const CACHE = 'privai-pocket-v1';
+const CACHE = 'privai-pocket-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,10 +8,20 @@ const APP_SHELL = [
   './src/domain/pii.mjs',
   './src/domain/storage.mjs',
   './src/domain/greeting.mjs',
+  './src/domain/i18n.mjs',
+  './src/domain/share.mjs',
+  './src/locales/it.mjs',
+  './src/locales/en.mjs',
   './manifest.webmanifest',
   './assets/icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',
+  './assets/hero-privacy.webp',
+  './assets/reward-token.webp',
+  './assets/tool-markdown.webp',
+  './assets/tool-protect.webp',
+  './assets/tool-prepare.webp',
+  './assets/tool-history.webp',
 ];
 
 self.addEventListener('install', (event) => {

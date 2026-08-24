@@ -47,6 +47,7 @@ $('#language-select').addEventListener('change', (event) => {
   persistentStore.saveLocale(locale);
   applyLocale(locale);
 });
+$('#points-info').addEventListener('click', () => $('#points-dialog').showModal());
 
 const shared = new URLSearchParams(location.search);
 if (shared.get('share') === '1') {

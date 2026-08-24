@@ -44,3 +44,14 @@ test('interface exposes runtime language and output-language controls', async ()
   assert.match(html, /data-i18n-placeholder=/);
   assert.match(app, /domain\/i18n\.mjs/);
 });
+
+test('home uses visual tool cards and keeps reward tokens in the top bar', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  for (const asset of ['hero-privacy.webp', 'tool-markdown.webp', 'tool-protect.webp', 'tool-prepare.webp', 'tool-history.webp', 'reward-token.webp']) {
+    assert.match(html, new RegExp(`assets/${asset}`));
+  }
+  assert.match(html, /class="token-balance"/);
+  assert.match(html, /id="points-info"/);
+  assert.match(html, /id="points-dialog"/);
+  assert.doesNotMatch(html, /class="points-card"/);
+});
