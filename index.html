@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8F1">
+  <meta name="description" content="Prepara contenuti protetti e in Markdown per qualsiasi intelligenza artificiale.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <style>.field select{width:100%;min-height:40px;border:0;outline:0;background:transparent;font:inherit;color:#111114}.privacy-warning{margin:12px 0;padding:14px 16px;border-radius:18px;background:#fff3e8;color:#6f3a15;font-size:13px;line-height:1.45;overflow-wrap:anywhere}[data-i18n]{overflow-wrap:anywhere}</style>
+  <title>PrivAI Pocket</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow" data-i18n="home.privateSpace">IL TUO SPAZIO PRIVATO</p>
+        <h1 id="page-title">👋 Buongiorno</h1>
+      </div>
+      <button class="icon-button" data-view="settings" aria-label="Apri impostazioni">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.37a1.7 1.7 0 0 0-1 .63 1.7 1.7 0 0 0-.37 1.08V21h-4v-.08A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.23 15a1.7 1.7 0 0 0-.63-1 1.7 1.7 0 0 0-1.08-.37H2v-4h.52A1.7 1.7 0 0 0 4.23 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.6 3.6 1.7 1.7 0 0 0 9.63 2H14v.08A1.7 1.7 0 0 0 15.4 3.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.77 8c.12.42.34.76.63 1 .3.24.67.37 1.08.37H22v4h-.52A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="view active" data-view-panel="home">
+        <article class="hero-card">
+          <div class="hero-copy">
+            <span class="privacy-chip"><span class="pulse"></span><span data-i18n="home.deviceOnly">Solo sul dispositivo</span></span>
+            <h2 data-i18n="home.heroTitle">Prima proteggi. Poi chiedi all’IA.</h2>
+            <p data-i18n="home.heroBody">Trasforma qualsiasi testo in Markdown e controlla i dati sensibili prima di condividerlo.</p>
+            <button class="primary-button" data-view="convert"><span data-i18n="home.start">Inizia ora</span> <span>→</span></button>
+          </div>
+          <div class="hero-art" aria-hidden="true"><div class="shield">✓</div><i></i><b></b></div>
+        </article>
+
+        <div class="section-heading"><div><p class="eyebrow" data-i18n="home.quickActions">AZIONI RAPIDE</p><h2 data-i18n="home.tools">I tuoi strumenti</h2></div></div>
+        <div class="tool-grid">
+          <button class="tool-card orange" data-view="convert"><span class="tool-icon">#</span><small data-i18n="tool.format">FORMATO</small><strong data-i18n="tool.convert">Converti in Markdown</strong><span class="arrow">↗</span></button>
+          <button class="tool-card dark" data-view="protect"><span class="tool-icon">◉</span><small>PRIVACY</small><strong data-i18n="tool.protect">Proteggi i dati</strong><span class="arrow">↗</span></button>
+          <button class="tool-card cream" data-view="prepare"><span class="tool-icon">✦</span><small data-i18n="tool.context">CONTESTO</small><strong data-i18n="tool.prepare">Prepara per l’IA</strong><span class="arrow">↗</span></button>
+          <button class="tool-card white" data-view="history"><span class="tool-icon">↺</span><small data-i18n="tool.local">LOCALE</small><strong data-i18n="tool.history">Cronologia</strong><span class="arrow">↗</span></button>
+        </div>
+
+        <article class="points-card">
+          <div class="points-ring"><span id="points-value">0</span><small>pt</small></div>
+          <div><small data-i18n="points.path">IL TUO PERCORSO</small><h3 data-i18n="points.title">Proteggi e sblocca</h3><p data-i18n="points.body">Completa azioni utili per ottenere nuovi template.</p></div>
+          <span>›</span>
+        </article>
+        <article class="pro-card"><div><span class="pro-badge">PRO</span><h3 data-i18n="pro.homeTitle">Più lavori, meno passaggi</h3><p data-i18n="pro.homeBody">Batch di documenti, regole personali, cronologia completa e Drive cifrato.</p></div><button data-view="plans" data-i18n="pro.discover">Scopri Pro</button></article>
+      </section>
+
+      <section class="view" data-view-panel="convert">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="step.one">PASSO 1 DI 3</p><h2 class="screen-title" data-i18n="convert.title">Converti</h2>
+        <p class="screen-intro" data-i18n="convert.intro">Incolla un testo o importa un file. La conversione avviene qui, senza invii esterni.</p>
+        <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="convert.exampleBefore">Prima: testo copiato da WhatsApp, con righe spezzate e simboli.</p><p data-i18n="convert.exampleAfter">Dopo: titoli e liste ordinati, pronti per ChatGPT o Claude.</p><strong data-i18n="convert.benefit">Vantaggio: niente sistemazioni manuali.</strong></article>
+        <label class="editor-card"><span data-i18n="convert.original">Contenuto originale</span><textarea id="source-input" data-i18n-placeholder="convert.sourcePlaceholder" placeholder="Incolla un messaggio, una nota o il testo di un documento…"></textarea></label>
+        <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Importa file</span><input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
+        <label class="editor-card output"><span data-i18n="convert.clean">Markdown pulito</span><textarea id="markdown-output" data-i18n-placeholder="convert.outputPlaceholder" placeholder="Il risultato apparirà qui…"></textarea></label>
+        <button class="wide-action" id="to-protect"><span data-i18n="convert.continue">Continua con Proteggi</span> <span>→</span></button>
+      </section>
+
+      <section class="view" data-view-panel="protect">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="step.two">PASSO 2 DI 3</p><h2 class="screen-title" data-i18n="protect.title">Proteggi</h2>
+        <div class="local-banner"><span>✓</span><div><strong data-i18n="protect.localTitle">Analisi locale</strong><p data-i18n="protect.localBody">Il testo non viene inviato a server esterni.</p></div></div>
+        <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="protect.exampleBefore">Prima: “Scrivi a mario@email.it o chiama +39 333 123 4567”.</p><p data-i18n="protect.exampleAfter">Dopo: “Scrivi a [EMAIL_1] o chiama [TELEPHONENUM_1]”.</p><strong data-i18n="protect.benefit">Vantaggio: condividi meno dati personali con l’IA.</strong></article>
+        <label class="editor-card"><span data-i18n="protect.input">Testo da controllare</span><textarea id="protect-input" data-i18n-placeholder="protect.inputPlaceholder" placeholder="Incolla o converti prima un contenuto…"></textarea></label>
+        <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Cerca dati sensibili</button>
+        <div id="findings" class="findings"><p class="empty-state" data-i18n="protect.notScanned">Nessuna analisi eseguita.</p></div>
+        <label class="editor-card output"><span data-i18n="protect.output">Testo protetto</span><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona cosa mascherare…"></textarea></label>
+        <button class="wide-action" id="to-prepare"><span data-i18n="protect.continue">Continua con Prepara</span> <span>→</span></button>
+      </section>
+
+      <section class="view" data-view-panel="prepare">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="step.three">PASSO 3 DI 3</p><h2 class="screen-title" data-i18n="prepare.title">Prepara</h2>
+        <p class="screen-intro" data-i18n="prepare.intro">Aggiungi un obiettivo chiaro. Otterrai un pacchetto Markdown pronto per qualunque IA.</p>
+        <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="prepare.exampleBefore">Prima: un lungo messaggio del cliente.</p><p data-i18n="prepare.exampleAfter">Dopo: un prompt che chiede attività, responsabili e scadenze senza inventare nulla.</p><strong data-i18n="prepare.benefit">Vantaggio: risposte più utili senza saper scrivere prompt.</strong></article>
+        <div class="template-chips" id="template-chips">
+          <button data-goal="Crea una checklist operativa">Checklist</button><button data-goal="Prepara una risposta email professionale">Email</button><button data-goal="Crea un riassunto fedele e conciso">Riassunto</button><button data-goal="Trasforma il contenuto in un post social">Post</button>
+        </div>
+        <label class="field"><span data-i18n="prepare.goal">Obiettivo</span><input id="goal-input" value="Crea una checklist operativa"></label>
+        <label class="field"><span data-i18n="prepare.constraints">Vincoli, uno per riga</span><textarea id="constraints-input">Non inventare informazioni mancanti
+Mantieni date e scadenze</textarea></label>
+        <label class="field"><span data-i18n="prepare.outputLanguage">Lingua del risultato</span><select id="output-language-select"><option value="same" data-i18n="language.same">Come il contenuto</option><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <button class="primary-button full" id="prepare-button" data-i18n="prepare.generate">Genera pacchetto</button>
+        <label class="editor-card output tall"><span data-i18n="prepare.ready">Pronto per l’IA</span><textarea id="prompt-output"></textarea></label>
+        <div class="button-row"><button class="secondary-button" id="copy-button" data-i18n="action.copy">Copia</button><button class="primary-button" id="share-button" data-i18n="action.share">Condividi</button></div>
+      </section>
+
+      <section class="view" data-view-panel="history">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="history.local">SALVATA SUL TELEFONO</p><h2 class="screen-title" data-i18n="history.title">Cronologia</h2>
+        <article class="example-card"><small data-i18n="example.practical">Esempio pratico</small><p data-i18n="history.example">Riapri il preventivo protetto ieri senza cercarlo tra chat e download.</p><strong data-i18n="history.benefit">Vantaggio: ritrovi subito il lavoro già preparato.</strong></article>
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+      <section class="view" data-view-panel="settings">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="settings.privacy">CONTROLLO E PRIVACY</p><h2 class="screen-title" data-i18n="settings.title">Impostazioni</h2>
+        <label class="field"><span data-i18n="settings.language">Lingua dell’app</span><select id="language-select"><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <article class="settings-card privacy-settings"><span class="settings-icon">✓</span><div><h3 data-i18n="settings.localTitle">Modalità locale attiva</h3><p data-i18n="settings.localBody">Conversione e protezione non usano servizi cloud.</p></div></article>
+        <div class="section-heading"><div><p class="eyebrow">FACOLTATIVO</p><h2>API personali</h2></div></div>
+        <p class="settings-note" data-i18n="settings.apiNote">Collega una tua chiave solo se vuoi usare servizi cloud. Prima di ogni invio vedrai provider e contenuto. In questo prototipo la chiave resta nella sessione del browser; nella versione nativa useremo Android Keystore e iOS Keychain.</p>
+        <article class="example-card"><small>Esempio pratico</small><p>Colleghi Groq per trascrivere un vocale oppure OpenAI per elaborare un testo, usando il tuo account e solo quando lo decidi.</p><strong>Vantaggio: scegli tu servizio e spesa.</strong></article>
+        <div class="provider-list">
+          <button class="provider-row" data-provider="groq"><span class="provider-logo orange-bg">G</span><div><strong>Groq</strong><small>Non configurata</small></div><span>›</span></button>
+          <button class="provider-row" data-provider="openai"><span class="provider-logo dark-bg">O</span><div><strong>OpenAI</strong><small>Non configurata</small></div><span>›</span></button>
+          <button class="provider-row" data-provider="anthropic"><span class="provider-logo cream-bg">A</span><div><strong>Anthropic</strong><small>Non configurata</small></div><span>›</span></button>
+          <button class="provider-row" data-provider="gemini"><span class="provider-logo green-bg">◆</span><div><strong>Gemini</strong><small>Non configurata</small></div><span>›</span></button>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="plans">
+        <button class="back-button" data-view="home">← Home</button>
+        <p class="eyebrow" data-i18n="plans.eyebrow">SCEGLI QUANTO TI SERVE</p><h2 class="screen-title" data-i18n="plans.title">Piani</h2>
+        <p class="screen-intro" data-i18n="plans.intro">Prova gratis il flusso completo. Passa a Pro quando ti fa risparmiare abbastanza tempo da usarlo su più lavori.</p>
+        <article class="plan-card"><span>GRATIS</span><h3>Per iniziare</h3><p>Conversioni singole, protezione base, template essenziali e cronologia limitata.</p><strong>€0</strong><button class="secondary-button" data-view="home">Continua gratis</button></article>
+        <article class="plan-card featured"><span>PRO</span><h3>Per lavorarci ogni giorno</h3><p>Più velocità, controllo e spazio per tutti i tuoi lavori.</p><div class="benefit-list">
+          <div><b>⇉</b><p><strong>Lavora su più documenti insieme</strong><small>Converti e proteggi intere cartelle senza ripetere ogni passaggio.</small></p></div>
+          <div><b>⌁</b><p><strong>Crea le tue regole di protezione</strong><small>Aggiungi clienti, parole e dati che vuoi sempre controllare.</small></p></div>
+          <div><b>✦</b><p><strong>Template personali illimitati</strong><small>Salva le istruzioni che usi per email, post, riunioni e preventivi.</small></p></div>
+          <div><b>☁</b><p><strong>Sincronizza con Drive in modo cifrato</strong><small>Ritrova i lavori sui tuoi dispositivi mantenendo il controllo dei file.</small></p></div>
+          <div><b>↗</b><p><strong>Condividi direttamente con WhatsApp, email e le tue app</strong><small>Invia il risultato con il menu nativo del telefono.</small></p></div>
+          <div><b>∞</b><p><strong>Cronologia e progetti senza limiti</strong><small>Organizza il lavoro per cliente o attività e ritrovalo velocemente.</small></p></div>
+        </div><strong>Prezzo da validare</strong><button class="primary-button" id="pro-interest">Passa a Pro</button><small>Nessun addebito nel prototipo.</small></article>
+      </section>
+    </main>
+
+    <footer class="bottom-bar">
+      <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" aria-label="Apri notizieartificiali.ai su Instagram"><span>◎</span><small>in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
+      <button class="add-button" data-view="convert" aria-label="Nuova conversione">＋</button>
+      <button class="nav-button copy-nav" id="global-copy"><span>▣</span><small data-i18n="action.copy">Copia</small></button>
+      <button class="nav-button share-nav" id="global-share"><span>↗</span><small data-i18n="action.share">Condividi</small></button>
+    </footer>
+  </div>
+
+  <dialog id="api-dialog">
+    <form method="dialog" class="dialog-card">
+      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
+      <p class="eyebrow">CLOUD FACOLTATIVO</p><h2 id="api-title">Collega API</h2>
+      <p>La chiave appartiene a te. Non inserire mai una chiave condivisa o aziendale senza autorizzazione.</p>
+      <label class="field"><span>Chiave API</span><input id="api-key-input" type="password" autocomplete="off" placeholder="Incolla la chiave…"></label>
+      <div class="button-row"><button class="secondary-button" id="api-delete" value="cancel" type="button">Rimuovi</button><button class="primary-button" id="api-save" value="cancel" type="button">Salva per la sessione</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="src/app.mjs"></script>
+</body>
+</html>
