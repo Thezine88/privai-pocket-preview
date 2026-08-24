@@ -57,7 +57,7 @@
         <article class="example-card"><small data-i18n="example.beforeAfter">Esempio pratico · Prima → Dopo</small><p data-i18n="convert.exampleBefore">Prima: testo copiato da WhatsApp, con righe spezzate e simboli.</p><p data-i18n="convert.exampleAfter">Dopo: titoli e liste ordinati, pronti per ChatGPT o Claude.</p><strong data-i18n="convert.benefit">Vantaggio: niente sistemazioni manuali.</strong></article>
         <label class="editor-card"><span data-i18n="convert.original">Contenuto originale</span><textarea id="source-input" data-i18n-placeholder="convert.sourcePlaceholder" placeholder="Incolla un messaggio, una nota o il testo di un documento…"></textarea></label>
         <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Importa file</span><input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
-        <label class="editor-card output"><span data-i18n="convert.clean">Markdown pulito</span><textarea id="markdown-output" data-i18n-placeholder="convert.outputPlaceholder" placeholder="Il risultato apparirà qui…"></textarea></label>
+        <article class="editor-card output"><div class="result-header"><span data-i18n="convert.clean">Markdown pulito</span><div class="result-actions"><button data-copy-result="markdown-output" data-i18n="action.copy">Copia</button><button data-share-result="markdown-output" data-i18n="action.share">Condividi</button></div></div><textarea id="markdown-output" data-i18n-placeholder="convert.outputPlaceholder" placeholder="Il risultato apparirà qui…" aria-label="Markdown pulito"></textarea></article>
         <button class="wide-action" id="to-protect"><span data-i18n="convert.continue">Continua con Proteggi</span> <span>→</span></button>
       </section>
 
@@ -69,7 +69,7 @@
         <label class="editor-card"><span data-i18n="protect.input">Testo da controllare</span><textarea id="protect-input" data-i18n-placeholder="protect.inputPlaceholder" placeholder="Incolla o converti prima un contenuto…"></textarea></label>
         <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Cerca dati sensibili</button>
         <div id="findings" class="findings"><p class="empty-state" data-i18n="protect.notScanned">Nessuna analisi eseguita.</p></div>
-        <label class="editor-card output"><span data-i18n="protect.output">Testo protetto</span><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona cosa mascherare…"></textarea></label>
+        <article class="editor-card output"><div class="result-header"><span data-i18n="protect.output">Testo protetto</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="action.share">Condividi</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona cosa mascherare…" aria-label="Testo protetto"></textarea></article>
         <button class="wide-action" id="to-prepare"><span data-i18n="protect.continue">Continua con Prepara</span> <span>→</span></button>
       </section>
 
@@ -86,8 +86,7 @@
 Mantieni date e scadenze</textarea></label>
         <label class="field"><span data-i18n="prepare.outputLanguage">Lingua del risultato</span><select id="output-language-select"><option value="same" data-i18n="language.same">Come il contenuto</option><option value="it">Italiano</option><option value="en">English</option></select></label>
         <button class="primary-button full" id="prepare-button" data-i18n="prepare.generate">Genera pacchetto</button>
-        <label class="editor-card output tall"><span data-i18n="prepare.ready">Pronto per l’IA</span><textarea id="prompt-output"></textarea></label>
-        <div class="button-row"><button class="secondary-button" id="copy-button" data-i18n="action.copy">Copia</button><button class="primary-button" id="share-button" data-i18n="action.share">Condividi</button></div>
+        <article class="editor-card output tall"><div class="result-header"><span data-i18n="prepare.ready">Pronto per l’IA</span><div class="result-actions"><button data-copy-result="prompt-output" data-i18n="action.copy">Copia</button><button data-share-result="prompt-output" data-i18n="action.share">Condividi</button></div></div><textarea id="prompt-output" aria-label="Pronto per l’IA"></textarea></article>
       </section>
 
       <section class="view" data-view-panel="history">
@@ -131,9 +130,7 @@ Mantieni date e scadenze</textarea></label>
 
     <footer class="bottom-bar">
       <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" aria-label="Apri notizieartificiali.ai su Instagram"><span>◎</span><small>in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
-      <button class="add-button" data-view="convert" aria-label="Nuova conversione">＋</button>
-      <button class="nav-button copy-nav" id="global-copy"><span>▣</span><small data-i18n="action.copy">Copia</small></button>
-      <button class="nav-button share-nav" id="global-share"><span>↗</span><small data-i18n="action.share">Condividi</small></button>
+      <button class="add-button" data-view="convert" aria-label="Nuova conversione"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
     </footer>
   </div>
 
@@ -144,6 +141,16 @@ Mantieni date e scadenze</textarea></label>
       <p>La chiave appartiene a te. Non inserire mai una chiave condivisa o aziendale senza autorizzazione.</p>
       <label class="field"><span>Chiave API</span><input id="api-key-input" type="password" autocomplete="off" placeholder="Incolla la chiave…"></label>
       <div class="button-row"><button class="secondary-button" id="api-delete" value="cancel" type="button">Rimuovi</button><button class="primary-button" id="api-save" value="cancel" type="button">Salva per la sessione</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="share-links-dialog">
+    <form method="dialog" class="dialog-card">
+      <p class="eyebrow" data-i18n="share.linksEyebrow">PRIMA DI CONDIVIDERE</p>
+      <h2 data-i18n="share.linksTitle">Il testo contiene link</h2>
+      <p data-i18n="share.linksBody">WhatsApp e altre app potrebbero mostrare un’anteprima. Scegli cosa inviare.</p>
+      <div class="dialog-actions"><button class="secondary-button" value="keep" data-i18n="share.keepLinks">Mantieni i link</button><button class="primary-button" value="remove" data-i18n="share.removeLinks">Condividi senza link</button></div>
+      <button class="text-button" value="cancel" data-i18n="share.cancel">Annulla</button>
     </form>
   </dialog>
 

@@ -13,8 +13,12 @@ test('mobile shell exposes the core workflows and corrected collaboration link',
   assert.match(html, /Passa a Pro/);
   assert.match(html, /Prima → Dopo/);
   assert.match(html, /Condividi/);
-  assert.match(html, /id="global-copy"/);
-  assert.match(html, /id="global-share"/);
+  assert.doesNotMatch(html, /id="global-copy"/);
+  assert.doesNotMatch(html, /id="global-share"/);
+  assert.match(html, /class="result-actions"/);
+  assert.match(html, /data-copy-result="markdown-output"/);
+  assert.match(html, /data-share-result="markdown-output"/);
+  assert.match(html, /id="share-links-dialog"/);
   assert.match(html, /Condividi direttamente con WhatsApp, email e le tue app/);
   assert.match(html, /Lavora su più documenti insieme/);
   assert.match(html, /Crea le tue regole di protezione/);
@@ -27,6 +31,8 @@ test('theme defines the approved color system and mobile touch targets', async (
     assert.match(css.toUpperCase(), new RegExp(color.toUpperCase()));
   }
   assert.match(css, /min-height:\s*48px/);
+  assert.match(css, /\.add-button\s*svg/);
+  assert.match(css, /left:\s*50%/);
 });
 
 test('interface exposes runtime language and output-language controls', async () => {

@@ -3,6 +3,7 @@ import { detectSensitiveData, maskFindings } from './domain/pii.mjs';
 import { createStore } from './domain/storage.mjs';
 import { greetingForHour } from './domain/greeting.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
+import { containsWebLinks, removeWebLinks } from './domain/share.mjs';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -111,32 +112,33 @@ $('#prepare-button').addEventListener('click', () => {
   award(15); toast(state.translator.t('dynamic.packSaved'));
 });
 
-$('#copy-button').addEventListener('click', async () => {
-  const text = $('#prompt-output').value; if (!text) return toast(state.translator.t('dynamic.noCopy'));
-  await navigator.clipboard.writeText(text); toast(state.translator.t('dynamic.copied'));
-});
-
 async function shareText(text) {
-  if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text });
-  else { await navigator.clipboard.writeText(text); toast(state.translator.t('dynamic.shareFallback')); }
+  let shareCopy = text;
+  if (containsWebLinks(text)) {
+    const dialog = $('#share-links-dialog');
+    dialog.returnValue = '';
+    const choice = await new Promise((resolve) => {
+      dialog.addEventListener('close', () => resolve(dialog.returnValue), { once: true });
+      dialog.showModal();
+    });
+    if (choice === 'cancel' || !choice) return;
+    if (choice === 'remove') shareCopy = removeWebLinks(text);
+  }
+  if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text: shareCopy });
+  else { await navigator.clipboard.writeText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
 }
 
-$('#share-button').addEventListener('click', async () => {
-  const text = $('#prompt-output').value; if (!text) return toast(state.translator.t('dynamic.noShare'));
-  await shareText(text);
-});
-
-$('#global-share').addEventListener('click', async () => {
-  const text = $('#prompt-output').value || state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value || $('#source-input').value;
-  if (!text.trim()) { showView('convert'); return toast(state.translator.t('dynamic.prepareShare')); }
-  await shareText(text);
-});
-
-$('#global-copy').addEventListener('click', async () => {
-  const text = $('#prompt-output').value || state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value || $('#source-input').value;
-  if (!text.trim()) { showView('convert'); return toast(state.translator.t('dynamic.prepareCopy')); }
+$$('[data-copy-result]').forEach((button) => button.addEventListener('click', async () => {
+  const text = $(`#${button.dataset.copyResult}`).value;
+  if (!text.trim()) return toast(state.translator.t('dynamic.noCopy'));
   await navigator.clipboard.writeText(text); toast(state.translator.t('dynamic.contentCopied'));
-});
+}));
+
+$$('[data-share-result]').forEach((button) => button.addEventListener('click', async () => {
+  const text = $(`#${button.dataset.shareResult}`).value;
+  if (!text.trim()) return toast(state.translator.t('dynamic.noShare'));
+  await shareText(text);
+}));
 
 function renderHistory() {
   const items = persistentStore.listRecent(); const host = $('#history-list');
