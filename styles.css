@@ -10,6 +10,16 @@
 .quick-add-dialog[open]::backdrop{animation:quick-backdrop-in .2s ease-out}
 .add-button svg{transition:transform .22s ease}
 body:has(#quick-add-dialog[open]) .add-button svg{transform:rotate(45deg)}
+@keyframes result-in{from{opacity:.2;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes privacy-pulse{50%{box-shadow:0 0 0 8px rgba(32,164,100,.15)}}
+@keyframes view-forward{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes copy-confirm{50%{transform:scale(1.06)}}
+@keyframes token-bump{50%{transform:scale(1.12)}}
+.editor-card.output.result-reveal{animation:result-in .28s ease-out}
+.local-banner.privacy-success>span{animation:privacy-pulse .5s ease-out}
+.view.active.forward{animation:view-forward .25s ease-out}
+.result-actions button.copied{background:var(--green)!important;border-color:var(--green)!important;animation:copy-confirm .25s ease-out}
+.token-balance.token-bump{animation:token-bump .32s ease-out}.token-fly{position:fixed;z-index:80;left:calc(50% - 22px);bottom:72px;width:44px;height:44px;pointer-events:none}
 /* Final compact mobile hierarchy. Important rules intentionally defeat older cascade layers. */
 #page-title{display:flex!important;align-items:flex-start!important;gap:7px!important}
 #greeting-emoji{flex:0 0 auto}

@@ -32,14 +32,32 @@ function toast(message) {
 
 function award(points) {
   state.points += points; localStorage.setItem('ai-pocket:points', state.points); $('#points-value').textContent = state.points;
+  animateToken();
 }
 
-function showView(name) {
-  $$('.view').forEach((view) => view.classList.toggle('active', view.dataset.viewPanel === name));
+function animateToken() {
+  const target = $('.token-balance');
+  target.classList.remove('token-bump'); void target.offsetWidth; target.classList.add('token-bump');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const token = document.createElement('img'); token.src = 'assets/reward-token.webp'; token.alt = ''; token.className = 'token-fly'; document.body.append(token);
+  const end = target.getBoundingClientRect();
+  token.animate([{ transform: 'translate(0,0) scale(.7)', opacity: 0 }, { opacity: 1, offset: .2 }, { transform: `translate(${end.left - innerWidth / 2 + 24}px,${end.top - innerHeight + 90}px) scale(.35)`, opacity: 0 }], { duration: 620, easing: 'cubic-bezier(.2,.8,.2,1)' }).finished.finally(() => token.remove());
+}
+
+function showView(name, forward = false) {
+  $$('.view').forEach((view) => {
+    const active = view.dataset.viewPanel === name;
+    view.classList.toggle('active', active); view.classList.toggle('forward', active && forward);
+  });
   $('.topbar').hidden = name !== 'home';
   scrollTo({ top: 0, behavior: 'smooth' });
   if (name === 'history') renderHistory();
   if (name === 'settings') renderProviders();
+}
+
+function revealResult(selector) {
+  const card = $(selector).closest('.editor-card.output');
+  card.classList.remove('result-reveal'); void card.offsetWidth; card.classList.add('result-reveal');
 }
 
 $$('[data-view]').forEach((button) => button.addEventListener('click', () => showView(button.dataset.view)));
@@ -68,6 +86,7 @@ $('#convert-button').addEventListener('click', () => {
   state.markdown = normalizeToMarkdown(source);
   $('#markdown-output').value = state.markdown;
   $('#protect-input').value = state.markdown;
+  revealResult('#markdown-output');
   award(5); toast(state.translator.t('dynamic.markdownCreated'));
 });
 
@@ -85,7 +104,7 @@ $('#prepare-file-input').addEventListener('change', (event) => importLocalFile(e
 
 $('#to-protect').addEventListener('click', () => {
   $('#protect-input').value = $('#markdown-output').value || $('#source-input').value;
-  showView('protect');
+  showView('protect', true);
 });
 
 function renderFindings() {
@@ -105,10 +124,12 @@ $('#scan-button').addEventListener('click', () => {
   const text = $('#protect-input').value;
   if (!text.trim()) return toast(state.translator.t('dynamic.insertContent'));
   state.findings = detectSensitiveData(text); renderFindings(); applyMask();
+  revealResult('#protected-output');
+  const banner = $('.local-banner'); banner.classList.remove('privacy-success'); void banner.offsetWidth; banner.classList.add('privacy-success');
   award(10); toast(state.translator.t('scan.count', { count: state.findings.length }));
 });
 
-$('#to-prepare').addEventListener('click', () => { $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value; showView('prepare'); });
+$('#to-prepare').addEventListener('click', () => { $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value; showView('prepare', true); });
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
   $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = button.dataset.goal;
 }));
@@ -118,6 +139,7 @@ $('#prepare-button').addEventListener('click', () => {
   if (!content.trim()) return toast(state.translator.t('dynamic.convertFirst'));
   const result = buildPromptPack({ goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
   $('#prompt-output').value = result;
+  revealResult('#prompt-output');
   const id = String(Date.now());
   persistentStore.saveRecent({ id, title: $('#goal-input').value || 'Contenuto preparato', markdown: result });
   award(15); toast(state.translator.t('dynamic.packSaved'));
@@ -155,7 +177,12 @@ async function copyText(text) {
 $$('[data-copy-result]').forEach((button) => button.addEventListener('click', async () => {
   const text = $(`#${button.dataset.copyResult}`).value;
   if (!text.trim()) return toast(state.translator.t('dynamic.noCopy'));
-  try { await copyText(text); toast(state.translator.t('dynamic.contentCopied')); }
+  try {
+    await copyText(text); button.classList.add('copied');
+    const original = button.textContent; button.textContent = state.translator.locale === 'it' ? '✓ Copiato' : '✓ Copied';
+    setTimeout(() => { button.classList.remove('copied'); button.textContent = original; }, 1200);
+    toast(state.translator.t('dynamic.contentCopied'));
+  }
   catch { toast(state.translator.locale === 'it' ? 'Copia non riuscita. Il testo resta visibile.' : 'Copy failed. Your text is still visible.'); }
 }));
 

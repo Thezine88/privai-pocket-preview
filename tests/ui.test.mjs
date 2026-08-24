@@ -126,3 +126,13 @@ test('quick add sheet animates from the central plus button', async () => {
   assert.match(css, /\.quick-add-dialog\[open\][^}]*animation:\s*quick-sheet-in/s);
   assert.match(css, /body:has\(#quick-add-dialog\[open\]\) \.add-button svg/s);
 });
+
+test('functional micro animations cover results, privacy, tokens, progress and copy', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const animation of ['result-in', 'privacy-pulse', 'view-forward', 'copy-confirm']) assert.match(css, new RegExp(`@keyframes ${animation}`));
+  assert.match(app, /function revealResult/);
+  assert.match(app, /function animateToken/);
+  assert.match(app, /classList\.add\('copied'\)/);
+  assert.match(app, /showView\('protect', true\)/);
+});
