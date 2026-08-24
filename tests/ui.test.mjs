@@ -119,3 +119,10 @@ test('tool card titles share the same two-line alignment area', async () => {
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.tool-card\.tool-card strong[^}]*min-height:\s*36px/s);
 });
+
+test('quick add sheet animates from the central plus button', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /@keyframes quick-sheet-in/);
+  assert.match(css, /\.quick-add-dialog\[open\][^}]*animation:\s*quick-sheet-in/s);
+  assert.match(css, /body:has\(#quick-add-dialog\[open\]\) \.add-button svg/s);
+});
