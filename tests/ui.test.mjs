@@ -47,11 +47,46 @@ test('interface exposes runtime language and output-language controls', async ()
 
 test('home uses visual tool cards and keeps reward tokens in the top bar', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  for (const asset of ['hero-privacy.webp', 'tool-markdown.webp', 'tool-protect.webp', 'tool-prepare.webp', 'tool-history.webp', 'reward-token.webp']) {
+  for (const asset of ['tool-markdown.webp', 'tool-protect.webp', 'tool-prepare.webp', 'tool-history.webp', 'reward-token.webp']) {
     assert.match(html, new RegExp(`assets/${asset}`));
   }
+  assert.doesNotMatch(html, /class="hero-product"/);
   assert.match(html, /class="token-balance"/);
   assert.match(html, /id="points-info"/);
   assert.match(html, /id="points-dialog"/);
+  assert.match(html, /id="quick-add-dialog"/);
+  assert.match(html, /id="quick-paste"/);
+  assert.match(html, /id="quick-file"/);
   assert.doesNotMatch(html, /class="points-card"/);
+});
+
+test('home forces the approved light palette and keeps tool art secondary', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /color-scheme:\s*light only/);
+  assert.match(css, /\.tool-card img[^}]*width:\s*96px/s);
+  assert.match(css, /\.hero-card[^}]*min-height:\s*210px/s);
+});
+
+test('bottom collaboration link leaves the centered add action unobstructed', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.bottom-bar \.collab-pill[^}]*width:\s*calc\(50% - 54px\)/s);
+  assert.match(css, /\.collab-pill strong[^}]*overflow:\s*hidden/s);
+});
+
+test('quick file picker keeps the original user gesture and primary targets stay touch friendly', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(app, /quick-file[\s\S]{0,220}setTimeout/);
+  assert.match(app, /quick-file[\s\S]{0,220}file-input'\)\.click\(\)/);
+  assert.match(css, /\.result-actions button[^}]*min-height:\s*44px/s);
+  assert.match(css, /\.dialog-close[^}]*min-width:\s*44px/s);
+});
+
+test('greeting separates the emoji from its wrapping text', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /id="greeting-emoji"/);
+  assert.match(html, /id="greeting-text"/);
+  assert.match(app, /greeting-emoji/);
+  assert.match(app, /greeting-text/);
 });

@@ -1,4 +1,4 @@
-const CACHE = 'privai-pocket-v2';
+const CACHE = 'privai-pocket-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -16,7 +16,6 @@ const APP_SHELL = [
   './assets/icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './assets/hero-privacy.webp',
   './assets/reward-token.webp',
   './assets/tool-markdown.webp',
   './assets/tool-protect.webp',
@@ -33,8 +32,22 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-    const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(event.request, copy)); return response;
-  }).catch(() => caches.match('./index.html'))));
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin || url.search) {
+    event.respondWith(fetch(request));
+    return;
+  }
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).then((response) => {
+      if (response.ok) caches.open(CACHE).then((cache) => cache.put('./index.html', response.clone()));
+      return response;
+    }).catch(() => caches.match('./index.html')));
+    return;
+  }
+  event.respondWith(caches.match(url.pathname).then((cached) => cached || fetch(request).then((response) => {
+    if (response.ok) caches.open(CACHE).then((cache) => cache.put(url.pathname, response.clone()));
+    return response;
+  })));
 });

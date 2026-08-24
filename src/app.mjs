@@ -19,7 +19,10 @@ function applyLocale(locale) {
   $$('[data-i18n-placeholder]').forEach((node) => { node.placeholder = state.translator.t(node.dataset.i18nPlaceholder); });
   const selector = $('#language-select');
   if (selector) selector.value = state.translator.locale;
-  $('#page-title').textContent = greetingForHour(new Date().getHours(), state.translator.locale);
+  const greeting = greetingForHour(new Date().getHours(), state.translator.locale);
+  const [emoji, ...words] = greeting.split(' ');
+  $('#greeting-emoji').textContent = emoji;
+  $('#greeting-text').textContent = words.join(' ');
 }
 
 function toast(message) {
@@ -48,13 +51,16 @@ $('#language-select').addEventListener('change', (event) => {
   applyLocale(locale);
 });
 $('#points-info').addEventListener('click', () => $('#points-dialog').showModal());
-
-const shared = new URLSearchParams(location.search);
-if (shared.get('share') === '1') {
-  const received = [shared.get('title'), shared.get('text'), shared.get('url')].filter(Boolean).join('\n\n');
-  if (received) { $('#source-input').value = received; showView('convert'); toast(state.translator.t('dynamic.received')); }
-  history.replaceState({}, '', location.pathname);
-}
+$('#add-button').addEventListener('click', () => $('#quick-add-dialog').showModal());
+$('#quick-paste').addEventListener('click', () => {
+  showView('convert');
+  setTimeout(() => $('#source-input').focus(), 0);
+});
+$('#quick-file').addEventListener('click', () => {
+  showView('convert');
+  $('#quick-add-dialog').close();
+  $('#file-input').click();
+});
 
 $('#convert-button').addEventListener('click', () => {
   const source = $('#source-input').value;
@@ -125,14 +131,28 @@ async function shareText(text) {
     if (choice === 'cancel' || !choice) return;
     if (choice === 'remove') shareCopy = removeWebLinks(text);
   }
-  if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text: shareCopy });
-  else { await navigator.clipboard.writeText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+  try {
+    if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text: shareCopy });
+    else { await copyText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+  } catch (error) {
+    if (error?.name !== 'AbortError') toast(state.translator.locale === 'it' ? 'Condivisione non riuscita. Il testo resta qui.' : 'Sharing failed. Your text is still here.');
+  }
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  const area = document.createElement('textarea');
+  area.value = text; area.style.position = 'fixed'; area.style.opacity = '0';
+  document.body.append(area); area.select();
+  const copied = document.execCommand('copy'); area.remove();
+  if (!copied) throw new Error('Clipboard unavailable');
 }
 
 $$('[data-copy-result]').forEach((button) => button.addEventListener('click', async () => {
   const text = $(`#${button.dataset.copyResult}`).value;
   if (!text.trim()) return toast(state.translator.t('dynamic.noCopy'));
-  await navigator.clipboard.writeText(text); toast(state.translator.t('dynamic.contentCopied'));
+  try { await copyText(text); toast(state.translator.t('dynamic.contentCopied')); }
+  catch { toast(state.translator.locale === 'it' ? 'Copia non riuscita. Il testo resta visibile.' : 'Copy failed. Your text is still visible.'); }
 }));
 
 $$('[data-share-result]').forEach((button) => button.addEventListener('click', async () => {
