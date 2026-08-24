@@ -1,5 +1,5 @@
 import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs';
-import { detectSensitiveData, maskFindings } from './domain/pii.mjs';
+import { detectSensitiveData, maskFindings, restoreProtectedText } from './domain/pii.mjs';
 import { createStore } from './domain/storage.mjs';
 import { greetingForHour } from './domain/greeting.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
@@ -10,7 +10,7 @@ const sessionStore = createStore(sessionStorage);
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
-const state = { markdown: '', protectedText: '', findings: [], provider: '', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
 
 function applyLocale(locale) {
   state.translator = createTranslator(locale);
@@ -116,17 +116,36 @@ function renderFindings() {
 }
 
 function applyMask() {
-  const result = maskFindings($('#protect-input').value, state.findings);
+  const result = maskFindings($('#protect-input').value, state.findings, { scope: state.maskScope });
+  state.mapping = result.mapping;
   state.protectedText = result.text; $('#protected-output').value = result.text;
 }
 
 $('#scan-button').addEventListener('click', () => {
   const text = $('#protect-input').value;
   if (!text.trim()) return toast(state.translator.t('dynamic.insertContent'));
+  state.maskScope = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase();
   state.findings = detectSensitiveData(text); renderFindings(); applyMask();
   revealResult('#protected-output');
   const banner = $('.local-banner'); banner.classList.remove('privacy-success'); void banner.offsetWidth; banner.classList.add('privacy-success');
   award(10); toast(state.translator.t('scan.count', { count: state.findings.length }));
+});
+
+$('#restore-button').addEventListener('click', () => {
+  const response = $('#restore-input').value;
+  if (!response.trim()) return toast(state.translator.locale === 'it' ? 'Incolla prima la risposta dell’IA' : 'Paste the AI response first');
+  if (!Object.keys(state.mapping).length) return toast(state.translator.locale === 'it' ? 'Prima proteggi un testo in questa sessione' : 'Protect some text in this session first');
+  const restored = restoreProtectedText(response, state.mapping);
+  if (!restored.restoredCount) return toast(state.translator.locale === 'it' ? 'Nessun dato da ripristinare trovato' : 'No restorable data found');
+  $('#restored-output').value = restored.text;
+  revealResult('#restored-output');
+  toast(state.translator.locale === 'it' ? `${restored.restoredCount} dati ripristinati sul telefono` : `${restored.restoredCount} items restored on your phone`);
+});
+
+$('#clear-mapping').addEventListener('click', () => {
+  state.mapping = {}; state.maskScope = ''; state.findings = [];
+  $('#restore-input').value = ''; $('#restored-output').value = '';
+  toast(state.translator.locale === 'it' ? 'Corrispondenze locali eliminate' : 'Local matches deleted');
 });
 
 $('#to-prepare').addEventListener('click', () => { $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value; showView('prepare', true); });

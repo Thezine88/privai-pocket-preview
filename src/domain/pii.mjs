@@ -60,7 +60,7 @@ export function detectSensitiveData(text) {
   return accepted.map(({ priority, ...finding }) => finding);
 }
 
-export function maskFindings(text, findings) {
+export function maskFindings(text, findings, { scope = '' } = {}) {
   const source = String(text ?? '');
   const selected = findings.filter((item) => item.selected !== false).sort((a, b) => a.start - b.start);
   const counters = new Map();
@@ -75,7 +75,7 @@ export function maskFindings(text, findings) {
     if (!placeholders.has(identity)) {
       const next = (counters.get(finding.type) ?? 0) + 1;
       counters.set(finding.type, next);
-      placeholders.set(identity, `[${finding.type}_${next}]`);
+      placeholders.set(identity, scope ? `[[PRIVAI_${scope}_${finding.type}_${next}]]` : `[${finding.type}_${next}]`);
     }
     const placeholder = placeholders.get(identity);
     mapping[placeholder] = finding.value;
@@ -84,4 +84,17 @@ export function maskFindings(text, findings) {
   }
   output += source.slice(cursor);
   return { text: output, mapping, maskedCount: selected.length };
+}
+
+export function restoreProtectedText(text, mapping) {
+  let output = String(text ?? '');
+  let restoredCount = 0;
+  const missingPlaceholders = [];
+  for (const [placeholder, original] of Object.entries(mapping ?? {})) {
+    if (!output.includes(placeholder)) { missingPlaceholders.push(placeholder); continue; }
+    const occurrences = output.split(placeholder).length - 1;
+    output = output.split(placeholder).join(original);
+    restoredCount += occurrences;
+  }
+  return { text: output, restoredCount, missingPlaceholders };
 }

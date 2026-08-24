@@ -136,3 +136,12 @@ test('functional micro animations cover results, privacy, tokens, progress and c
   assert.match(app, /classList\.add\('copied'\)/);
   assert.match(app, /showView\('protect', true\)/);
 });
+
+test('privacy tool exposes an intuitive local restore workflow', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const id of ['restore-input', 'restore-button', 'restored-output', 'clear-mapping']) assert.match(html, new RegExp(`id="${id}"`));
+  assert.match(html, /Ripristina i dati/);
+  assert.match(app, /restoreProtectedText/);
+  assert.match(app, /state\.mapping/);
+});

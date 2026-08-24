@@ -67,7 +67,16 @@
         <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Oppure scegli un file</span><input id="protect-file-input" type="file" accept=".txt,.md,text/plain,text/markdown"></label>
         <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Cerca dati sensibili</button>
         <div id="findings" class="findings"><p class="empty-state" data-i18n="protect.notScanned">Nessuna analisi eseguita.</p></div>
-        <article class="editor-card output"><div class="result-header"><span data-i18n="protect.output">Testo protetto</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="action.share">Condividi</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona cosa mascherare…" aria-label="Testo protetto"></textarea></article>
+        <article class="editor-card output"><div class="result-header"><span data-i18n="protect.output">Versione protetta</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="protect.openAI">Apri nell’IA</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="Seleziona quali dati nascondere…" aria-label="Versione protetta"></textarea></article>
+        <article class="restore-card">
+          <p class="eyebrow" data-i18n="restore.eyebrow">NASCONDI PRIMA. RIPRISTINA DOPO.</p>
+          <h3 data-i18n="restore.title">Hai ricevuto la risposta dell’IA?</h3>
+          <p data-i18n="restore.body">Condividila con questa app oppure incollala qui. I dati originali vengono ripristinati soltanto sul telefono.</p>
+          <label class="editor-card"><span data-i18n="restore.input">Risposta di ChatGPT, Claude o un’altra IA</span><textarea id="restore-input" data-i18n-placeholder="restore.placeholder" placeholder="Incolla qui la risposta…"></textarea></label>
+          <button class="primary-button full" id="restore-button" data-i18n="restore.action">Ripristina i dati</button>
+          <article class="editor-card output"><div class="result-header"><span data-i18n="restore.output">Risultato completo</span><div class="result-actions"><button data-copy-result="restored-output" data-i18n="action.copy">Copia</button><button data-share-result="restored-output" data-i18n="action.share">Condividi</button></div></div><textarea id="restored-output" data-i18n-placeholder="restore.outputPlaceholder" placeholder="Il risultato completo apparirà qui…" aria-label="Risultato completo"></textarea></article>
+          <button class="text-button" id="clear-mapping" type="button" data-i18n="restore.clear">Elimina le corrispondenze locali</button>
+        </article>
         <button class="wide-action" id="to-prepare"><span data-i18n="protect.continue">Continua con Prepara</span> <span>→</span></button>
       </section>
 

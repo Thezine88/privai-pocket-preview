@@ -20,6 +20,7 @@ body:has(#quick-add-dialog[open]) .add-button svg{transform:rotate(45deg)}
 .view.active.forward{animation:view-forward .25s ease-out}
 .result-actions button.copied{background:var(--green)!important;border-color:var(--green)!important;animation:copy-confirm .25s ease-out}
 .token-balance.token-bump{animation:token-bump .32s ease-out}.token-fly{position:fixed;z-index:80;left:calc(50% - 22px);bottom:72px;width:44px;height:44px;pointer-events:none}
+.restore-card{margin:22px 0;padding:18px;border-radius:28px;background:linear-gradient(145deg,#fff,#fff3e8);border:1px solid #f1dfd0;box-shadow:var(--shadow)}.restore-card h3{font-size:21px;margin:4px 0 7px}.restore-card>p:not(.eyebrow){font-size:12px;line-height:1.45;color:var(--muted);margin:0 0 10px}.restore-card .editor-card{box-shadow:none;border:1px solid #eee1d6}.restore-card>.text-button{font-size:11px}
 /* Final compact mobile hierarchy. Important rules intentionally defeat older cascade layers. */
 #page-title{display:flex!important;align-items:flex-start!important;gap:7px!important}
 #greeting-emoji{flex:0 0 auto}
