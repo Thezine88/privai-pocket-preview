@@ -101,4 +101,5 @@ test('Samsung-compatible light scheme and collaboration do not occupy fixed navi
   const fixedFooter = html.match(/<footer class="bottom-bar">([\s\S]*?)<\/footer>/)?.[1] ?? '';
   assert.doesNotMatch(fixedFooter, /notizieartificiali/);
   assert.match(html, /class="home-collab"[^>]*instagram\.com\/notizieartificiali\.ai/);
+  assert.match(css, /\.home-collab\.home-collab[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
 });
