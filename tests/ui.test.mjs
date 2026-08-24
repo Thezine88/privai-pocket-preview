@@ -93,13 +93,14 @@ test('home hero stays compact and greeting text wraps within its own column', as
   assert.match(css, /\.view\.active \.hero-card[^}]*padding:\s*16px 20px!important/s);
 });
 
-test('Samsung-compatible light scheme and collaboration do not occupy fixed navigation', async () => {
+test('Samsung-compatible light scheme and compact collaboration stay in fixed navigation', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(html, /name="color-scheme" content="only light"/);
   assert.match(css, /color-scheme:\s*only light/);
   const fixedFooter = html.match(/<footer class="bottom-bar">([\s\S]*?)<\/footer>/)?.[1] ?? '';
-  assert.doesNotMatch(fixedFooter, /notizieartificiali/);
-  assert.match(html, /class="home-collab"[^>]*instagram\.com\/notizieartificiali\.ai/);
-  assert.match(css, /\.home-collab\.home-collab[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
+  assert.match(fixedFooter, /class="collab-pill"[^>]*instagram\.com\/notizieartificiali\.ai/);
+  assert.doesNotMatch(html, /class="home-collab"/);
+  assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
+  assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*width:\s*calc\(50% - 54px\)/s);
 });
