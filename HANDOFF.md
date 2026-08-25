@@ -107,7 +107,7 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 - Modifiche `v17` verificate e pubblicate sul branch `main`.
 - Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
 - Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
-- Ultimo commit pubblico noto al momento dell'handoff: `01e67c25c49cc244468c0f6242a615df78026920`.
+- Ultimo commit dei sorgenti/test prima dell'aggiornamento finale di questo handoff: `53eef4b7c67ba07996d987dea467f6d49f773efc`.
 
 Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 
