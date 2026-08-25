@@ -60,6 +60,28 @@ test('interface exposes runtime language and output-language controls', async ()
   assert.match(app, /domain\/i18n\.mjs/);
 });
 
+test('every previously mixed-language surface is connected to runtime translations', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const requiredKeys = [
+    'convert.eyebrow', 'convert.resultEyebrow', 'action.editOriginal',
+    'protect.mode', 'restore.mode', 'protect.eyebrow', 'protect.reviewEyebrow',
+    'protect.reviewTitle', 'protect.apply', 'protect.protectedSummary',
+    'restore.inputEyebrow', 'restore.resultEyebrow', 'prepare.eyebrow',
+    'prepare.personalize', 'prepare.resultEyebrow', 'history.intro',
+    'settings.optional', 'settings.personalApis', 'plans.freeTitle',
+    'plans.proTitle', 'collab.label', 'voice.title', 'voice.body',
+  ];
+  for (const key of requiredKeys) assert.match(html, new RegExp(`data-i18n="${key.replace('.', '\\.')}"`));
+  assert.match(html, /data-goal-key="prepare\.goalChecklist"/);
+  assert.match(html, /data-i18n-aria-label="collab\.aria"/);
+});
+
+test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /styles\.css\?v=17/);
+  assert.match(html, /src\/app\.mjs\?v=17/);
+});
+
 test('home uses visual tool cards and keeps reward tokens in the top bar', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   for (const asset of ['tool-markdown.webp', 'tool-protect.webp', 'tool-prepare.webp', 'tool-history.webp', 'reward-token.webp']) {
