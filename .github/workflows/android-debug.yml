@@ -1,0 +1,50 @@
+name: Android debug APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: node --test tests/*.test.mjs
+      - name: Build local web bundle
+        run: npm run build:web
+      - name: Check packaged credentials
+        run: |
+          node --input-type=module <<'NODE'
+          import { checkPackageSafety } from './scripts/check-package.mjs';
+          const findings = await checkPackageSafety('www');
+          if (findings.length) {
+            console.error(JSON.stringify(findings, null, 2));
+            process.exit(1);
+          }
+          NODE
+      - name: Sync Capacitor Android
+        run: CAPACITOR_TELEMETRY_DISABLED=1 ./node_modules/.bin/cap sync android
+      - name: Assemble debug APK
+        run: cd android && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v7
+        with:
+          name: privai-pocket-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
