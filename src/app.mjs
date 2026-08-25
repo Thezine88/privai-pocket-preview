@@ -1,5 +1,5 @@
 import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs';
-import { detectSensitiveData, maskFindings, restoreProtectedText } from './domain/pii.mjs';
+import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs';
 import { createStore } from './domain/storage.mjs';
 import { greetingForHour } from './domain/greeting.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
@@ -58,6 +58,10 @@ function showView(name, forward = false) {
     view.classList.toggle('active', active); view.classList.toggle('forward', active && forward);
   });
   $('.topbar').hidden = name !== 'home';
+  if (workflows[name]) {
+    if (name === 'protect') setProtectMode('protect');
+    showWorkflowPhase(name, 'input');
+  }
   scrollTo({ top: 0, behavior: 'smooth' });
   if (name === 'history') renderHistory();
   if (name === 'settings') renderProviders();
@@ -108,6 +112,25 @@ $('#add-button').addEventListener('click', () => $('#quick-add-dialog').showModa
 $('#voice-entry').addEventListener('click', () => $('#voice-dialog').showModal());
 $$('[data-protect-mode]').forEach((button) => button.addEventListener('click', () => setProtectMode(button.dataset.protectMode)));
 $$('[data-workflow-edit]').forEach((button) => button.addEventListener('click', () => showWorkflowPhase(button.dataset.workflowEdit, 'input')));
+
+function clearWorkflow(tool) {
+  const fields = {
+    convert: ['source-input', 'markdown-output', 'file-input'],
+    protect: ['protect-input', 'protected-output', 'protect-file-input'],
+    prepare: ['prepare-input', 'prompt-output', 'prepare-file-input'],
+    restore: ['restore-input', 'restored-output'],
+  }[tool] ?? [];
+  fields.forEach((id) => { const field = $(`#${id}`); if (field) field.value = ''; });
+  if (tool === 'convert') state.markdown = '';
+  if (tool === 'protect') {
+    state.protectedText = ''; state.findings = []; state.mapping = {}; state.maskScope = '';
+    $('#findings').innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('protect.notScanned'))}</p>`;
+  }
+  showWorkflowPhase(tool, 'input');
+  toast(state.translator.t('dynamic.cleared'));
+}
+
+$$('[data-clear-workflow]').forEach((button) => button.addEventListener('click', () => clearWorkflow(button.dataset.clearWorkflow)));
 $('#quick-paste').addEventListener('click', () => {
   showView('convert');
   showWorkflowPhase('convert', 'input');
@@ -169,7 +192,7 @@ function renderFindings() {
   const host = $('#findings');
   const warning = `<p class="privacy-warning">${escapeHtml(state.translator.t('protect.reviewWarning'))}</p>`;
   if (!state.findings.length) { host.innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('protect.noneFound'))}</p>${warning}`; return; }
-  host.innerHTML = state.findings.map((item, index) => `<label class="finding"><input type="checkbox" data-finding="${index}" ${item.selected ? 'checked' : ''}><div><strong>${item.type}</strong><p>${escapeHtml(item.value)}</p></div></label>`).join('') + warning;
+  host.innerHTML = state.findings.map((item, index) => `<label class="finding"><input type="checkbox" data-finding="${index}" ${item.selected ? 'checked' : ''}><div><strong>${escapeHtml(displaySensitiveType(item.type, state.translator.locale))}</strong><p>${escapeHtml(item.value)}</p></div></label>`).join('') + warning;
   $$('[data-finding]').forEach((input) => input.addEventListener('change', () => { state.findings[Number(input.dataset.finding)].selected = input.checked; }));
 }
 

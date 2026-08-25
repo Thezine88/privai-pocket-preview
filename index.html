@@ -55,6 +55,7 @@
             <p class="screen-intro" data-i18n="convert.intro">Ordina il contenuto in un formato chiaro, pronto per qualsiasi IA.</p>
             <label class="editor-card"><span data-i18n="convert.original">Contenuto originale</span><textarea id="source-input" data-i18n-placeholder="convert.sourcePlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></label>
             <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Scegli file</span><input id="file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
+            <button class="text-button clear-workflow-button" type="button" data-clear-workflow="convert" data-i18n="action.clear">Pulisci</button>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
             <p class="eyebrow">RISULTATO PRONTO</p>
@@ -76,6 +77,7 @@
             <div class="local-banner"><span>✓</span><div><strong data-i18n="protect.localTitle">Analisi locale</strong><p data-i18n="protect.localBody">Il testo non viene inviato a server esterni.</p></div></div>
             <label class="editor-card"><span data-i18n="protect.input">Testo da controllare</span><textarea id="protect-input" data-i18n-placeholder="protect.inputPlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></label>
             <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Scegli file</span><input id="protect-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
+            <button class="text-button clear-workflow-button" type="button" data-clear-workflow="protect" data-i18n="action.clear">Pulisci</button>
             <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Controlla i dati</button>
           </section>
           <section class="workflow-phase" data-phase="review" hidden>
@@ -100,6 +102,7 @@
             <p class="screen-intro" data-i18n="restore.body">Incolla la risposta dell’IA: gli originali vengono reinseriti soltanto sul telefono.</p>
             <div class="waiting-job" id="restore-status">Le corrispondenze restano disponibili solo in questa sessione.</div>
             <label class="editor-card"><span data-i18n="restore.input">Risposta di ChatGPT, Claude o un’altra IA</span><textarea id="restore-input" data-i18n-placeholder="restore.placeholder" placeholder="Incolla qui la risposta…"></textarea></label>
+            <button class="text-button clear-workflow-button" type="button" data-clear-workflow="restore" data-i18n="action.clear">Pulisci</button>
             <button class="primary-button full" id="restore-button" data-i18n="restore.action">Ripristina i dati</button>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
@@ -118,6 +121,7 @@
             <p class="screen-intro" data-i18n="prepare.intro">Aggiungi ciò che vuoi ottenere. PrivAI prepara istruzioni Markdown pronte per qualsiasi IA.</p>
             <label class="editor-card"><span data-i18n="prepare.input">Contenuto</span><textarea id="prepare-input" data-i18n-placeholder="prepare.inputPlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></label>
             <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Scegli file</span><input id="prepare-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
+            <button class="text-button clear-workflow-button" type="button" data-clear-workflow="prepare" data-i18n="action.clear">Pulisci</button>
             <label class="field"><span data-i18n="prepare.goal">Cosa vuoi ottenere?</span><input id="goal-input" value="Crea una checklist operativa"></label>
             <details class="personalize"><summary>Personalizza</summary><div class="template-chips" id="template-chips"><button data-goal="Crea una checklist operativa">Checklist</button><button data-goal="Prepara una risposta email professionale">Email</button><button data-goal="Crea un riassunto fedele e conciso">Riassunto</button><button data-goal="Trasforma il contenuto in un post social">Post</button></div><label class="field"><span data-i18n="prepare.constraints">Vincoli, uno per riga</span><textarea id="constraints-input">Non inventare informazioni mancanti
 Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n="prepare.outputLanguage">Lingua del risultato</span><select id="output-language-select"><option value="same" data-i18n="language.same">Come il contenuto</option><option value="it">Italiano</option><option value="en">English</option></select></label></details>

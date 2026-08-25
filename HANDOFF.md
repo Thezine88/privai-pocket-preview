@@ -44,7 +44,9 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Cronologia locale limitata e cancellazione individuale.
 - Contatore Free, gettoni dichiarati Beta, saluti variabili, italiano/inglese e anteprima vantaggi Pro dichiarata `In arrivo`.
 - Menu animato del pulsante `+` con una sola azione «Sfoglia file»: il selettore riconosce automaticamente testo, Markdown e PDF.
-- Micro-interazioni e PWA offline con cache `v14`, inclusi lettore PDF, worker e stato dei workflow.
+- Micro-interazioni e PWA offline con cache `v15`, inclusi lettore PDF, worker e stato dei workflow.
+- Le etichette tecniche dei dati sono tradotte per l'utente (`TELEPHONENUM` → `Telefono`) e ogni flusso dispone di un comando `Pulisci`.
+- Aprendo Converti, Proteggi o Prepara dalla Home viene sempre mostrata la fase iniziale indipendente, senza riutilizzare la schermata risultato di un altro strumento.
 - Configurazione BYOK dimostrativa, senza chiamate reali e senza persistenza di chiavi.
 
 ## Limiti e problemi aperti
@@ -99,7 +101,7 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 - Test d'integrazione PDF: estrazione reale riuscita con il motore offline incluso.
 - `node scripts/build-web.mjs`: build web completata in `www/`.
 - `checkPackageSafety('www')`: `[]`; nessuna credenziale nota o configurazione di server remoto trovata nel pacchetto.
-- Versione PWA pubblica precedente; redesign guidato, PDF e cache `v14` restano locali finché non vengono pubblicati con conferma del proprietario.
+- Versione PWA pubblica aggiornata al redesign guidato; le correzioni successive e la cache `v15` devono essere pubblicate con conferma del proprietario.
 - Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
 - Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
 - Commit pubblico noto al momento dell'handoff: `c6ea5f8e6e15ad47838a7a0e3257046328244566`.

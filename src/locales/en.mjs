@@ -1,4 +1,5 @@
 export const en = Object.freeze({
+  'action.clear': 'Clear',
   'action.copy': 'Copy',
   'action.share': 'Share',
   'convert.action': 'Convert',
@@ -115,6 +116,7 @@ export const en = Object.freeze({
   'dynamic.apiSaved': 'Key saved for this session',
   'dynamic.contentCopied': 'Content copied',
   'dynamic.convertFirst': 'Convert or protect some content first',
+  'dynamic.cleared': 'Content cleared. You can start a new task.',
   'dynamic.copied': 'Copied',
   'dynamic.deleted': 'Item deleted',
   'dynamic.fileImported': 'File imported locally',

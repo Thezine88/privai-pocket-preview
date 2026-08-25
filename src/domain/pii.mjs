@@ -35,6 +35,16 @@ const detectors = [
   { type: 'DATE', pattern: /\b(?:0?[1-9]|[12]\d|3[01])[\/.\-](?:0?[1-9]|1[0-2])[\/.\-](?:19|20)\d{2}\b/gu },
 ];
 
+const sensitiveTypeLabels = {
+  it: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Telefono', CF: 'Codice fiscale', IBAN: 'IBAN', DATE: 'Data' },
+  en: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Phone', CF: 'Tax code', IBAN: 'IBAN', DATE: 'Date' },
+};
+
+export function displaySensitiveType(type, locale = 'it') {
+  const language = String(locale).toLowerCase().startsWith('it') ? 'it' : 'en';
+  return sensitiveTypeLabels[language][type] ?? String(type ?? '');
+}
+
 export function detectSensitiveData(text) {
   const source = String(text ?? '');
   const candidates = [];

@@ -1,4 +1,5 @@
 export const it = Object.freeze({
+  'action.clear': 'Pulisci',
   'action.copy': 'Copia',
   'action.share': 'Condividi',
   'convert.action': 'Converti',
@@ -115,6 +116,7 @@ export const it = Object.freeze({
   'dynamic.apiSaved': 'Chiave salvata per questa sessione',
   'dynamic.contentCopied': 'Contenuto copiato',
   'dynamic.convertFirst': 'Prima converti o proteggi un contenuto',
+  'dynamic.cleared': 'Contenuto eliminato. Puoi iniziare un nuovo lavoro.',
   'dynamic.copied': 'Copiato',
   'dynamic.deleted': 'Elemento eliminato',
   'dynamic.fileImported': 'File importato localmente',

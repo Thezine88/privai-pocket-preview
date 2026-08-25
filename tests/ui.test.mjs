@@ -130,6 +130,22 @@ test('protect and prepare accept independent local documents', async () => {
   assert.match(app, /\$\('#prepare-input'\)\.value/);
 });
 
+test('each editable workflow can be cleared before starting a new file', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const workflow of ['convert', 'protect', 'prepare', 'restore']) {
+    assert.match(html, new RegExp(`data-clear-workflow="${workflow}"`));
+  }
+  assert.match(app, /function clearWorkflow/);
+  assert.match(app, /data-clear-workflow/);
+});
+
+test('opening a home tool resets that tool to its independent input phase', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /function showView[\s\S]*workflows\[name\][\s\S]*showWorkflowPhase\(name, 'input'\)/);
+  assert.match(app, /name === 'protect'[\s\S]*setProtectMode\('protect'\)/);
+});
+
 test('every document picker accepts local PDFs and the quick menu names them', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
