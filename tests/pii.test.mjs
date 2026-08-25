@@ -28,6 +28,13 @@ test('uses friendly labels for technical sensitive-data types', () => {
   assert.equal(displaySensitiveType('EMAIL', 'it'), 'Email');
 });
 
+test('uses a readable phone label in protected placeholders', () => {
+  const text = 'Chiama +39 333 123 4567';
+  const masked = maskFindings(text, detectSensitiveData(text), { scope: 'A7F2' });
+  assert.equal(masked.text, 'Chiama [[PRIVAI_A7F2_PHONE_1]]');
+  assert.doesNotMatch(masked.text, /TELEPHONENUM/);
+});
+
 test('rejects an invalid fiscal-code checksum', () => {
   assert.equal(detectSensitiveData('CF RSSMRA85T10A562X').some((item) => item.type === 'CF'), false);
 });
