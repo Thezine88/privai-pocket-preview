@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="only light">
   <meta name="description" content="Prepara contenuti protetti e in Markdown per qualsiasi intelligenza artificiale.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=17">
   <style>.field select{width:100%;min-height:40px;border:0;outline:0;background:transparent;font:inherit;color:#111114}.privacy-warning{margin:12px 0;padding:14px 16px;border-radius:18px;background:#fff3e8;color:#6f3a15;font-size:13px;line-height:1.45;overflow-wrap:anywhere}[data-i18n]{overflow-wrap:anywhere}</style>
   <title>PrivAI Pocket</title>
 </head>
@@ -43,35 +43,35 @@
           <button class="tool-card cream" data-view="prepare"><img src="assets/tool-prepare.webp" alt=""><strong data-i18n="tool.prepare">Prepara per l’IA</strong><small data-i18n="tool.prepareBenefit">Richieste più chiare e utili</small></button>
           <button class="tool-card white" data-view="history"><img src="assets/tool-history.webp" alt=""><strong data-i18n="tool.history">Cronologia</strong><small data-i18n="tool.historyBenefit">Ritrova i lavori sul telefono</small></button>
         </div>
-        <article class="pro-card"><div><span class="pro-badge">PRO · IN ARRIVO</span><h3 data-i18n="pro.homeTitle">Più lavori, meno passaggi</h3><p data-i18n="pro.homeBody">Anteprima delle funzioni pensate per chi userà PrivAI ogni giorno.</p></div><button data-view="plans" data-i18n="pro.discover">Scopri Pro</button></article>
+        <article class="pro-card"><div><span class="pro-badge" data-i18n="pro.badge">PRO · IN ARRIVO</span><h3 data-i18n="pro.homeTitle">Più lavori, meno passaggi</h3><p data-i18n="pro.homeBody">Anteprima delle funzioni pensate per chi userà PrivAI ogni giorno.</p></div><button data-view="plans" data-i18n="pro.discover">Scopri Pro</button></article>
       </section>
 
       <section class="view" data-view-panel="convert">
         <button class="back-button" data-view="home">← Home</button>
         <div class="workflow" data-workflow="convert">
           <section class="workflow-phase" data-phase="input" data-phase-active="true">
-            <p class="eyebrow">FORMATO CHIARO</p>
+            <p class="eyebrow" data-i18n="convert.eyebrow">FORMATO CHIARO</p>
             <h2 class="screen-title" data-i18n="convert.title">Converti in Markdown</h2>
             <p class="screen-intro" data-i18n="convert.intro">Ordina il contenuto in un formato chiaro, pronto per qualsiasi IA.</p>
             <div class="editor-card input-editor"><div class="editor-heading"><label for="source-input" data-i18n="convert.original">Contenuto originale</label><button class="editor-clear-button" type="button" data-clear-workflow="convert" data-clear-target="source-input" data-i18n-aria-label="action.clearAria" aria-label="Pulisci testo" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button></div><textarea id="source-input" data-i18n-placeholder="convert.sourcePlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></div>
             <div class="button-row"><label class="secondary-button file-button"><span data-i18n="convert.import">Scegli file</span><input id="file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label><button class="primary-button" id="convert-button" data-i18n="convert.action">Converti</button></div>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
-            <p class="eyebrow">RISULTATO PRONTO</p>
+            <p class="eyebrow" data-i18n="convert.resultEyebrow">RISULTATO PRONTO</p>
             <h2 class="screen-title" data-i18n="convert.clean">Markdown pulito</h2>
             <article class="editor-card output"><div class="result-header result-actions-sticky"><span data-i18n="convert.clean">Markdown pulito</span><div class="result-actions"><button data-copy-result="markdown-output" data-i18n="action.copy">Copia</button><button data-share-result="markdown-output" data-i18n="action.share">Condividi</button></div></div><textarea id="markdown-output" data-i18n-placeholder="convert.outputPlaceholder" placeholder="Il risultato apparirà qui…" aria-label="Markdown pulito"></textarea></article>
             <button class="wide-action" id="to-protect"><span data-i18n="convert.continue">Proteggi i dati</span><span>→</span></button>
-            <button class="text-button" data-workflow-edit="convert" type="button">Modifica originale</button>
+            <button class="text-button" data-workflow-edit="convert" type="button" data-i18n="action.editOriginal">Modifica originale</button>
           </section>
         </div>
       </section>
 
       <section class="view" data-view-panel="protect">
         <button class="back-button" data-view="home">← Home</button>
-        <div class="protect-mode-switch" aria-label="Scegli modalità"><button data-protect-mode="protect" aria-pressed="true">Proteggi</button><button data-protect-mode="restore" aria-pressed="false">Ripristina</button></div>
+        <div class="protect-mode-switch" data-i18n-aria-label="protect.modeAria" aria-label="Scegli modalità"><button data-protect-mode="protect" aria-pressed="true" data-i18n="protect.mode">Proteggi</button><button data-protect-mode="restore" aria-pressed="false" data-i18n="restore.mode">Ripristina</button></div>
         <div class="workflow" data-workflow="protect">
           <section class="workflow-phase" data-phase="input" data-phase-active="true">
-            <p class="eyebrow">CONTROLLO PRIVATO</p><h2 class="screen-title" data-i18n="protect.title">Proteggi i dati</h2>
+            <p class="eyebrow" data-i18n="protect.eyebrow">CONTROLLO PRIVATO</p><h2 class="screen-title" data-i18n="protect.title">Proteggi i dati</h2>
             <p class="screen-intro" data-i18n="protect.intro">Individua e sostituisci i dati riservati prima di condividere.</p>
             <div class="local-banner"><span>✓</span><div><strong data-i18n="protect.localTitle">Analisi locale</strong><p data-i18n="protect.localBody">Il testo non viene inviato a server esterni.</p></div></div>
             <div class="editor-card input-editor"><div class="editor-heading"><label for="protect-input" data-i18n="protect.input">Testo da controllare</label><button class="editor-clear-button" type="button" data-clear-workflow="protect" data-clear-target="protect-input" data-i18n-aria-label="action.clearAria" aria-label="Pulisci testo" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button></div><textarea id="protect-input" data-i18n-placeholder="protect.inputPlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></div>
@@ -79,33 +79,33 @@
             <button class="primary-button full" id="scan-button" data-i18n="protect.scan">Controlla i dati</button>
           </section>
           <section class="workflow-phase" data-phase="review" hidden>
-            <p class="eyebrow">CONTROLLA PRIMA DI CONTINUARE</p><h2 class="screen-title">Dati trovati</h2>
-            <p class="screen-intro" id="findings-summary">Seleziona cosa vuoi sostituire.</p>
+            <p class="eyebrow" data-i18n="protect.reviewEyebrow">CONTROLLA PRIMA DI CONTINUARE</p><h2 class="screen-title" data-i18n="protect.reviewTitle">Dati trovati</h2>
+            <p class="screen-intro" id="findings-summary" data-i18n="protect.reviewIntro">Seleziona cosa vuoi sostituire.</p>
             <div id="findings" class="findings"><p class="empty-state" data-i18n="protect.notScanned">Nessuna analisi eseguita.</p></div>
-            <button class="primary-button full" id="apply-protection">Crea versione protetta</button>
-            <button class="text-button" data-workflow-edit="protect" type="button">Modifica testo</button>
+            <button class="primary-button full" id="apply-protection" data-i18n="protect.apply">Crea versione protetta</button>
+            <button class="text-button" data-workflow-edit="protect" type="button" data-i18n="action.editText">Modifica testo</button>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
-            <p class="eyebrow">RISULTATO PRONTO</p><h2 class="screen-title" data-i18n="protect.output">Versione protetta</h2>
-            <p class="screen-intro" id="protected-summary">I dati selezionati sono stati sostituiti sul telefono.</p>
+            <p class="eyebrow" data-i18n="convert.resultEyebrow">RISULTATO PRONTO</p><h2 class="screen-title" data-i18n="protect.output">Versione protetta</h2>
+            <p class="screen-intro" id="protected-summary" data-i18n="protect.protectedSummary">I dati selezionati sono stati sostituiti sul telefono.</p>
             <article class="editor-card output"><div class="result-header result-actions-sticky"><span data-i18n="protect.output">Versione protetta</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="action.share">Condividi</button><button data-share-result="protected-output" data-i18n="protect.openAI">Invia all’IA</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="La versione protetta apparirà qui…" aria-label="Versione protetta"></textarea></article>
             <button class="wide-action" id="to-prepare"><span data-i18n="protect.continue">Prepara per l’IA</span><span>→</span></button>
-            <button class="text-button" data-workflow-edit="protect" type="button">Modifica originale</button>
+            <button class="text-button" data-workflow-edit="protect" type="button" data-i18n="action.editOriginal">Modifica originale</button>
             <button class="text-button" id="clear-mapping" type="button" data-i18n="restore.clear">Elimina le corrispondenze locali</button>
           </section>
         </div>
         <div class="workflow" data-workflow="restore" hidden>
           <section class="workflow-phase" data-phase="input" data-phase-active="true">
-            <p class="eyebrow">PROTEGGI E RIPRISTINA</p><h2 class="screen-title">Ripristina i dati</h2>
+            <p class="eyebrow" data-i18n="restore.inputEyebrow">PROTEGGI E RIPRISTINA</p><h2 class="screen-title" data-i18n="restore.action">Ripristina i dati</h2>
             <p class="screen-intro" data-i18n="restore.body">Incolla la risposta dell’IA: gli originali vengono reinseriti soltanto sul telefono.</p>
-            <div class="waiting-job" id="restore-status">Le corrispondenze restano disponibili solo in questa sessione.</div>
+            <div class="waiting-job" id="restore-status" data-i18n="restore.sessionEmpty">Le corrispondenze restano disponibili solo in questa sessione.</div>
             <div class="editor-card input-editor"><div class="editor-heading"><label for="restore-input" data-i18n="restore.input">Risposta di ChatGPT, Claude o un’altra IA</label><button class="editor-clear-button" type="button" data-clear-workflow="restore" data-clear-target="restore-input" data-i18n-aria-label="action.clearAria" aria-label="Pulisci testo" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button></div><textarea id="restore-input" data-i18n-placeholder="restore.placeholder" placeholder="Incolla qui la risposta…"></textarea></div>
             <button class="primary-button full" id="restore-button" data-i18n="restore.action">Ripristina i dati</button>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
-            <p class="eyebrow">RISULTATO COMPLETO</p><h2 class="screen-title" data-i18n="restore.output">Dati ripristinati</h2>
+            <p class="eyebrow" data-i18n="restore.resultEyebrow">RISULTATO COMPLETO</p><h2 class="screen-title" data-i18n="restore.output">Dati ripristinati</h2>
             <article class="editor-card output"><div class="result-header result-actions-sticky"><span data-i18n="restore.output">Risultato completo</span><div class="result-actions"><button data-copy-result="restored-output" data-i18n="action.copy">Copia</button><button data-share-result="restored-output" data-i18n="action.share">Condividi</button></div></div><textarea id="restored-output" data-i18n-placeholder="restore.outputPlaceholder" placeholder="Il risultato completo apparirà qui…" aria-label="Risultato completo"></textarea></article>
-            <button class="text-button" data-workflow-edit="restore" type="button">Modifica risposta</button>
+            <button class="text-button" data-workflow-edit="restore" type="button" data-i18n="action.editResponse">Modifica risposta</button>
           </section>
         </div>
       </section>
@@ -114,19 +114,19 @@
         <button class="back-button" data-view="home">← Home</button>
         <div class="workflow" data-workflow="prepare">
           <section class="workflow-phase" data-phase="input" data-phase-active="true">
-            <p class="eyebrow">RICHIESTA PIÙ CHIARA</p><h2 class="screen-title" data-i18n="prepare.title">Prepara per l’IA</h2>
+            <p class="eyebrow" data-i18n="prepare.eyebrow">RICHIESTA PIÙ CHIARA</p><h2 class="screen-title" data-i18n="prepare.title">Prepara per l’IA</h2>
             <p class="screen-intro" data-i18n="prepare.intro">Aggiungi ciò che vuoi ottenere. PrivAI prepara istruzioni Markdown pronte per qualsiasi IA.</p>
             <div class="editor-card input-editor"><div class="editor-heading"><label for="prepare-input" data-i18n="prepare.input">Contenuto</label><button class="editor-clear-button" type="button" data-clear-workflow="prepare" data-clear-target="prepare-input" data-i18n-aria-label="action.clearAria" aria-label="Pulisci testo" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button></div><textarea id="prepare-input" data-i18n-placeholder="prepare.inputPlaceholder" placeholder="Incolla, detta o scegli un file…"></textarea></div>
             <label class="secondary-button file-button standalone-file"><span data-i18n="source.file">Scegli file</span><input id="prepare-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
-            <label class="field"><span data-i18n="prepare.goal">Cosa vuoi ottenere?</span><input id="goal-input" value="Crea una checklist operativa"></label>
-            <details class="personalize"><summary>Personalizza</summary><div class="template-chips" id="template-chips"><button data-goal="Crea una checklist operativa">Checklist</button><button data-goal="Prepara una risposta email professionale">Email</button><button data-goal="Crea un riassunto fedele e conciso">Riassunto</button><button data-goal="Trasforma il contenuto in un post social">Post</button></div><label class="field"><span data-i18n="prepare.constraints">Vincoli, uno per riga</span><textarea id="constraints-input">Non inventare informazioni mancanti
+            <label class="field"><span data-i18n="prepare.goal">Cosa vuoi ottenere?</span><input id="goal-input" value="Crea una checklist operativa" data-i18n-value="prepare.goalChecklist"></label>
+            <details class="personalize"><summary data-i18n="prepare.personalize">Personalizza</summary><div class="template-chips" id="template-chips"><button data-goal-key="prepare.goalChecklist" data-i18n="prepare.chipChecklist">Checklist</button><button data-goal-key="prepare.goalEmail" data-i18n="prepare.chipEmail">Email</button><button data-goal-key="prepare.goalSummary" data-i18n="prepare.chipSummary">Riassunto</button><button data-goal-key="prepare.goalPost" data-i18n="prepare.chipPost">Post</button></div><label class="field"><span data-i18n="prepare.constraints">Vincoli, uno per riga</span><textarea id="constraints-input" data-i18n-value="prepare.defaultConstraints">Non inventare informazioni mancanti
 Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n="prepare.outputLanguage">Lingua del risultato</span><select id="output-language-select"><option value="same" data-i18n="language.same">Come il contenuto</option><option value="it">Italiano</option><option value="en">English</option></select></label></details>
             <button class="primary-button full" id="prepare-button" data-i18n="prepare.generate">Prepara per l’IA</button>
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
-            <p class="eyebrow">PRONTO DA USARE</p><h2 class="screen-title" data-i18n="prepare.ready">Pronto per l’IA</h2>
+            <p class="eyebrow" data-i18n="prepare.resultEyebrow">PRONTO DA USARE</p><h2 class="screen-title" data-i18n="prepare.ready">Pronto per l’IA</h2>
             <article class="editor-card output tall"><div class="result-header result-actions-sticky"><span data-i18n="prepare.ready">Pronto per l’IA</span><div class="result-actions"><button data-copy-result="prompt-output" data-i18n="action.copy">Copia</button><button data-share-result="prompt-output" data-i18n="action.share">Condividi</button><button data-share-result="prompt-output">Invia all’IA</button></div></div><textarea id="prompt-output" aria-label="Pronto per l’IA"></textarea></article>
-            <button class="text-button" data-workflow-edit="prepare" type="button">Modifica richiesta</button>
+            <button class="text-button" data-workflow-edit="prepare" type="button" data-i18n="action.editRequest">Modifica richiesta</button>
           </section>
         </div>
       </section>
@@ -134,7 +134,7 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
       <section class="view" data-view-panel="history">
         <button class="back-button" data-view="home">← Home</button>
         <p class="eyebrow" data-i18n="history.local">SALVATA SUL TELEFONO</p><h2 class="screen-title" data-i18n="history.title">Cronologia</h2>
-        <p class="screen-intro">Ritrova rapidamente i contenuti preparati e i lavori in attesa di ripristino.</p>
+        <p class="screen-intro" data-i18n="history.intro">Ritrova rapidamente i contenuti preparati e i lavori in attesa di ripristino.</p>
         <div id="history-list" class="history-list"></div>
       </section>
 
@@ -143,7 +143,7 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
         <p class="eyebrow" data-i18n="settings.privacy">CONTROLLO E PRIVACY</p><h2 class="screen-title" data-i18n="settings.title">Impostazioni</h2>
         <label class="field"><span data-i18n="settings.language">Lingua dell’app</span><select id="language-select"><option value="it">Italiano</option><option value="en">English</option></select></label>
         <article class="settings-card privacy-settings"><span class="settings-icon">✓</span><div><h3 data-i18n="settings.localTitle">Modalità locale attiva</h3><p data-i18n="settings.localBody">Conversione e protezione non usano servizi cloud.</p></div></article>
-        <div class="section-heading"><div><p class="eyebrow">FACOLTATIVO</p><h2>API personali</h2></div></div>
+        <div class="section-heading"><div><p class="eyebrow" data-i18n="settings.optional">FACOLTATIVO</p><h2 data-i18n="settings.personalApis">API personali</h2></div></div>
         <p class="settings-note" data-i18n="settings.apiNote">Collega una tua chiave solo se vuoi usare servizi cloud. Prima di ogni invio vedrai provider e contenuto. In questo prototipo la chiave resta nella sessione del browser; nella versione nativa useremo Android Keystore e iOS Keychain.</p>
         <div class="provider-list">
           <button class="provider-row" data-provider="groq"><span class="provider-logo orange-bg">G</span><div><strong>Groq</strong><small>Non configurata</small></div><span>›</span></button>
@@ -157,20 +157,20 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
         <button class="back-button" data-view="home">← Home</button>
         <p class="eyebrow" data-i18n="plans.eyebrow">SCEGLI QUANTO TI SERVE</p><h2 class="screen-title" data-i18n="plans.title">Piani</h2>
         <p class="screen-intro" data-i18n="plans.intro">Prova gratis il flusso completo. Passa a Pro quando ti fa risparmiare abbastanza tempo da usarlo su più lavori.</p>
-        <article class="plan-card"><span>GRATIS</span><h3>Per iniziare</h3><p>Conversioni singole, protezione base, template essenziali e cronologia limitata.</p><strong>€0</strong><button class="secondary-button" data-view="home">Continua gratis</button></article>
-        <article class="plan-card featured"><span>PRO</span><h3>Per lavorarci ogni giorno</h3><p>Più velocità, controllo e spazio per tutti i tuoi lavori.</p><div class="benefit-list">
-          <div><b>⇉</b><p><strong>Lavora su più documenti insieme</strong><small>Converti e proteggi intere cartelle senza ripetere ogni passaggio.</small></p></div>
-          <div><b>⌁</b><p><strong>Crea le tue regole di protezione</strong><small>Aggiungi clienti, parole e dati che vuoi sempre controllare.</small></p></div>
-          <div><b>✦</b><p><strong>Template personali illimitati</strong><small>Salva le istruzioni che usi per email, post, riunioni e preventivi.</small></p></div>
-          <div><b>☁</b><p><strong>Sincronizza con Drive in modo cifrato</strong><small>Ritrova i lavori sui tuoi dispositivi mantenendo il controllo dei file.</small></p></div>
-          <div><b>↗</b><p><strong>Condividi direttamente con WhatsApp, email e le tue app</strong><small>Invia il risultato con il menu nativo del telefono.</small></p></div>
-          <div><b>∞</b><p><strong>Cronologia e progetti senza limiti</strong><small>Organizza il lavoro per cliente o attività e ritrovalo velocemente.</small></p></div>
-        </div><strong>Prezzo da validare</strong><button class="primary-button" id="pro-interest">Passa a Pro</button><small>Nessun addebito nel prototipo.</small></article>
+        <article class="plan-card"><span data-i18n="plans.freeLabel">GRATIS</span><h3 data-i18n="plans.freeTitle">Per iniziare</h3><p data-i18n="plans.freeBody">Conversioni singole, protezione base, template essenziali e cronologia limitata.</p><strong>€0</strong><button class="secondary-button" data-view="home" data-i18n="plans.freeAction">Continua gratis</button></article>
+        <article class="plan-card featured"><span>PRO</span><h3 data-i18n="plans.proTitle">Per lavorarci ogni giorno</h3><p data-i18n="plans.proBody">Più velocità, controllo e spazio per tutti i tuoi lavori.</p><div class="benefit-list">
+          <div><b>⇉</b><p><strong data-i18n="plans.batchTitle">Lavora su più documenti insieme</strong><small data-i18n="plans.batchBody">Converti e proteggi intere cartelle senza ripetere ogni passaggio.</small></p></div>
+          <div><b>⌁</b><p><strong data-i18n="plans.rulesTitle">Crea le tue regole di protezione</strong><small data-i18n="plans.rulesBody">Aggiungi clienti, parole e dati che vuoi sempre controllare.</small></p></div>
+          <div><b>✦</b><p><strong data-i18n="plans.templatesTitle">Template personali illimitati</strong><small data-i18n="plans.templatesBody">Salva le istruzioni che usi per email, post, riunioni e preventivi.</small></p></div>
+          <div><b>☁</b><p><strong data-i18n="plans.driveTitle">Sincronizza con Drive in modo cifrato</strong><small data-i18n="plans.driveBody">Ritrova i lavori sui tuoi dispositivi mantenendo il controllo dei file.</small></p></div>
+          <div><b>↗</b><p><strong data-i18n="plans.shareTitle">Condividi direttamente con WhatsApp, email e le tue app</strong><small data-i18n="plans.shareBody">Invia il risultato con il menu nativo del telefono.</small></p></div>
+          <div><b>∞</b><p><strong data-i18n="plans.historyTitle">Cronologia e progetti senza limiti</strong><small data-i18n="plans.historyBody">Organizza il lavoro per cliente o attività e ritrovalo velocemente.</small></p></div>
+        </div><strong data-i18n="plans.pricePending">Prezzo da validare</strong><button class="primary-button" id="pro-interest" data-i18n="plans.proAction">Passa a Pro</button><small data-i18n="plans.noCharge">Nessun addebito nel prototipo.</small></article>
       </section>
     </main>
 
     <footer class="bottom-bar">
-      <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" aria-label="Apri notizieartificiali.ai su Instagram"><span class="instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="instagram-dot" cx="17.5" cy="6.5" r="1"/></svg></span><small>in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
+      <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="collab.aria" aria-label="Apri notizieartificiali.ai su Instagram"><span class="instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="instagram-dot" cx="17.5" cy="6.5" r="1"/></svg></span><small data-i18n="collab.label">in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
       <button class="add-button" id="add-button" aria-label="Aggiungi contenuto"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
       <button class="voice-button" id="voice-entry" aria-label="Microfono, in arrivo"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M8.5 21h7"/></svg><span class="sr-only">In arrivo</span></button>
     </footer>
@@ -178,11 +178,11 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
 
   <dialog id="api-dialog" aria-labelledby="api-title">
     <form method="dialog" class="dialog-card">
-      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
-      <p class="eyebrow">CLOUD FACOLTATIVO</p><h2 id="api-title">Collega API</h2>
-      <p>La chiave appartiene a te. Non inserire mai una chiave condivisa o aziendale senza autorizzazione.</p>
-      <label class="field"><span>Chiave API</span><input id="api-key-input" type="password" autocomplete="off" placeholder="Incolla la chiave…"></label>
-      <div class="button-row"><button class="secondary-button" id="api-delete" value="cancel" type="button">Rimuovi</button><button class="primary-button" id="api-save" value="cancel" type="button">Salva per la sessione</button></div>
+      <button class="dialog-close" value="cancel" data-i18n-aria-label="action.close" aria-label="Chiudi">×</button>
+      <p class="eyebrow" data-i18n="settings.cloudOptional">CLOUD FACOLTATIVO</p><h2 id="api-title" data-i18n="settings.connectApi">Collega API</h2>
+      <p data-i18n="settings.apiSafety">La chiave appartiene a te. Non inserire mai una chiave condivisa o aziendale senza autorizzazione.</p>
+      <label class="field"><span data-i18n="settings.apiKey">Chiave API</span><input id="api-key-input" type="password" autocomplete="off" data-i18n-placeholder="settings.apiPlaceholder" placeholder="Incolla la chiave…"></label>
+      <div class="button-row"><button class="secondary-button" id="api-delete" value="cancel" type="button" data-i18n="settings.apiRemove">Rimuovi</button><button class="primary-button" id="api-save" value="cancel" type="button" data-i18n="settings.apiSave">Salva per la sessione</button></div>
     </form>
   </dialog>
 
@@ -198,7 +198,7 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
 
   <dialog id="points-dialog" aria-labelledby="points-title">
     <form method="dialog" class="dialog-card">
-      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
+      <button class="dialog-close" value="cancel" data-i18n-aria-label="action.close" aria-label="Chiudi">×</button>
       <img class="dialog-token" src="assets/reward-token.webp" alt="Gettone premio">
       <p class="eyebrow" data-i18n="points.infoEyebrow">GETTONI · BETA</p>
       <h2 id="points-title" data-i18n="points.infoTitle">Usa l’app, sblocca vantaggi</h2>
@@ -225,15 +225,15 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
 
   <dialog id="voice-dialog" aria-labelledby="voice-title">
     <form method="dialog" class="dialog-card">
-      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
-      <p class="eyebrow">IN ARRIVO</p>
-      <h2 id="voice-title">Parla con PrivAI</h2>
-      <p>La voce sarà attivata nella versione nativa soltanto dopo il controllo della trascrizione locale sul dispositivo. Questa anteprima non usa il microfono.</p>
-      <button class="primary-button full" value="cancel">Ho capito</button>
+      <button class="dialog-close" value="cancel" data-i18n-aria-label="action.close" aria-label="Chiudi">×</button>
+      <p class="eyebrow" data-i18n="voice.eyebrow">IN ARRIVO</p>
+      <h2 id="voice-title" data-i18n="voice.title">Parla con PrivAI</h2>
+      <p data-i18n="voice.body">La voce sarà attivata nella versione nativa soltanto dopo il controllo della trascrizione locale sul dispositivo. Questa anteprima non usa il microfono.</p>
+      <button class="primary-button full" value="cancel" data-i18n="points.understood">Ho capito</button>
     </form>
   </dialog>
 
   <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="src/app.mjs"></script>
+  <script type="module" src="src/app.mjs?v=17"></script>
 </body>
 </html>
