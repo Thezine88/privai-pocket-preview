@@ -96,11 +96,15 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 
 ## Ultima verifica nota — 25 agosto 2026
 
-- `node --test`: 61 test superati, 0 falliti.
+- `node --test`: 66 test superati, 0 falliti.
 - Test d'integrazione PDF: estrazione reale riuscita con il motore offline incluso.
 - `node scripts/build-web.mjs`: build web completata in `www/`.
 - `checkPackageSafety('www')`: `[]`; nessuna credenziale nota o configurazione di server remoto trovata nel pacchetto.
-- Sorgenti PWA pubblicati sul branch `main` con il cestino contestuale e cache `v16`.
+- Localizzazione italiana/inglese completata per flussi, piani, API, cronologia, collaborazione, dialoghi e contenuti dinamici.
+- I valori predefiniti di Prepara cambiano lingua senza sovrascrivere ciò che l'utente ha già scritto.
+- Il segnaposto tecnico `TELEPHONENUM` è stato sostituito nell'output protetto dal leggibile `PHONE`.
+- Cache portata a `v17`; CSS, entry JavaScript e relativo grafo di moduli hanno query di versione per impedire combinazioni di file vecchi e nuovi.
+- Modifiche `v17` verificate localmente ma ancora da pubblicare sul branch `main` al momento di questa nota.
 - Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
 - Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
 - Ultimo commit pubblico noto al momento dell'handoff: `62b985fd5818dbdc084b0611fc912c1cd92bacb4`.
@@ -115,7 +119,7 @@ Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 - [ ] Verificare visivamente la build servita da GitHub Pages su Chrome, Samsung Internet e PWA installata dopo l'aggiornamento del service worker.
 - [ ] Pubblicare e provare l'importazione PDF su Chrome e Samsung Internet con PDF reali semplici, multipagina e scansionati.
 - [ ] Ripristinare i metadati Git o continuare tramite il repository collegato.
-- [ ] Sincronizzare la PWA `v16` nel progetto Android.
+- [ ] Sincronizzare la PWA `v17` nel progetto Android.
 - [ ] Compilare, installare e smoke-testare l'APK su telefono reale.
 - [ ] Implementare il vault Keystore con test prima del codice.
 - [ ] Implementare il Share Target nativo e il ritorno intuitivo dall'assistente IA.
