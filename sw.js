@@ -1,4 +1,4 @@
-const CACHE = 'privai-pocket-v13';
+const CACHE = 'privai-pocket-v14';
 const APP_SHELL = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   './src/domain/i18n.mjs',
   './src/domain/share.mjs',
   './src/domain/pdf.mjs',
+  './src/domain/workflow.mjs',
   './vendor/pdf.mjs',
   './vendor/pdf.worker.mjs',
   './src/locales/it.mjs',

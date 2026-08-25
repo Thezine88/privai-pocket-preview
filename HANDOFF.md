@@ -1,6 +1,6 @@
 # PrivAI Pocket — Handoff operativo
 
-**Aggiornato:** 24 agosto 2026  
+**Aggiornato:** 25 agosto 2026  
 **Repository:** `Thezine88/privai-pocket-preview`  
 **Anteprima pubblica:** `https://thezine88.github.io/privai-pocket-preview/`  
 **Fase:** validazione PWA pubblica; progetto Android/Capacitor presente, APK ancora da compilare e provare su telefono reale.
@@ -17,6 +17,7 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Nucleo local-first, leggero e indipendente da API pagate dallo sviluppatore.
 - ChatGPT Plus e Claude Pro non sono API e non finanziano il funzionamento dell'app.
 - Ogni strumento è utilizzabile da solo; resta disponibile anche un percorso guidato Converti → Proteggi → Prepara → Ripristina.
+- Ogni strumento mostra una sola fase alla volta: inserimento, eventuale revisione e risultato. Il risultato sostituisce il modulo lungo e mantiene Copia/Condividi subito visibili.
 - Parole visibili: «Proteggi», «Nascondi», «Versione protetta» e «Ripristina»; evitare «mascheramento» nell'interfaccia.
 - Copia e Condividi sono azioni primarie su ogni risultato.
 - Free: tre azioni al giorno per strumento e gettoni/gamification da validare.
@@ -24,7 +25,7 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - «Continua sul computer» sarà Pro, ma resta bloccato finché non supera i gate di sicurezza nativi.
 - Nessun relay cloud va attivato ora.
 - Identità visiva: bianco caldo, arancione e nero, card arrotondate, ombre e icone 3D semplici.
-- Barra inferiore fissa con effetto glass, pulsante `+` e collegamento Instagram `@notizieartificiali.ai`.
+- Barra inferiore fissa con effetto glass, collegamento Instagram completo, pulsante `+` e microfono visibile ma dichiarato `In arrivo`.
 - Interfaccia italiano/inglese; il testo dell'utente non viene tradotto automaticamente.
 - Nessuna esclusione per modello commerciale del telefono: degradazione per funzione/capacità.
 
@@ -36,13 +37,14 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Rilevamento locale deterministico di email, telefoni, codici fiscali validi, IBAN validi, URL e date.
 - Segnaposto stabili e legati al singolo lavoro.
 - Ripristino esatto locale durante la sessione, con conferma e possibilità di cancellare le corrispondenze.
+- Riconoscimento dei soli segnaposto appartenenti al lavoro corrente e apertura automatica di Ripristina quando una risposta nota viene incollata nel flusso Proteggi.
 - Preparazione di istruzioni Markdown per assistenti IA esterni.
 - Copia e condivisione; rimozione del link Instagram dal payload condiviso.
 - Apertura dell'assistente IA scelto; il ritorno del risultato avviene oggi tramite incolla manuale.
 - Cronologia locale limitata e cancellazione individuale.
-- Contatore Free, gettoni prototipo, saluti variabili, italiano/inglese e pagina vantaggi Pro.
+- Contatore Free, gettoni dichiarati Beta, saluti variabili, italiano/inglese e anteprima vantaggi Pro dichiarata `In arrivo`.
 - Menu animato del pulsante `+` con una sola azione «Sfoglia file»: il selettore riconosce automaticamente testo, Markdown e PDF.
-- Micro-interazioni e PWA offline con cache `v13`, inclusi lettore e worker PDF.
+- Micro-interazioni e PWA offline con cache `v14`, inclusi lettore PDF, worker e stato dei workflow.
 - Configurazione BYOK dimostrativa, senza chiamate reali e senza persistenza di chiavi.
 
 ## Limiti e problemi aperti
@@ -51,12 +53,12 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Le corrispondenze per il ripristino sono in memoria di sessione e possono sparire se pagina/app viene chiusa o ricaricata.
 - Il Web Share Target in ingresso è disabilitato: un flusso GET potrebbe esporre testo in URL, cronologia o cache.
 - La risposta di ChatGPT/Claude deve ancora essere incollata manualmente nell'app.
-- Samsung Internet può forzare un tema scuro; il tema chiaro deve essere reso esplicito e verificato su browser/dispositivi reali.
-- Il testo `@notizieartificiali.ai` può essere troncato sui display stretti: correzione responsive ancora da pubblicare.
+- Il CSS richiede esplicitamente il tema chiaro e gestisce 360–380 px, ma Chrome, Samsung Internet e PWA installata devono ancora essere verificati su dispositivi reali.
+- Il nuovo layout responsive e il nome Instagram completo sono implementati localmente ma non ancora pubblicati su GitHub Pages.
 - Il rilevatore base non trova necessariamente nomi, organizzazioni, indirizzi liberi o identificatori contestuali.
 - I PDF protetti da password, danneggiati o oltre i limiti vengono rifiutati senza sostituire il testo già presente.
 - I PDF composti soltanto da immagini richiedono OCR locale, che non è ancora operativo.
-- Non sono operativi: login Google, Drive, pagamenti, partner creator, OCR, audio, iOS e desktop bridge.
+- Non sono operativi: login Google, Drive, pagamenti, partner creator, OCR, voce, iOS e desktop bridge. Il microfono non chiede permessi e apre soltanto una spiegazione trasparente.
 - La versione remota potrebbe non contenere il nuovo test unitario del ripristino se il connettore GitHub ne ha rifiutato il payload; verificare prima del prossimo commit.
 
 ## Sicurezza richiesta per Android
@@ -91,24 +93,27 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 - La compilazione locale è stata bloccata dal download di `gradle-8.14.3-all.zip` non raggiungibile nell'ambiente usato.
 - Nessun APK installabile è stato ancora validato.
 
-## Ultima verifica nota
+## Ultima verifica nota — 25 agosto 2026
 
-- `node --test tests/*.test.mjs`: 50 test superati, 0 falliti dopo l'aggiunta PDF.
+- `node --test tests/*.test.mjs`: 58 test superati, 0 falliti.
 - Test d'integrazione PDF: estrazione reale riuscita con il motore offline incluso.
-- Controllo sintassi JavaScript: superato.
-- Build web: completata.
-- Versione PWA pubblicata con flusso di protezione/ripristino e cache `v12`; la modifica PDF/cache `v13` è locale finché non viene pubblicata.
+- `node scripts/build-web.mjs`: build web completata in `www/`.
+- `checkPackageSafety('www')`: `[]`; nessuna credenziale nota o configurazione di server remoto trovata nel pacchetto.
+- Versione PWA pubblica precedente; redesign guidato, PDF e cache `v14` restano locali finché non vengono pubblicati con conferma del proprietario.
+- Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
+- Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
 - Commit pubblico noto al momento dell'handoff: `c6ea5f8e6e15ad47838a7a0e3257046328244566`.
 
 Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 
 ## Prossime attività, in ordine
 
-- [ ] Correggere la barra inferiore perché il nome Instagram sia sempre leggibile senza coprire il `+`.
-- [ ] Forzare e testare il tema chiaro su Chrome, Samsung Internet e PWA installata.
+- [x] Correggere localmente la barra inferiore perché il nome Instagram sia leggibile insieme a `+` e microfono.
+- [x] Forzare localmente il tema chiaro; resta da provarlo su Chrome, Samsung Internet e PWA installata.
 - [ ] Verificare che tutte le correzioni visive approvate siano presenti nella build pubblica e invalidare correttamente la cache.
 - [ ] Pubblicare e provare l'importazione PDF su Chrome e Samsung Internet con PDF reali semplici, multipagina e scansionati.
-- [ ] Sincronizzare la PWA `v13` nel progetto Android.
+- [ ] Ripristinare i metadati Git o lavorare dal repository collegato, quindi pubblicare la cache `v14` solo dopo conferma.
+- [ ] Sincronizzare la PWA `v14` nel progetto Android.
 - [ ] Compilare, installare e smoke-testare l'APK su telefono reale.
 - [ ] Implementare il vault Keystore con test prima del codice.
 - [ ] Implementare il Share Target nativo e il ritorno intuitivo dall'assistente IA.

@@ -9,9 +9,8 @@ test('mobile shell exposes the core workflows and corrected collaboration link',
   }
   assert.match(html, /https:\/\/www\.instagram\.com\/notizieartificiali\.ai\//);
   assert.match(html, /@notizieartificiali\.ai/);
-  assert.match(html, /Esempio pratico/);
+  assert.doesNotMatch(html, /class="example-card"/);
   assert.match(html, /Passa a Pro/);
-  assert.match(html, /Prima → Dopo/);
   assert.match(html, /Condividi/);
   assert.doesNotMatch(html, /id="global-copy"/);
   assert.doesNotMatch(html, /id="global-share"/);
@@ -23,6 +22,22 @@ test('mobile shell exposes the core workflows and corrected collaboration link',
   assert.match(html, /Lavora su più documenti insieme/);
   assert.match(html, /Crea le tue regole di protezione/);
   assert.match(html, /Sincronizza con Drive in modo cifrato/);
+});
+
+test('tools use dedicated input review and result phases', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  for (const workflow of ['convert', 'protect', 'prepare']) {
+    assert.match(html, new RegExp(`data-workflow="${workflow}"`));
+  }
+  for (const phase of ['input', 'review', 'result']) {
+    assert.match(html, new RegExp(`data-phase="${phase}"`));
+  }
+  assert.match(html, /data-protect-mode="restore"/);
+  assert.match(html, /id="voice-entry"/);
+  assert.match(html, /aria-label="Microfono, in arrivo"/);
+  assert.match(app, /domain\/workflow\.mjs/);
+  assert.match(app, /function showWorkflowPhase/);
 });
 
 test('theme defines the approved color system and mobile touch targets', async () => {
@@ -102,14 +117,14 @@ test('Samsung-compatible light scheme and compact collaboration stay in fixed na
   assert.match(fixedFooter, /class="collab-pill"[^>]*instagram\.com\/notizieartificiali\.ai/);
   assert.doesNotMatch(html, /class="home-collab"/);
   assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
-  assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*width:\s*calc\(50% - 54px\)/s);
+  assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto/);
 });
 
 test('protect and prepare accept independent local documents', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
   for (const id of ['protect-file-input', 'prepare-file-input', 'prepare-input']) assert.match(html, new RegExp(`id="${id}"`));
-  assert.match(html, /data-i18n="source\.question"/);
+  assert.match(html, /data-i18n="source\.file"/);
   assert.match(app, /protect-file-input/);
   assert.match(app, /prepare-file-input/);
   assert.match(app, /\$\('#prepare-input'\)\.value/);
@@ -154,4 +169,23 @@ test('privacy tool exposes an intuitive local restore workflow', async () => {
   assert.match(html, /Ripristina i dati/);
   assert.match(app, /restoreProtectedText/);
   assert.match(app, /state\.mapping/);
+});
+
+test('responsive redesign keeps actions visible and respects reduced motion', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /\.workflow-phase\[data-phase-active\]/);
+  assert.match(css, /@media\s*\(max-width:\s*380px\)/);
+  assert.match(css, /\.result-actions-sticky/);
+});
+
+test('future voice and rewards are labelled honestly without browser recording', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /id="voice-dialog"/);
+  assert.match(html, /IN ARRIVO/);
+  assert.match(html, /GETTONI · BETA|BETA · GETTONI/);
+  assert.match(html, /Non sono denaro/);
+  assert.doesNotMatch(app, /getUserMedia\(/);
+  assert.doesNotMatch(app, /webkitSpeechRecognition|new SpeechRecognition/);
 });

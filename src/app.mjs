@@ -5,6 +5,7 @@ import { greetingForHour } from './domain/greeting.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
 import { containsWebLinks, removeWebLinks } from './domain/share.mjs';
 import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs';
+import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -12,6 +13,12 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
 const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const workflows = {
+  convert: createWorkflowState('convert'),
+  protect: createWorkflowState('protect'),
+  prepare: createWorkflowState('prepare'),
+  restore: createWorkflowState('restore'),
+};
 
 function applyLocale(locale) {
   state.translator = createTranslator(locale);
@@ -61,6 +68,33 @@ function revealResult(selector) {
   card.classList.remove('result-reveal'); void card.offsetWidth; card.classList.add('result-reveal');
 }
 
+function showWorkflowPhase(tool, phase) {
+  const root = document.querySelector(`[data-workflow="${tool}"]`);
+  if (!root) return;
+  root.querySelectorAll('[data-phase]').forEach((panel) => {
+    const active = panel.dataset.phase === phase;
+    panel.hidden = !active;
+    panel.toggleAttribute('data-phase-active', active);
+  });
+  workflows[tool] = transitionWorkflow(workflows[tool], phase === 'review' ? 'REVIEW' : phase === 'result' ? 'COMPLETE' : 'EDIT');
+  const heading = root.querySelector(`[data-phase="${phase}"] h2, [data-phase="${phase}"] h3`);
+  heading?.setAttribute('tabindex', '-1');
+  heading?.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+function setProtectMode(mode) {
+  $$('[data-protect-mode]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.protectMode === mode)));
+  $('[data-workflow="protect"]').hidden = mode !== 'protect';
+  $('[data-workflow="restore"]').hidden = mode !== 'restore';
+  if (mode === 'restore') {
+    const count = Object.keys(state.mapping).length;
+    $('#restore-status').textContent = count
+      ? `${count} corrispondenze disponibili in questa sessione.`
+      : 'Prima proteggi un testo: le corrispondenze resteranno disponibili in questa sessione.';
+  }
+}
+
 $$('[data-view]').forEach((button) => button.addEventListener('click', () => showView(button.dataset.view)));
 $('#points-value').textContent = state.points;
 applyLocale(state.translator.locale);
@@ -71,12 +105,18 @@ $('#language-select').addEventListener('change', (event) => {
 });
 $('#points-info').addEventListener('click', () => $('#points-dialog').showModal());
 $('#add-button').addEventListener('click', () => $('#quick-add-dialog').showModal());
+$('#voice-entry').addEventListener('click', () => $('#voice-dialog').showModal());
+$$('[data-protect-mode]').forEach((button) => button.addEventListener('click', () => setProtectMode(button.dataset.protectMode)));
+$$('[data-workflow-edit]').forEach((button) => button.addEventListener('click', () => showWorkflowPhase(button.dataset.workflowEdit, 'input')));
 $('#quick-paste').addEventListener('click', () => {
   showView('convert');
+  showWorkflowPhase('convert', 'input');
+  $('#quick-add-dialog').close();
   setTimeout(() => $('#source-input').focus(), 0);
 });
 $('#quick-file').addEventListener('click', () => {
   showView('convert');
+  showWorkflowPhase('convert', 'input');
   $('#quick-add-dialog').close();
   $('#file-input').click();
 });
@@ -87,6 +127,7 @@ $('#convert-button').addEventListener('click', () => {
   state.markdown = normalizeToMarkdown(source);
   $('#markdown-output').value = state.markdown;
   $('#protect-input').value = state.markdown;
+  showWorkflowPhase('convert', 'result');
   revealResult('#markdown-output');
   award(5); toast(state.translator.t('dynamic.markdownCreated'));
 });
@@ -120,6 +161,8 @@ $('#prepare-file-input').addEventListener('change', (event) => importLocalFile(e
 $('#to-protect').addEventListener('click', () => {
   $('#protect-input').value = $('#markdown-output').value || $('#source-input').value;
   showView('protect', true);
+  setProtectMode('protect');
+  showWorkflowPhase('protect', 'input');
 });
 
 function renderFindings() {
@@ -127,7 +170,7 @@ function renderFindings() {
   const warning = `<p class="privacy-warning">${escapeHtml(state.translator.t('protect.reviewWarning'))}</p>`;
   if (!state.findings.length) { host.innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('protect.noneFound'))}</p>${warning}`; return; }
   host.innerHTML = state.findings.map((item, index) => `<label class="finding"><input type="checkbox" data-finding="${index}" ${item.selected ? 'checked' : ''}><div><strong>${item.type}</strong><p>${escapeHtml(item.value)}</p></div></label>`).join('') + warning;
-  $$('[data-finding]').forEach((input) => input.addEventListener('change', () => { state.findings[Number(input.dataset.finding)].selected = input.checked; applyMask(); }));
+  $$('[data-finding]').forEach((input) => input.addEventListener('change', () => { state.findings[Number(input.dataset.finding)].selected = input.checked; }));
 }
 
 function applyMask() {
@@ -140,10 +183,20 @@ $('#scan-button').addEventListener('click', () => {
   const text = $('#protect-input').value;
   if (!text.trim()) return toast(state.translator.t('dynamic.insertContent'));
   state.maskScope = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase();
-  state.findings = detectSensitiveData(text); renderFindings(); applyMask();
-  revealResult('#protected-output');
+  state.findings = detectSensitiveData(text); renderFindings();
+  $('#findings-summary').textContent = state.findings.length ? `${state.findings.length} elementi trovati. Seleziona cosa vuoi sostituire.` : 'Nessun dato strutturato trovato. Controlla comunque il testo.';
+  showWorkflowPhase('protect', 'review');
   const banner = $('.local-banner'); banner.classList.remove('privacy-success'); void banner.offsetWidth; banner.classList.add('privacy-success');
-  award(10); toast(state.translator.t('scan.count', { count: state.findings.length }));
+  toast(state.translator.t('scan.count', { count: state.findings.length }));
+});
+
+$('#apply-protection').addEventListener('click', () => {
+  applyMask();
+  const selected = state.findings.filter((finding) => finding.selected).length;
+  $('#protected-summary').textContent = `${selected} dati sostituiti sul telefono. Controlla il risultato prima di condividerlo.`;
+  showWorkflowPhase('protect', 'result');
+  revealResult('#protected-output');
+  award(10);
 });
 
 $('#restore-button').addEventListener('click', () => {
@@ -153,6 +206,7 @@ $('#restore-button').addEventListener('click', () => {
   const restored = restoreProtectedText(response, state.mapping);
   if (!restored.restoredCount) return toast(state.translator.locale === 'it' ? 'Nessun dato da ripristinare trovato' : 'No restorable data found');
   $('#restored-output').value = restored.text;
+  showWorkflowPhase('restore', 'result');
   revealResult('#restored-output');
   toast(state.translator.locale === 'it' ? `${restored.restoredCount} dati ripristinati sul telefono` : `${restored.restoredCount} items restored on your phone`);
 });
@@ -163,7 +217,19 @@ $('#clear-mapping').addEventListener('click', () => {
   toast(state.translator.locale === 'it' ? 'Corrispondenze locali eliminate' : 'Local matches deleted');
 });
 
-$('#to-prepare').addEventListener('click', () => { $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value; showView('prepare', true); });
+$('#to-prepare').addEventListener('click', () => {
+  $('#prepare-input').value = $('#protected-output').value || $('#protect-input').value;
+  showView('prepare', true);
+  showWorkflowPhase('prepare', 'input');
+});
+
+$('#protect-input').addEventListener('input', (event) => {
+  if (!containsKnownPlaceholder(event.target.value, state.mapping)) return;
+  $('#restore-input').value = event.target.value;
+  setProtectMode('restore');
+  showWorkflowPhase('restore', 'input');
+  toast(state.translator.locale === 'it' ? 'Risposta riconosciuta: puoi ripristinare i dati.' : 'Response recognised: you can restore your data.');
+});
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
   $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = button.dataset.goal;
 }));
@@ -173,6 +239,7 @@ $('#prepare-button').addEventListener('click', () => {
   if (!content.trim()) return toast(state.translator.t('dynamic.convertFirst'));
   const result = buildPromptPack({ goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
   $('#prompt-output').value = result;
+  showWorkflowPhase('prepare', 'result');
   revealResult('#prompt-output');
   const id = String(Date.now());
   persistentStore.saveRecent({ id, title: $('#goal-input').value || 'Contenuto preparato', markdown: result });
@@ -230,7 +297,12 @@ function renderHistory() {
   const items = persistentStore.listRecent(); const host = $('#history-list');
   if (!items.length) { host.innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('dynamic.noHistory'))}</p>`; return; }
   host.innerHTML = items.map((item) => `<article class="history-item"><div><h3>${escapeHtml(item.title)}</h3><p>${new Date(item.updatedAt).toLocaleString(state.translator.locale)}</p></div><span>›</span><div class="history-actions"><button data-open="${item.id}">${state.translator.locale === 'it' ? 'Apri' : 'Open'}</button><button data-delete="${item.id}">${state.translator.locale === 'it' ? 'Elimina' : 'Delete'}</button></div></article>`).join('');
-  $$('[data-open]').forEach((button) => button.addEventListener('click', () => { const item = items.find((entry) => entry.id === button.dataset.open); $('#prompt-output').value = item.markdown; showView('prepare'); }));
+  $$('[data-open]').forEach((button) => button.addEventListener('click', () => {
+    const item = items.find((entry) => entry.id === button.dataset.open);
+    $('#prompt-output').value = item.markdown;
+    showView('prepare');
+    showWorkflowPhase('prepare', 'result');
+  }));
   $$('[data-delete]').forEach((button) => button.addEventListener('click', () => { persistentStore.deleteRecent(button.dataset.delete); renderHistory(); toast(state.translator.t('dynamic.deleted')); }));
 }
 
