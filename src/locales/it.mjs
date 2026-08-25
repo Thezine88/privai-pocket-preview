@@ -1,5 +1,7 @@
 export const it = Object.freeze({
   'action.clear': 'Pulisci',
+  'action.clearAria': 'Pulisci testo',
+  'action.clearConfirm': 'Vuoi eliminare il testo e il risultato già creato?',
   'action.copy': 'Copia',
   'action.share': 'Condividi',
   'convert.action': 'Converti',
