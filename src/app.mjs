@@ -25,6 +25,7 @@ function applyLocale(locale) {
   document.documentElement.lang = state.translator.locale;
   $$('[data-i18n]').forEach((node) => { node.textContent = state.translator.t(node.dataset.i18n); });
   $$('[data-i18n-placeholder]').forEach((node) => { node.placeholder = state.translator.t(node.dataset.i18nPlaceholder); });
+  $$('[data-i18n-aria-label]').forEach((node) => { node.setAttribute('aria-label', state.translator.t(node.dataset.i18nAriaLabel)); });
   const selector = $('#language-select');
   if (selector) selector.value = state.translator.locale;
   const greeting = greetingForHour(new Date().getHours(), state.translator.locale);
@@ -120,17 +121,36 @@ function clearWorkflow(tool) {
     prepare: ['prepare-input', 'prompt-output', 'prepare-file-input'],
     restore: ['restore-input', 'restored-output'],
   }[tool] ?? [];
+  const processed = {
+    convert: Boolean($('#markdown-output').value),
+    protect: Boolean($('#protected-output').value || state.findings.length || Object.keys(state.mapping).length),
+    prepare: Boolean($('#prompt-output').value),
+    restore: Boolean($('#restored-output').value),
+  }[tool] ?? false;
+  if (processed && !window.confirm(state.translator.t('action.clearConfirm'))) return;
   fields.forEach((id) => { const field = $(`#${id}`); if (field) field.value = ''; });
   if (tool === 'convert') state.markdown = '';
   if (tool === 'protect') {
     state.protectedText = ''; state.findings = []; state.mapping = {}; state.maskScope = '';
     $('#findings').innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('protect.notScanned'))}</p>`;
   }
+  syncClearButton($(`[data-clear-workflow="${tool}"]`));
   showWorkflowPhase(tool, 'input');
   toast(state.translator.t('dynamic.cleared'));
 }
 
-$$('[data-clear-workflow]').forEach((button) => button.addEventListener('click', () => clearWorkflow(button.dataset.clearWorkflow)));
+function syncClearButton(button) {
+  if (!button) return;
+  const input = $(`#${button.dataset.clearTarget}`);
+  button.hidden = !input?.value.trim();
+}
+
+$$('[data-clear-workflow]').forEach((button) => {
+  const input = $(`#${button.dataset.clearTarget}`);
+  input?.addEventListener('input', () => syncClearButton(button));
+  button.addEventListener('click', () => clearWorkflow(button.dataset.clearWorkflow));
+  syncClearButton(button);
+});
 $('#quick-paste').addEventListener('click', () => {
   showView('convert');
   showWorkflowPhase('convert', 'input');
@@ -163,11 +183,13 @@ async function importLocalFile(event, targetSelector) {
       toast(state.translator.t('pdf.reading'));
       const result = await extractTextFromPdf(file);
       $(targetSelector).value = result.text;
+      $(targetSelector).dispatchEvent(new Event('input'));
       toast(state.translator.t('pdf.imported', { count: result.pages }));
       return;
     }
     if (file.size > 2_000_000) return toast(state.translator.t('dynamic.fileTooLarge'));
     $(targetSelector).value = await file.text();
+    $(targetSelector).dispatchEvent(new Event('input'));
     toast(state.translator.t('dynamic.fileImported'));
   } catch (error) {
     const code = error instanceof PdfImportError ? error.code : 'PDF_INVALID';
