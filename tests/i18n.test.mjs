@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTranslator, normalizeLocale, SUPPORTED_LOCALES } from '../src/domain/i18n.mjs';
+import { en } from '../src/locales/en.mjs';
+import { it } from '../src/locales/it.mjs';
 
 test('normalizes Italian locales and falls back to English for unsupported languages', () => {
   assert.equal(normalizeLocale('it-IT'), 'it');
@@ -19,4 +21,8 @@ test('interpolates variables without interpreting their contents', () => {
 
 test('makes missing keys visible instead of returning an empty label', () => {
   assert.equal(createTranslator('en').t('missing.key'), '[missing.key]');
+});
+
+test('Italian and English expose the same complete interface keys', () => {
+  assert.deepEqual(Object.keys(it).sort(), Object.keys(en).sort());
 });
