@@ -1,11 +1,11 @@
-import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs';
-import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs';
-import { createStore } from './domain/storage.mjs';
-import { greetingForHour } from './domain/greeting.mjs';
-import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
-import { containsWebLinks, removeWebLinks } from './domain/share.mjs';
-import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs';
-import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs';
+import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=17';
+import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=17';
+import { createStore } from './domain/storage.mjs?v=17';
+import { greetingForHour } from './domain/greeting.mjs?v=17';
+import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=17';
+import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=17';
+import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=17';
+import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=17';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -21,17 +21,33 @@ const workflows = {
 };
 
 function applyLocale(locale) {
+  const previousTranslator = state.translator;
   state.translator = createTranslator(locale);
   document.documentElement.lang = state.translator.locale;
   $$('[data-i18n]').forEach((node) => { node.textContent = state.translator.t(node.dataset.i18n); });
   $$('[data-i18n-placeholder]').forEach((node) => { node.placeholder = state.translator.t(node.dataset.i18nPlaceholder); });
   $$('[data-i18n-aria-label]').forEach((node) => { node.setAttribute('aria-label', state.translator.t(node.dataset.i18nAriaLabel)); });
+  $$('[data-i18n-value]').forEach((node) => {
+    const key = node.dataset.i18nValue;
+    if (!node.dataset.i18nValueReady || node.value === previousTranslator.t(key)) node.value = state.translator.t(key);
+    node.dataset.i18nValueReady = 'true';
+  });
   const selector = $('#language-select');
   if (selector) selector.value = state.translator.locale;
   const greeting = greetingForHour(new Date().getHours(), state.translator.locale);
   const [emoji, ...words] = greeting.split(' ');
   $('#greeting-emoji').textContent = emoji;
   $('#greeting-text').textContent = words.join(' ');
+  updateRestoreStatus();
+  if ($('[data-view-panel="history"]')?.classList.contains('active')) renderHistory();
+  if ($('[data-view-panel="settings"]')?.classList.contains('active')) renderProviders();
+}
+
+function updateRestoreStatus() {
+  const node = $('#restore-status');
+  if (!node) return;
+  const count = Object.keys(state.mapping).length;
+  node.textContent = state.translator.t(count ? 'restore.sessionReady' : 'restore.sessionEmpty', { count });
 }
 
 function toast(message) {
@@ -93,10 +109,7 @@ function setProtectMode(mode) {
   $('[data-workflow="protect"]').hidden = mode !== 'protect';
   $('[data-workflow="restore"]').hidden = mode !== 'restore';
   if (mode === 'restore') {
-    const count = Object.keys(state.mapping).length;
-    $('#restore-status').textContent = count
-      ? `${count} corrispondenze disponibili in questa sessione.`
-      : 'Prima proteggi un testo: le corrispondenze resteranno disponibili in questa sessione.';
+    updateRestoreStatus();
   }
 }
 
@@ -229,7 +242,7 @@ $('#scan-button').addEventListener('click', () => {
   if (!text.trim()) return toast(state.translator.t('dynamic.insertContent'));
   state.maskScope = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase();
   state.findings = detectSensitiveData(text); renderFindings();
-  $('#findings-summary').textContent = state.findings.length ? `${state.findings.length} elementi trovati. Seleziona cosa vuoi sostituire.` : 'Nessun dato strutturato trovato. Controlla comunque il testo.';
+  $('#findings-summary').textContent = state.translator.t(state.findings.length ? 'protect.foundSummary' : 'protect.noneSummary', { count: state.findings.length });
   showWorkflowPhase('protect', 'review');
   const banner = $('.local-banner'); banner.classList.remove('privacy-success'); void banner.offsetWidth; banner.classList.add('privacy-success');
   toast(state.translator.t('scan.count', { count: state.findings.length }));
@@ -238,7 +251,7 @@ $('#scan-button').addEventListener('click', () => {
 $('#apply-protection').addEventListener('click', () => {
   applyMask();
   const selected = state.findings.filter((finding) => finding.selected).length;
-  $('#protected-summary').textContent = `${selected} dati sostituiti sul telefono. Controlla il risultato prima di condividerlo.`;
+  $('#protected-summary').textContent = state.translator.t('protect.replacedSummary', { count: selected });
   showWorkflowPhase('protect', 'result');
   revealResult('#protected-output');
   award(10);
@@ -276,7 +289,7 @@ $('#protect-input').addEventListener('input', (event) => {
   toast(state.translator.locale === 'it' ? 'Risposta riconosciuta: puoi ripristinare i dati.' : 'Response recognised: you can restore your data.');
 });
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
-  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = button.dataset.goal;
+  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = state.translator.t(button.dataset.goalKey);
 }));
 
 $('#prepare-button').addEventListener('click', () => {
@@ -341,7 +354,7 @@ $$('[data-share-result]').forEach((button) => button.addEventListener('click', a
 function renderHistory() {
   const items = persistentStore.listRecent(); const host = $('#history-list');
   if (!items.length) { host.innerHTML = `<p class="empty-state">${escapeHtml(state.translator.t('dynamic.noHistory'))}</p>`; return; }
-  host.innerHTML = items.map((item) => `<article class="history-item"><div><h3>${escapeHtml(item.title)}</h3><p>${new Date(item.updatedAt).toLocaleString(state.translator.locale)}</p></div><span>›</span><div class="history-actions"><button data-open="${item.id}">${state.translator.locale === 'it' ? 'Apri' : 'Open'}</button><button data-delete="${item.id}">${state.translator.locale === 'it' ? 'Elimina' : 'Delete'}</button></div></article>`).join('');
+  host.innerHTML = items.map((item) => `<article class="history-item"><div><h3>${escapeHtml(item.title)}</h3><p>${new Date(item.updatedAt).toLocaleString(state.translator.locale)}</p></div><span>›</span><div class="history-actions"><button data-open="${item.id}">${escapeHtml(state.translator.t('history.open'))}</button><button data-delete="${item.id}">${escapeHtml(state.translator.t('history.delete'))}</button></div></article>`).join('');
   $$('[data-open]').forEach((button) => button.addEventListener('click', () => {
     const item = items.find((entry) => entry.id === button.dataset.open);
     $('#prompt-output').value = item.markdown;
@@ -353,11 +366,11 @@ function renderHistory() {
 
 const dialog = $('#api-dialog');
 $$('[data-provider]').forEach((button) => button.addEventListener('click', () => {
-  state.provider = button.dataset.provider; $('#api-title').textContent = `Collega ${button.querySelector('strong').textContent}`; $('#api-key-input').value = sessionStore.getProviderKey(state.provider); dialog.showModal();
+  state.provider = button.dataset.provider; $('#api-title').textContent = state.translator.t('settings.connectProvider', { provider: button.querySelector('strong').textContent }); $('#api-key-input').value = sessionStore.getProviderKey(state.provider); dialog.showModal();
 }));
 $('#api-save').addEventListener('click', () => { const key = $('#api-key-input').value.trim(); if (!key) return toast(state.translator.t('dynamic.insertApi')); sessionStore.saveProviderKey(state.provider, key); dialog.close(); renderProviders(); toast(state.translator.t('dynamic.apiSaved')); });
 $('#api-delete').addEventListener('click', () => { sessionStore.deleteProviderKey(state.provider); $('#api-key-input').value = ''; dialog.close(); renderProviders(); toast(state.translator.t('dynamic.apiRemoved')); });
-function renderProviders() { $$('[data-provider]').forEach((row) => { const summary = sessionStore.providerSummary(row.dataset.provider); row.querySelector('small').textContent = summary.configured ? `${state.translator.locale === 'it' ? 'Configurata' : 'Configured'} ${summary.masked}` : state.translator.t('dynamic.notConfigured'); }); }
+function renderProviders() { $$('[data-provider]').forEach((row) => { const summary = sessionStore.providerSummary(row.dataset.provider); row.querySelector('small').textContent = summary.configured ? `${state.translator.t('dynamic.configured')} ${summary.masked}` : state.translator.t('dynamic.notConfigured'); }); }
 function escapeHtml(value) { const node = document.createElement('div'); node.textContent = String(value); return node.innerHTML; }
 
 $('#pro-interest').addEventListener('click', () => toast(state.translator.t('dynamic.proInterest')));
