@@ -130,14 +130,24 @@ test('protect and prepare accept independent local documents', async () => {
   assert.match(app, /\$\('#prepare-input'\)\.value/);
 });
 
-test('each editable workflow can be cleared before starting a new file', async () => {
+test('each editable workflow exposes a contextual clear control inside its text editor', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
-  for (const workflow of ['convert', 'protect', 'prepare', 'restore']) {
-    assert.match(html, new RegExp(`data-clear-workflow="${workflow}"`));
+  const editors = {
+    convert: 'source-input',
+    protect: 'protect-input',
+    prepare: 'prepare-input',
+    restore: 'restore-input',
+  };
+  for (const [workflow, input] of Object.entries(editors)) {
+    assert.match(html, new RegExp(`<div class="editor-card input-editor">[\\s\\S]*?data-clear-workflow="${workflow}"[\\s\\S]*?data-clear-target="${input}"[\\s\\S]*?<textarea id="${input}"`));
   }
+  assert.doesNotMatch(html, /class="text-button clear-workflow-button"/);
+  assert.match(html, /class="editor-clear-button"[^>]*hidden/);
   assert.match(app, /function clearWorkflow/);
-  assert.match(app, /data-clear-workflow/);
+  assert.match(app, /function syncClearButton/);
+  assert.match(app, /dataset\.clearTarget/);
+  assert.match(app, /addEventListener\('input'/);
 });
 
 test('opening a home tool resets that tool to its independent input phase', async () => {
