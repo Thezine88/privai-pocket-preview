@@ -2,9 +2,6 @@ name: Android debug APK
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    branches: [main]
 
 permissions:
   contents: read
@@ -25,9 +22,26 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: gradle
-      - run: npm ci
-      - run: node --test tests/*.test.mjs
-      - run: npm run android:debug
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: node --test tests/*.test.mjs
+      - name: Build local web bundle
+        run: npm run build:web
+      - name: Check packaged credentials
+        run: |
+          node --input-type=module <<'NODE'
+          import { checkPackageSafety } from './scripts/check-package.mjs';
+          const findings = await checkPackageSafety('www');
+          if (findings.length) {
+            console.error(JSON.stringify(findings, null, 2));
+            process.exit(1);
+          }
+          NODE
+      - name: Sync Capacitor Android
+        run: CAPACITOR_TELEMETRY_DISABLED=1 ./node_modules/.bin/cap sync android
+      - name: Assemble debug APK
+        run: cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v7
         with:
           name: privai-pocket-debug-apk

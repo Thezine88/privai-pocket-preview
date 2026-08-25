@@ -23,9 +23,15 @@ test('keeps the generated Android project at the approved SDK levels', async () 
 
 test('builds a debug APK in CI without runtime service credentials', async () => {
   const workflow = await readFile(new URL('../.github/workflows/android-debug.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /on:\s*\n\s*workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /pull_request:|\n\s*push:/);
+  assert.match(workflow, /runs-on:\s*ubuntu-latest/);
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /java-version:\s*21/);
-  assert.match(workflow, /npm run android:debug/);
+  assert.match(workflow, /checkPackageSafety\('www'\)/);
+  assert.match(workflow, /cap sync android/);
+  assert.match(workflow, /gradlew assembleDebug/);
   assert.match(workflow, /android\/app\/build\/outputs\/apk\/debug\/app-debug\.apk/);
+  assert.match(workflow, /retention-days:\s*7/);
   assert.doesNotMatch(workflow, /secrets\./);
 });
