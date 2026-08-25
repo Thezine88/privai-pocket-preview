@@ -104,10 +104,10 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 - I valori predefiniti di Prepara cambiano lingua senza sovrascrivere ciò che l'utente ha già scritto.
 - Il segnaposto tecnico `TELEPHONENUM` è stato sostituito nell'output protetto dal leggibile `PHONE`.
 - Cache portata a `v17`; CSS, entry JavaScript e relativo grafo di moduli hanno query di versione per impedire combinazioni di file vecchi e nuovi.
-- Modifiche `v17` verificate localmente ma ancora da pubblicare sul branch `main` al momento di questa nota.
+- Modifiche `v17` verificate e pubblicate sul branch `main`.
 - Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
 - Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
-- Ultimo commit pubblico noto al momento dell'handoff: `62b985fd5818dbdc084b0611fc912c1cd92bacb4`.
+- Ultimo commit pubblico noto al momento dell'handoff: `01e67c25c49cc244468c0f6242a615df78026920`.
 
 Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 
