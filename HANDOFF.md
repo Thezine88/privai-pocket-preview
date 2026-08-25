@@ -48,6 +48,7 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Le etichette tecniche dei dati sono tradotte per l'utente (`TELEPHONENUM` → `Telefono`) e ogni flusso dispone di un comando `Pulisci`.
 - Aprendo Converti, Proteggi o Prepara dalla Home viene sempre mostrata la fase iniziale indipendente, senza riutilizzare la schermata risultato di un altro strumento.
 - Configurazione BYOK dimostrativa, senza chiamate reali e senza persistenza di chiavi.
+- Il comando per svuotare un lavoro è ora un cestino contestuale dentro ciascun editor di Converti, Proteggi, Prepara e Ripristina. Compare solo quando c'è testo; se esiste già un risultato chiede conferma.
 
 ## Limiti e problemi aperti
 
@@ -56,12 +57,10 @@ La formulazione corretta è «controllo locale base» e «versione protetta». N
 - Il Web Share Target in ingresso è disabilitato: un flusso GET potrebbe esporre testo in URL, cronologia o cache.
 - La risposta di ChatGPT/Claude deve ancora essere incollata manualmente nell'app.
 - Il CSS richiede esplicitamente il tema chiaro e gestisce 360–380 px, ma Chrome, Samsung Internet e PWA installata devono ancora essere verificati su dispositivi reali.
-- Il nuovo layout responsive e il nome Instagram completo sono implementati localmente ma non ancora pubblicati su GitHub Pages.
 - Il rilevatore base non trova necessariamente nomi, organizzazioni, indirizzi liberi o identificatori contestuali.
 - I PDF protetti da password, danneggiati o oltre i limiti vengono rifiutati senza sostituire il testo già presente.
 - I PDF composti soltanto da immagini richiedono OCR locale, che non è ancora operativo.
 - Non sono operativi: login Google, Drive, pagamenti, partner creator, OCR, voce, iOS e desktop bridge. Il microfono non chiede permessi e apre soltanto una spiegazione trasparente.
-- La versione remota potrebbe non contenere il nuovo test unitario del ripristino se il connettore GitHub ne ha rifiutato il payload; verificare prima del prossimo commit.
 
 ## Sicurezza richiesta per Android
 
@@ -97,14 +96,14 @@ Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat r
 
 ## Ultima verifica nota — 25 agosto 2026
 
-- `node --test tests/*.test.mjs`: 58 test superati, 0 falliti.
+- `node --test`: 61 test superati, 0 falliti.
 - Test d'integrazione PDF: estrazione reale riuscita con il motore offline incluso.
 - `node scripts/build-web.mjs`: build web completata in `www/`.
 - `checkPackageSafety('www')`: `[]`; nessuna credenziale nota o configurazione di server remoto trovata nel pacchetto.
-- Versione PWA pubblica aggiornata al redesign guidato; le correzioni successive e la cache `v15` devono essere pubblicate con conferma del proprietario.
+- Sorgenti PWA pubblicati sul branch `main` con il cestino contestuale e cache `v16`.
 - Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
 - Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
-- Commit pubblico noto al momento dell'handoff: `c6ea5f8e6e15ad47838a7a0e3257046328244566`.
+- Ultimo commit pubblico noto al momento dell'handoff: `62b985fd5818dbdc084b0611fc912c1cd92bacb4`.
 
 Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 
@@ -112,10 +111,11 @@ Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 
 - [x] Correggere localmente la barra inferiore perché il nome Instagram sia leggibile insieme a `+` e microfono.
 - [x] Forzare localmente il tema chiaro; resta da provarlo su Chrome, Samsung Internet e PWA installata.
-- [ ] Verificare che tutte le correzioni visive approvate siano presenti nella build pubblica e invalidare correttamente la cache.
+- [x] Pubblicare il cestino contestuale negli editor e invalidare la cache con `v16`.
+- [ ] Verificare visivamente la build servita da GitHub Pages su Chrome, Samsung Internet e PWA installata dopo l'aggiornamento del service worker.
 - [ ] Pubblicare e provare l'importazione PDF su Chrome e Samsung Internet con PDF reali semplici, multipagina e scansionati.
-- [ ] Ripristinare i metadati Git o lavorare dal repository collegato, quindi pubblicare la cache `v14` solo dopo conferma.
-- [ ] Sincronizzare la PWA `v14` nel progetto Android.
+- [ ] Ripristinare i metadati Git o continuare tramite il repository collegato.
+- [ ] Sincronizzare la PWA `v16` nel progetto Android.
 - [ ] Compilare, installare e smoke-testare l'APK su telefono reale.
 - [ ] Implementare il vault Keystore con test prima del codice.
 - [ ] Implementare il Share Target nativo e il ritorno intuitivo dall'assistente IA.
