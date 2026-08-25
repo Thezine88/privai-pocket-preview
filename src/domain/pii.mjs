@@ -85,7 +85,8 @@ export function maskFindings(text, findings, { scope = '' } = {}) {
     if (!placeholders.has(identity)) {
       const next = (counters.get(finding.type) ?? 0) + 1;
       counters.set(finding.type, next);
-      placeholders.set(identity, scope ? `[[PRIVAI_${scope}_${finding.type}_${next}]]` : `[${finding.type}_${next}]`);
+      const placeholderType = finding.type === 'TELEPHONENUM' ? 'PHONE' : finding.type;
+      placeholders.set(identity, scope ? `[[PRIVAI_${scope}_${placeholderType}_${next}]]` : `[${placeholderType}_${next}]`);
     }
     const placeholder = placeholders.get(identity);
     mapping[placeholder] = finding.value;
