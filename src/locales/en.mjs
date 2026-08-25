@@ -1,5 +1,7 @@
 export const en = Object.freeze({
   'action.clear': 'Clear',
+  'action.clearAria': 'Clear text',
+  'action.clearConfirm': 'Delete the text and the result already created?',
   'action.copy': 'Copy',
   'action.share': 'Share',
   'convert.action': 'Convert',
