@@ -1285,6 +1285,21 @@ async function quickProtectWrite(plugin, text) {
 }
 
 /**
+ * Impronta del testo scritto negli appunti, non il testo stesso.
+ *
+ * Serve solo a riconoscere "questo è ciò che ho appena scritto io", e per
+ * quello basta un confronto di uguaglianza. Conservare il contenuto vero
+ * sarebbe un dato personale in più che resta sul dispositivo — nel ramo
+ * "ripristina" sarebbe addirittura il testo con i dati IN CHIARO, che è
+ * esattamente ciò che questa app esiste per non lasciare in giro.
+ */
+async function fingerprint(text) {
+  const bytes = new TextEncoder().encode(String(text ?? ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * Punto d'ingresso headless per QuickProtectActivity: l'Activity vive meno
  * di un secondo e non deve mai disegnare nulla. Decide con la stessa
  * funzione pura di src/domain/quickProtect.mjs, poi scrive gli appunti,
@@ -1316,7 +1331,7 @@ async function runQuickProtect() {
     // non è una nuova risposta da ripristinare — è lo stesso tocco di
     // prima. Questo toglie il rischio per sempre, non solo per 3 secondi.
     const lastWritten = await store.get('quickProtectLastWritten');
-    if (clip !== null && clip !== undefined && clip === lastWritten) {
+    if (clip && lastWritten && (await fingerprint(clip)) === lastWritten) {
       await plugin?.toast?.({ message: t('quickProtect.nothing') });
       return;
     }
@@ -1327,7 +1342,7 @@ async function runQuickProtect() {
 
     if (decision.action === 'restore') {
       await quickProtectWrite(plugin, decision.text);
-      await store.set('quickProtectLastWritten', decision.text);
+      await store.set('quickProtectLastWritten', await fingerprint(decision.text));
       // Stessa ambiguità già accettata dal ripristino manuale dagli appunti
       // (resumeRestore → runRestore): quando il ripristino viene da una
       // mappa combinata di più lavori, non c'è un lavoro "giusto" solo da
@@ -1337,7 +1352,7 @@ async function runQuickProtect() {
       await plugin?.toast?.({ message: t('quickProtect.restored') });
     } else if (decision.action === 'mask') {
       await quickProtectWrite(plugin, decision.text);
-      await store.set('quickProtectLastWritten', decision.text);
+      await store.set('quickProtectLastWritten', await fingerprint(decision.text));
       const limits = planOf(state.plan);
       const jobs = await vault.listJobs();
       const limited = !isUnlimited(limits.openJobs) && jobs.length >= limits.openJobs;

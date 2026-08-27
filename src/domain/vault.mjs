@@ -73,6 +73,17 @@ export function createSecureStore({ fallback = globalThis.localStorage, plugin =
 
 /* ------------------------------------------------------------------ */
 
+/**
+ * Ogni chiave che l'app scrive nel proprio spazio, in un posto solo.
+ * `onboarded` resta fuori di proposito: non è un dato dell'utente, e
+ * cancellarlo farebbe ripartire la presentazione iniziale a chi ha solo
+ * chiesto di cancellare i propri dati.
+ */
+export const WIPED_KEYS = Object.freeze([
+  'jobs', 'entries', 'recent', 'prefs',
+  'quickProtectLastRun', 'quickProtectLastWritten',
+]);
+
 export function createVault(store) {
   const readJobs = async () => (await store.get('jobs')) ?? [];
   const writeJobs = (jobs) => store.set('jobs', jobs);
@@ -165,9 +176,14 @@ export function createVault(store) {
       await store.set('entries', entries.filter((entry) => entry.id !== id));
     },
 
-    /** Il pulsante che in un'app di privacy deve esistere e trovarsi subito. */
+    /**
+     * Il pulsante che in un'app di privacy deve esistere e trovarsi subito.
+     * «Tutto» deve voler dire tutto: ogni chiave che l'app scrive va elencata
+     * qui, non solo quelle delle schermate principali. Se aggiungi una chiave
+     * altrove, aggiungila anche qui — c'è un test che lo verifica.
+     */
     async wipeEverything() {
-      for (const key of ['jobs', 'entries', 'recent', 'prefs']) await store.remove(key);
+      for (const key of WIPED_KEYS) await store.remove(key);
     },
   };
 }

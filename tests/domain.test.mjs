@@ -8,7 +8,7 @@ import {
 } from '../src/domain/pii.mjs';
 import { decideQuickProtect } from '../src/domain/quickProtect.mjs';
 import { normalizeToMarkdown, buildRequest, titleFromText, containsPlaceholders } from '../src/domain/markdown.mjs';
-import { createVault, RETENTION, retentionLabel, clampRetention } from '../src/domain/vault.mjs';
+import { createVault, RETENTION, retentionLabel, clampRetention, WIPED_KEYS } from '../src/domain/vault.mjs';
 import { getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor, RECIPES } from '../src/domain/recipes.mjs';
 import { planOf, createDesktopSessions, pairingCode, isUnlimited } from '../src/domain/plan.mjs';
 import { createTranslator, normalizeLocale } from '../src/domain/i18n.mjs';
@@ -245,6 +245,35 @@ test('la rubrica non accetta duplicati e la cancellazione totale funziona', asyn
   await vault.wipeEverything();
   assert.equal((await vault.listJobs()).length, 0);
   assert.equal((await vault.listEntries()).length, 0);
+});
+
+test('«Cancella tutto» non lascia indietro nessuna chiave che l\'app scrive', async () => {
+  // Il riquadro delle Impostazioni Rapide ha aggiunto due chiavi proprie, e
+  // la prima versione non le cancellava: chi svuotava l'app prima di
+  // prestare il telefono si portava dietro l'ultimo testo trattato. In
+  // un'app che promette «non resta nulla», «tutto» deve voler dire tutto.
+  //
+  // Le chiavi attese si ricavano dal codice, non da WIPED_KEYS: un test che
+  // scorresse la lista stessa passerebbe anche togliendone una voce, ed è
+  // esattamente la regressione da cui vogliamo difenderci.
+  const { readFile } = await import('node:fs/promises');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+
+  const scritte = new Set([...app.matchAll(/store\.set\(\s*'([^']+)'/g)].map((m) => m[1]));
+  scritte.delete('onboarded');   // non è un dato dell'utente: vedi WIPED_KEYS
+
+  const dimenticate = [...scritte].filter((key) => !WIPED_KEYS.includes(key));
+  assert.deepEqual(dimenticate, [],
+    `chiavi scritte da app.mjs ma non cancellate da «Cancella tutto»: ${dimenticate.join(', ')}`);
+
+  // E la cancellazione deve funzionare davvero, non solo elencarle.
+  const store = fakeStore();
+  const vault = createVault(store);
+  for (const key of WIPED_KEYS) await store.set(key, 'roba');
+  await vault.wipeEverything();
+  const rimaste = [];
+  for (const key of WIPED_KEYS) if ((await store.get(key)) !== null) rimaste.push(key);
+  assert.deepEqual(rimaste, [], `chiavi sopravvissute alla cancellazione: ${rimaste.join(', ')}`);
 });
 
 test('le mappe di più lavori si combinano per riconoscere qualsiasi risposta', async () => {
