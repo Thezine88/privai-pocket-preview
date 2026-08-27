@@ -78,13 +78,13 @@ test('every previously mixed-language surface is connected to runtime translatio
 
 test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /styles\.css\?v=20/);
-  assert.match(html, /src\/app\.mjs\?v=20/);
+  assert.match(html, /styles\.css\?v=21/);
+  assert.match(html, /src\/app\.mjs\?v=21/);
 });
 
 test('offline shell includes the complete approved Willy onboarding', async () => {
   const sw = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /privai-pocket-v20/);
+  assert.match(sw, /privai-pocket-v21/);
   for (const asset of [
     'willy-welcome.webp',
     'willy-prepare.webp',
@@ -92,6 +92,20 @@ test('offline shell includes the complete approved Willy onboarding', async () =
     'willy-control.webp',
     'fonts\/willy-rounded.otf',
   ]) assert.match(sw, new RegExp(asset));
+});
+
+test('Willy opens smoothly and supports explicit directional navigation', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /data-onboarding-step="-1"/);
+  assert.match(html, /data-onboarding-step="1"/);
+  assert.match(html, /data-i18n="onboarding\.hint"/);
+  assert.match(css, /\.app-enter \.onboarding:not\(\[hidden\]\)/);
+  assert.doesNotMatch(css, /\.onboarding-slide\{[^}]*transform:/);
+  assert.match(app, /tapStepDelta/);
+  assert.match(app, /boundedOnboardingIndex/);
+  assert.match(app, /navigator\.vibrate\?\.\(12\)/);
 });
 
 test('home uses visual tool cards and keeps reward tokens in the top bar', async () => {

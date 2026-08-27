@@ -6,6 +6,14 @@ export function swipeStepDelta(startX, endX, threshold = 48) {
   return distance < 0 ? 1 : -1;
 }
 
+export function tapStepDelta(clientX, viewportWidth) {
+  return clientX < viewportWidth / 2 ? -1 : 1;
+}
+
+export function boundedOnboardingIndex(index, step, lastIndex = 3) {
+  return Math.max(0, Math.min(index + step, lastIndex));
+}
+
 export function createOnboardingState(storage) {
   return {
     shouldShow: () => storage.getItem(COMPLETED_KEY) !== 'true',

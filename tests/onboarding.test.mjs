@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createOnboardingState, swipeStepDelta } from '../src/domain/onboarding.mjs';
+import {
+  boundedOnboardingIndex,
+  createOnboardingState,
+  swipeStepDelta,
+  tapStepDelta,
+} from '../src/domain/onboarding.mjs';
 
 function memoryStorage() {
   const values = new Map();
@@ -30,4 +35,15 @@ test('swipe navigation ignores taps and maps horizontal gestures to slide steps'
   assert.equal(swipeStepDelta(200, 145), 1);
   assert.equal(swipeStepDelta(145, 200), -1);
   assert.equal(swipeStepDelta(200, 170), 0);
+});
+
+test('tapping the left or right half navigates backward or forward', () => {
+  assert.equal(tapStepDelta(90, 400), -1);
+  assert.equal(tapStepDelta(310, 400), 1);
+});
+
+test('onboarding navigation stops at the first and last slide', () => {
+  assert.equal(boundedOnboardingIndex(0, -1, 3), 0);
+  assert.equal(boundedOnboardingIndex(1, 1, 3), 2);
+  assert.equal(boundedOnboardingIndex(3, 1, 3), 3);
 });

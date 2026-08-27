@@ -1,4 +1,4 @@
-const CACHE = 'privai-pocket-v20';
+const CACHE = 'privai-pocket-v21';
 const APP_SHELL = [
   './',
   './index.html',

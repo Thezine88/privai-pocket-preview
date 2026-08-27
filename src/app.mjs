@@ -1,13 +1,13 @@
-import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=20';
-import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=20';
-import { createStore } from './domain/storage.mjs?v=20';
-import { greetingForHour } from './domain/greeting.mjs?v=20';
-import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=20';
-import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=20';
-import { createOutboundShare } from './domain/outbound-share.mjs?v=20';
-import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=20';
-import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=20';
-import { createOnboardingState, swipeStepDelta } from './domain/onboarding.mjs?v=20';
+import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=21';
+import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=21';
+import { createStore } from './domain/storage.mjs?v=21';
+import { greetingForHour } from './domain/greeting.mjs?v=21';
+import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=21';
+import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=21';
+import { createOutboundShare } from './domain/outbound-share.mjs?v=21';
+import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=21';
+import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=21';
+import { boundedOnboardingIndex, createOnboardingState, swipeStepDelta, tapStepDelta } from './domain/onboarding.mjs?v=21';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -63,11 +63,16 @@ function toast(message) {
   clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2200);
 }
 
+function touchFeedback() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  navigator.vibrate?.(12);
+}
+
 let onboardingIndex = 0;
 let onboardingPointerX = 0;
 let onboardingSwipeHandled = false;
 function showOnboarding(index = 0) {
-  onboardingIndex = Math.max(0, Math.min(index, 3));
+  onboardingIndex = boundedOnboardingIndex(index, 0);
   $('#willy-onboarding').hidden = false;
   document.body.classList.add('onboarding-open');
   $$('[data-onboarding-slide]').forEach((slide, position) => {
@@ -75,6 +80,16 @@ function showOnboarding(index = 0) {
     slide.classList.toggle('active', position === onboardingIndex);
   });
   $$('.onboarding-dots span').forEach((dot, position) => dot.classList.toggle('active', position === onboardingIndex));
+  $('[data-onboarding-step="-1"]').disabled = onboardingIndex === 0;
+  $('[data-onboarding-step="1"]').disabled = onboardingIndex === 3;
+}
+
+function navigateOnboarding(step) {
+  $('#willy-onboarding').classList.add('onboarding-guided');
+  const nextIndex = boundedOnboardingIndex(onboardingIndex, step);
+  if (nextIndex === onboardingIndex) return;
+  touchFeedback();
+  showOnboarding(nextIndex);
 }
 
 function closeOnboarding() {
@@ -86,19 +101,19 @@ function closeOnboarding() {
 $('#willy-onboarding').addEventListener('click', (event) => {
   if (onboardingSwipeHandled) { onboardingSwipeHandled = false; return; }
   if (event.target.closest('button')) return;
-  if (onboardingIndex === 3) closeOnboarding(); else showOnboarding(onboardingIndex + 1);
+  navigateOnboarding(tapStepDelta(event.clientX, innerWidth));
 });
 $('#willy-onboarding').addEventListener('pointerdown', (event) => { onboardingPointerX = event.clientX; });
 $('#willy-onboarding').addEventListener('pointerup', (event) => {
   const step = swipeStepDelta(onboardingPointerX, event.clientX);
   if (!step) return;
   onboardingSwipeHandled = true;
-  if (step > 0 && onboardingIndex === 3) closeOnboarding();
-  else showOnboarding(onboardingIndex + step);
+  navigateOnboarding(step);
 });
+$$('[data-onboarding-step]').forEach((button) => button.addEventListener('click', () => navigateOnboarding(Number(button.dataset.onboardingStep))));
 $('#onboarding-skip').addEventListener('click', closeOnboarding);
 $('#onboarding-start').addEventListener('click', closeOnboarding);
-$('#replay-onboarding').addEventListener('click', () => showOnboarding(0));
+$('#replay-onboarding').addEventListener('click', () => { $('#willy-onboarding').classList.remove('onboarding-guided'); showOnboarding(0); });
 if (onboardingState.shouldShow()) showOnboarding(0);
 
 function award(points) {
@@ -165,8 +180,7 @@ const hapticTargets = '.primary-button,.wide-action,.tool-card,.add-button,.voic
 $$(hapticTargets).forEach((button) => button.classList.add('haptic-press'));
 document.addEventListener('click', (event) => {
   if (!event.target.closest(hapticTargets)) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  navigator.vibrate?.(12);
+  touchFeedback();
 });
 $('#points-value').textContent = state.points;
 applyLocale(state.translator.locale);
