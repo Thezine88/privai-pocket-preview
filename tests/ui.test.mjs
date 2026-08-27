@@ -247,3 +247,15 @@ test('AI actions are primary and never reuse the generic share binding', async (
   assert.doesNotMatch(html, /data-share-result="(?:protected|prompt)-output"[^>]*>Invia all’IA/);
   assert.match(app, /shareWithInstalledAI/);
 });
+
+test('Willy onboarding is skippable, replayable and exposes four concise steps', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /id="willy-onboarding"/);
+  assert.match(html, /id="onboarding-skip"/);
+  assert.match(html, /id="onboarding-start"/);
+  assert.match(html, /id="replay-onboarding"/);
+  assert.equal((html.match(/class="onboarding-slide/g) ?? []).length, 4);
+  assert.match(app, /createOnboardingState/);
+  assert.match(html, /data-onboarding-next/);
+});

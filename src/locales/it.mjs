@@ -1,4 +1,13 @@
 export const it = Object.freeze({
+  'onboarding.skip': 'Salta',
+  'onboarding.title1': 'Ciao, io sono Willy! 👋',
+  'onboarding.body1': 'Sei pronto a lavorare con me?',
+  'onboarding.body2': 'Prima di iniziare un lavoro con un chatbot, passa da qui. In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.',
+  'onboarding.body3': 'Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere. Alla fine del lavoro torni qui e ripristiniamo tutto.',
+  'onboarding.body4': 'La sicurezza è una priorità: nulla viene condiviso online senza una tua scelta.',
+  'onboarding.command': 'Hai tu il comando.',
+  'onboarding.start': 'Partiamo!',
+  'onboarding.replay': 'Rivedi la presentazione',
   'action.clear': 'Pulisci',
   'action.clearAria': 'Pulisci testo',
   'action.clearConfirm': 'Vuoi eliminare il testo e il risultato già creato?',

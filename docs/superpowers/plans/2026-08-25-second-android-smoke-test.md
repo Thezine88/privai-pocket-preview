@@ -127,13 +127,13 @@
 - Persistenza locale: flag di completamento per la singola installazione.
 - Interazione: tap in area libera avanza; `Salta` chiude; `Partiamo!` chiude dall'ultima schermata.
 
-- [ ] **Step 1: Scrivere test fallenti** per primo avvio, avanzamento, skip, completamento persistente e possibilità di riapertura dalle impostazioni.
-- [ ] **Step 2: Verificare RED** con `node --test tests/ui.test.mjs tests/i18n.test.mjs`.
-- [ ] **Step 3: Integrare il minimo onboarding a quattro schermate** con il testo definitivo registrato in `HANDOFF.md`.
-- [ ] **Step 4: Integrare le quattro pose approvate di Willy** come immagini trasparenti responsive, senza video o librerie di animazione.
-- [ ] **Step 5: Implementare dissolvenza e lieve galleggiamento in CSS**, disabilitati con `prefers-reduced-motion`.
-- [ ] **Step 6: Rendere `Salta`, indicatori e `Partiamo!` accessibili**, con target di tocco di almeno 44×44 px e focus visibile.
-- [ ] **Step 7: Verificare GREEN**, primo avvio per installazione, riapertura dalle impostazioni, safe area e assenza di rete.
+- [x] **Step 1: Scrivere test fallenti** per primo avvio, avanzamento, skip, completamento persistente e possibilità di riapertura dalle impostazioni.
+- [x] **Step 2: Verificare RED** con `node --test tests/ui.test.mjs tests/i18n.test.mjs`.
+- [x] **Step 3: Integrare il minimo onboarding a quattro schermate** con il testo definitivo registrato in `HANDOFF.md`.
+- [x] **Step 4: Integrare le quattro pose approvate di Willy** come immagini trasparenti responsive, senza video o librerie di animazione.
+- [x] **Step 5: Implementare dissolvenza e lieve galleggiamento in CSS**, disabilitati con `prefers-reduced-motion`.
+- [x] **Step 6: Rendere `Salta`, indicatori e `Partiamo!` accessibili**, con target di tocco di almeno 44×44 px e focus visibile.
+- [x] **Step 7: Verificare GREEN**, primo avvio per installazione, riapertura dalle impostazioni, safe area e assenza di rete.
 - [ ] **Step 8: Commit** `feat(onboarding): introduce Willy before the chatbot flow`.
 
 ### Task 5: Gate unico prima del secondo APK

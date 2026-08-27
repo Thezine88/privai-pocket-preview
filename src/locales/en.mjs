@@ -1,4 +1,13 @@
 export const en = Object.freeze({
+  'onboarding.skip': 'Skip',
+  'onboarding.title1': "Hi, I'm Willy! 👋",
+  'onboarding.body1': 'Ready to work with me?',
+  'onboarding.body2': 'Before starting a task with a chatbot, come through here. In a few taps, we will turn your content into useful AI requests.',
+  'onboarding.body3': 'We will protect sensitive data: you always decide what to hide. When the work is done, come back here and we will restore everything.',
+  'onboarding.body4': 'Security is a priority: nothing is shared online without your choice.',
+  'onboarding.command': 'You are in control.',
+  'onboarding.start': "Let's go!",
+  'onboarding.replay': 'Replay introduction',
   'action.clear': 'Clear',
   'action.clearAria': 'Clear text',
   'action.clearConfirm': 'Delete the text and the result already created?',

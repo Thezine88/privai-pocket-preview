@@ -7,6 +7,7 @@ import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=17';
 import { createOutboundShare } from './domain/outbound-share.mjs?v=17';
 import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=17';
 import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=17';
+import { createOnboardingState } from './domain/onboarding.mjs?v=17';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
@@ -14,6 +15,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
 const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', selectedTemplate: 'checklist', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const onboardingState = createOnboardingState(localStorage);
 const outboundShare = createOutboundShare({
   isNative: () => Boolean(globalThis.Capacitor?.isNativePlatform?.()),
   nativePlugin: () => globalThis.Capacitor?.Plugins?.OutboundShare,
@@ -60,6 +62,33 @@ function toast(message) {
   const node = $('#toast'); node.textContent = message; node.classList.add('show');
   clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2200);
 }
+
+let onboardingIndex = 0;
+function showOnboarding(index = 0) {
+  onboardingIndex = Math.max(0, Math.min(index, 3));
+  $('#willy-onboarding').hidden = false;
+  document.body.classList.add('onboarding-open');
+  $$('[data-onboarding-slide]').forEach((slide, position) => {
+    slide.hidden = position !== onboardingIndex;
+    slide.classList.toggle('active', position === onboardingIndex);
+  });
+  $$('.onboarding-dots span').forEach((dot, position) => dot.classList.toggle('active', position === onboardingIndex));
+}
+
+function closeOnboarding() {
+  onboardingState.complete();
+  $('#willy-onboarding').hidden = true;
+  document.body.classList.remove('onboarding-open');
+}
+
+$('#willy-onboarding').addEventListener('click', (event) => {
+  if (event.target.closest('button')) return;
+  if (onboardingIndex === 3) closeOnboarding(); else showOnboarding(onboardingIndex + 1);
+});
+$('#onboarding-skip').addEventListener('click', closeOnboarding);
+$('#onboarding-start').addEventListener('click', closeOnboarding);
+$('#replay-onboarding').addEventListener('click', () => showOnboarding(0));
+if (onboardingState.shouldShow()) showOnboarding(0);
 
 function award(points) {
   state.points += points; localStorage.setItem('ai-pocket:points', state.points); $('#points-value').textContent = state.points;

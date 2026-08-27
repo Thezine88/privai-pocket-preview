@@ -12,6 +12,14 @@
   <title>PrivAI Pocket</title>
 </head>
 <body>
+  <section class="onboarding" id="willy-onboarding" role="dialog" aria-modal="true" aria-labelledby="onboarding-title-1" data-onboarding-next hidden>
+    <button class="onboarding-skip" id="onboarding-skip" type="button" data-i18n="onboarding.skip">Salta</button>
+    <article class="onboarding-slide active" data-onboarding-slide="0"><img src="assets/willy-welcome.webp" alt="" class="onboarding-willy"><div class="onboarding-copy"><h2 id="onboarding-title-1" data-i18n="onboarding.title1">Ciao, io sono Willy! 👋</h2><p data-i18n="onboarding.body1">Sei pronto a lavorare con me?</p></div></article>
+    <article class="onboarding-slide" data-onboarding-slide="1" hidden><img src="assets/willy-prepare.webp" alt="" class="onboarding-willy"><div class="onboarding-copy"><p data-i18n="onboarding.body2">Prima di iniziare un lavoro con un chatbot, passa da qui. In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.</p></div></article>
+    <article class="onboarding-slide" data-onboarding-slide="2" hidden><img src="assets/willy-protect.webp" alt="" class="onboarding-willy"><div class="onboarding-copy"><p data-i18n="onboarding.body3">Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere. Alla fine del lavoro torni qui e ripristiniamo tutto.</p></div></article>
+    <article class="onboarding-slide" data-onboarding-slide="3" hidden><img src="assets/willy-control.webp" alt="" class="onboarding-willy"><div class="onboarding-copy"><p data-i18n="onboarding.body4">La sicurezza è una priorità: nulla viene condiviso online senza una tua scelta.</p><strong data-i18n="onboarding.command">Hai tu il comando.</strong></div><button class="primary-button onboarding-start" id="onboarding-start" type="button" data-i18n="onboarding.start">Partiamo!</button></article>
+    <div class="onboarding-dots" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
+  </section>
   <div class="app-shell">
     <header class="topbar">
       <div>
@@ -145,6 +153,7 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
         <button class="back-button" data-view="home">← Home</button>
         <p class="eyebrow" data-i18n="settings.privacy">CONTROLLO E PRIVACY</p><h2 class="screen-title" data-i18n="settings.title">Impostazioni</h2>
         <label class="field"><span data-i18n="settings.language">Lingua dell’app</span><select id="language-select"><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <button class="secondary-button full" id="replay-onboarding" type="button" data-i18n="onboarding.replay">Rivedi la presentazione</button>
         <article class="settings-card privacy-settings"><span class="settings-icon">✓</span><div><h3 data-i18n="settings.localTitle">Modalità locale attiva</h3><p data-i18n="settings.localBody">Conversione e protezione non usano servizi cloud.</p></div></article>
         <div class="section-heading"><div><p class="eyebrow" data-i18n="settings.optional">FACOLTATIVO</p><h2 data-i18n="settings.personalApis">API personali</h2></div></div>
         <p class="settings-note" data-i18n="settings.apiNote">Collega una tua chiave solo se vuoi usare servizi cloud. Prima di ogni invio vedrai provider e contenuto. In questo prototipo la chiave resta nella sessione del browser; nella versione nativa useremo Android Keystore e iOS Keychain.</p>
