@@ -21,6 +21,15 @@ test('keeps the generated Android project at the approved SDK levels', async () 
   assert.match(instrumentedTest, /assertEquals\("app\.privai\.pocket", appContext\.getPackageName\(\)\)/);
 });
 
+test('keeps Android content and controls outside system bars', async () => {
+  const activity = await readFile(new URL('../android/app/src/main/java/app/privai/pocket/MainActivity.java', import.meta.url), 'utf8');
+  assert.match(activity, /WindowInsetsCompat\.Type\.systemBars\(\)/);
+  assert.match(activity, /WindowInsetsCompat\.Type\.displayCutout\(\)/);
+  assert.match(activity, /setPadding\(systemBars\.left, systemBars\.top, systemBars\.right, systemBars\.bottom\)/);
+  assert.match(activity, /setAppearanceLightStatusBars\(true\)/);
+  assert.match(activity, /setAppearanceLightNavigationBars\(true\)/);
+});
+
 test('builds a debug APK in CI without runtime service credentials', async () => {
   const workflow = await readFile(new URL('../.github/workflows/android-debug.yml', import.meta.url), 'utf8');
   assert.match(workflow, /on:\s*\n\s*workflow_dispatch:/);
