@@ -201,7 +201,29 @@ Converti in Markdown, Prepara per l'IA e Ripristina rimangono funzioni, ma posso
 - `minSdkVersion = 24`, `compileSdkVersion = 36`, `targetSdkVersion = 36`.
 - Asset web sincronizzabili in `android/app/src/main/assets/public/`.
 - La compilazione locale è stata bloccata dal download di `gradle-8.14.3-all.zip` non raggiungibile nell'ambiente usato.
-- Nessun APK installabile è stato ancora validato.
+- Prima APK debug compilata da GitHub Actions sul commit `953c364f6eb76aa16834fe1f1687bfe087ec1ac6` e installata su telefono Samsung.
+- SHA-256 della prima APK: `50ecafcd19637304ea80d3b7ec123254db2567a4d808e0c439ef90f61e8ad80e`; dimensione 5.090.639 byte.
+- Lo smoke test ha confermato l'avvio, ma ha rilevato sovrapposizione con status bar e navigazione Android a tre tasti, azioni Condividi/Invia all'IA non differenziate e schermata Prepara troppo verbosa.
+
+## Incremento approvato prima del secondo APK
+
+Non generare una nuova APK dopo ogni correzione. Il secondo APK viene creato soltanto quando questi elementi sono completi e verificati a livello web/automatico:
+
+1. applicare gli inset nativi Android a status bar, display cutout, navigazione a gesti e tre tasti;
+2. rendere distinte le azioni: Copia usa gli appunti, Condividi apre il chooser Android generico, Scegli un'IA mostra gli assistenti installati con fallback trasparente;
+3. trasformare Email, Post, Riassunto e Checklist da semplici etichette a template locali completi e realmente differenti;
+4. semplificare Prepara e Risultato eliminando titoli, spiegazioni e azioni duplicate;
+5. presentare l'anteprima responsive all'utente prima del merge;
+6. eseguire suite completa, build web, controllo credenziali, sync Capacitor e soltanto allora una singola build manuale APK.
+
+Flusso UI approvato:
+
+- inserimento: `Cosa vuoi creare?` → Email/Post/Riassunto/Checklist → contenuto → obiettivo breve → `Prepara`; opzioni avanzate chiuse;
+- risultato: `Pronto` → anteprima → azione primaria `Scegli un'IA` → azioni secondarie `Copia` e `Condividi` → `Modifica` discreto.
+
+Piano eseguibile: `docs/superpowers/plans/2026-08-25-second-android-smoke-test.md`.
+
+La modalità voce è un'opportunità futura esplicita: `Parla → trascrivi → revisiona → proteggi → condividi`. Non implementarla in questo incremento e non assumere che il riconoscimento sia locale senza verificarlo sul dispositivo.
 
 ## Ultima verifica nota — 25 agosto 2026
 
@@ -229,7 +251,8 @@ Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
 - [ ] Pubblicare e provare l'importazione PDF su Chrome e Samsung Internet con PDF reali semplici, multipagina e scansionati.
 - [ ] Ripristinare i metadati Git o continuare tramite il repository collegato.
 - [ ] Sincronizzare la PWA `v17` nel progetto Android.
-- [ ] Compilare, installare e smoke-testare l'APK su telefono reale.
+- [x] Compilare, installare e smoke-testare la prima APK su telefono reale; problemi osservati registrati nell'incremento per la seconda APK.
+- [ ] Eseguire il piano `docs/superpowers/plans/2026-08-25-second-android-smoke-test.md` e rispettare il gate unico prima della seconda APK.
 - [ ] Definire test di accettazione e implementare il vault Keystore/AES-GCM con test prima del codice.
 - [ ] Implementare revisione manuale dei dati trovati e ricevuta privacy.
 - [ ] Implementare il Share Target nativo e il ritorno/ripristino intuitivo dall'assistente IA.
