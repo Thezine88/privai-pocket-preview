@@ -1,5 +1,11 @@
 # Riquadro Impostazioni Rapide "Proteggi appunti" — Piano di implementazione
 
+> ## ⚠️ ESEGUITO E SUPERATO — documento storico, non la fonte di verità
+>
+> I quattro task qui sotto sono stati eseguiti il 27/08/2026 (commit `928ef7a`, `e8a02a4`, `704d3f2`, `1ffd0d6`). **Tre revisioni successive hanno poi cambiato scelte importanti**, quindi il codice riportato in questo piano non corrisponde più a quello che gira: in particolare il segnale di avvio headless (qui `window.__privaiQuickProtect` iniettato con `evaluateJavascript`) è stato **eliminato** in favore del controllo di presenza del plugin, e la guardia sui tocchi ripetuti è cambiata due volte.
+>
+> **Per capire come funziona davvero, leggi la specifica**: `docs/superpowers/specs/2026-08-27-quick-settings-tile-design.md`, che è aggiornata e racconta anche perché ogni scelta è cambiata. Questo piano resta solo come traccia di ciò che era stato pianificato prima delle revisioni.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Un riquadro nelle Impostazioni Rapide di Android che, toccato, protegge o ripristina il contenuto degli appunti senza mai mostrare una schermata.
