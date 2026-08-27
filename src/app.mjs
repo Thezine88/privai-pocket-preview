@@ -1,24 +1,37 @@
-import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=17';
-import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=17';
-import { createStore } from './domain/storage.mjs?v=17';
-import { greetingForHour } from './domain/greeting.mjs?v=17';
-import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=17';
-import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=17';
-import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=17';
-import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=17';
+import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=22';
+import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=22';
+import { createStore } from './domain/storage.mjs?v=22';
+import { greetingForHour } from './domain/greeting.mjs?v=22';
+import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=22';
+import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=22';
+import { createOutboundShare } from './domain/outbound-share.mjs?v=22';
+import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=22';
+import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=22';
+import { boundedOnboardingIndex, createOnboardingState, swipeStepDelta, tapStepDelta } from './domain/onboarding.mjs?v=22';
+import { addManualFindings, buildGuidedPrompt, getRecipeQuestions, listGuidedRecipes, transitionGuidedWorkflow } from './domain/guided-workflow.mjs?v=22';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
-const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const HAPTICS_KEY = 'ai-pocket:haptics';
+const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', selectedTemplate: 'checklist', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const onboardingState = createOnboardingState(localStorage);
+const outboundShare = createOutboundShare({
+  isNative: () => Boolean(globalThis.Capacitor?.isNativePlatform?.()),
+  nativePlugin: () => globalThis.Capacitor?.Plugins?.OutboundShare,
+  webShare: navigator.share?.bind(navigator),
+});
 const workflows = {
   convert: createWorkflowState('convert'),
   protect: createWorkflowState('protect'),
   prepare: createWorkflowState('prepare'),
   restore: createWorkflowState('restore'),
 };
+let guidedState = { step: 'input', hasContent: false, findingCount: 0, findings: [], mapping: {}, maskScope: '', recipeId: '', answers: {}, result: '', returnStep: 'input' };
+let guidedScanTimer;
+let guidedReceiptMode = 'ai';
 
 function applyLocale(locale) {
   const previousTranslator = state.translator;
@@ -41,6 +54,7 @@ function applyLocale(locale) {
   updateRestoreStatus();
   if ($('[data-view-panel="history"]')?.classList.contains('active')) renderHistory();
   if ($('[data-view-panel="settings"]')?.classList.contains('active')) renderProviders();
+  if (guidedState.recipeId || guidedState.step === 'purpose') { renderGuidedRecipes($('#guided-show-more')?.dataset.expanded === 'true'); renderGuidedQuestions(); }
 }
 
 function updateRestoreStatus() {
@@ -54,6 +68,59 @@ function toast(message) {
   const node = $('#toast'); node.textContent = message; node.classList.add('show');
   clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2200);
 }
+
+function touchFeedback() {
+  if (localStorage.getItem(HAPTICS_KEY) === 'off') return;
+  navigator.vibrate?.(12);
+}
+
+let onboardingIndex = 0;
+let onboardingPointerX = 0;
+let onboardingSwipeHandled = false;
+function showOnboarding(index = 0) {
+  onboardingIndex = boundedOnboardingIndex(index, 0);
+  $('#willy-onboarding').hidden = false;
+  document.body.classList.add('onboarding-open');
+  $$('[data-onboarding-slide]').forEach((slide, position) => {
+    slide.hidden = position !== onboardingIndex;
+    slide.classList.toggle('active', position === onboardingIndex);
+  });
+  $$('.onboarding-dots span').forEach((dot, position) => dot.classList.toggle('active', position === onboardingIndex));
+  $('[data-onboarding-step="-1"]').disabled = onboardingIndex === 0;
+  $('[data-onboarding-step="1"]').disabled = onboardingIndex === 3;
+}
+
+function navigateOnboarding(step) {
+  $('#willy-onboarding').classList.add('onboarding-guided');
+  const nextIndex = boundedOnboardingIndex(onboardingIndex, step);
+  if (nextIndex === onboardingIndex) return;
+  touchFeedback();
+  showOnboarding(nextIndex);
+}
+
+function closeOnboarding() {
+  onboardingState.complete();
+  $('#willy-onboarding').hidden = true;
+  document.body.classList.remove('onboarding-open');
+}
+
+$('#willy-onboarding').addEventListener('click', (event) => {
+  if (onboardingSwipeHandled) { onboardingSwipeHandled = false; return; }
+  if (event.target.closest('button')) return;
+  navigateOnboarding(tapStepDelta(event.clientX, innerWidth));
+});
+$('#willy-onboarding').addEventListener('pointerdown', (event) => { onboardingPointerX = event.clientX; });
+$('#willy-onboarding').addEventListener('pointerup', (event) => {
+  const step = swipeStepDelta(onboardingPointerX, event.clientX);
+  if (!step) return;
+  onboardingSwipeHandled = true;
+  navigateOnboarding(step);
+});
+$$('[data-onboarding-step]').forEach((button) => button.addEventListener('click', () => navigateOnboarding(Number(button.dataset.onboardingStep))));
+$('#onboarding-skip').addEventListener('click', closeOnboarding);
+$('#onboarding-start').addEventListener('click', closeOnboarding);
+$('#replay-onboarding').addEventListener('click', () => { $('#willy-onboarding').classList.remove('onboarding-guided'); showOnboarding(0); });
+if (onboardingState.shouldShow()) showOnboarding(0);
 
 function award(points) {
   state.points += points; localStorage.setItem('ai-pocket:points', state.points); $('#points-value').textContent = state.points;
@@ -75,6 +142,12 @@ function showView(name, forward = false) {
     view.classList.toggle('active', active); view.classList.toggle('forward', active && forward);
   });
   $('.topbar').hidden = name !== 'home';
+  $('.guided-action-bar').hidden = name !== 'home';
+  $$('[data-main-nav]').forEach((button) => {
+    const active = button.dataset.mainNav === name;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
+  });
   if (workflows[name]) {
     if (name === 'protect') setProtectMode('protect');
     showWorkflowPhase(name, 'input');
@@ -113,7 +186,14 @@ function setProtectMode(mode) {
   }
 }
 
-$$('[data-view]').forEach((button) => button.addEventListener('click', () => showView(button.dataset.view)));
+$$('[data-view]').forEach((button) => button.addEventListener('click', () => showView(button.dataset.view, button.dataset.view !== 'home')));
+
+const hapticTargets = '.primary-button,.wide-action,.tool-card,.add-button,.voice-button,.protect-mode-switch button,.macro-nav-item,.guided-recipe,.guided-scan-summary';
+$$(hapticTargets).forEach((button) => button.classList.add('haptic-press'));
+document.addEventListener('click', (event) => {
+  if (!event.target.closest(hapticTargets)) return;
+  touchFeedback();
+});
 $('#points-value').textContent = state.points;
 applyLocale(state.translator.locale);
 $('#language-select').addEventListener('change', (event) => {
@@ -121,6 +201,8 @@ $('#language-select').addEventListener('change', (event) => {
   persistentStore.saveLocale(locale);
   applyLocale(locale);
 });
+$('#haptics-toggle').checked = localStorage.getItem(HAPTICS_KEY) !== 'off';
+$('#haptics-toggle').addEventListener('change', (event) => localStorage.setItem(HAPTICS_KEY, event.target.checked ? 'on' : 'off'));
 $('#points-info').addEventListener('click', () => $('#points-dialog').showModal());
 $('#add-button').addEventListener('click', () => $('#quick-add-dialog').showModal());
 $('#voice-entry').addEventListener('click', () => $('#voice-dialog').showModal());
@@ -216,6 +298,151 @@ $('#file-input').addEventListener('change', (event) => importLocalFile(event, '#
 $('#protect-file-input').addEventListener('change', (event) => importLocalFile(event, '#protect-input'));
 $('#prepare-file-input').addEventListener('change', (event) => importLocalFile(event, '#prepare-input'));
 
+function showGuidedStep(step) {
+  guidedState = { ...guidedState, step };
+  $$('[data-guided-step]').forEach((panel) => {
+    const active = panel.dataset.guidedStep === step;
+    panel.hidden = !active;
+    panel.classList.toggle('guided-step-enter', active);
+  });
+  const action = $('#guided-primary-action');
+  action.hidden = step === 'review';
+  action.textContent = step === 'input' ? 'Cosa ti serve?' : step === 'purpose' ? 'Crea il risultato' : 'Apri in un’IA';
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+function setWillyState(status) {
+  const sources = {
+    ready: 'assets/willy-welcome.webp',
+    scanning: 'assets/willy-prepare.webp',
+    attention: 'assets/willy-protect-v3.webp',
+    complete: 'assets/willy-control.webp',
+  };
+  if (!sources[status]) return;
+  $$('.guided-willy').forEach((willy) => { willy.dataset.willyState = status; willy.src = sources[status]; });
+}
+
+function runGuidedScan(text) {
+  const content = String(text ?? '');
+  const findings = detectSensitiveData(content);
+  guidedState = {
+    ...guidedState,
+    hasContent: Boolean(content.trim()),
+    findings,
+    findingCount: findings.length,
+    maskScope: guidedState.maskScope || (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`).replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase(),
+  };
+  const count = guidedState.findingCount;
+  setWillyState(count ? 'attention' : 'ready');
+  $('#guided-findings-summary').innerHTML = `<span aria-hidden="true">${count ? '!' : '✓'}</span><span><strong>${count ? `${count} ${count === 1 ? 'dato da controllare' : 'dati da controllare'}` : 'Nessun dato strutturato trovato'}</strong><small>${content.trim() ? 'Tocca per verificare cosa nascondere.' : 'Inserisci un contenuto: valuterò automaticamente i dati sensibili.'}</small></span><span aria-hidden="true">›</span>`;
+}
+
+function scheduleGuidedScan(text) {
+  clearTimeout(guidedScanTimer);
+  setWillyState('scanning');
+  guidedScanTimer = setTimeout(runGuidedScan, 250, text);
+}
+
+function renderGuidedFindings() {
+  const host = $('#guided-findings');
+  if (!guidedState.findings.length) {
+    host.innerHTML = '<p class="empty-state">Nessun dato strutturato trovato. Puoi aggiungere manualmente ciò che vuoi nascondere.</p>';
+    return;
+  }
+  host.innerHTML = guidedState.findings.map((finding, index) => `<label class="finding"><input type="checkbox" data-guided-finding="${index}" ${finding.selected ? 'checked' : ''}><div><strong>${escapeHtml(finding.type === 'CUSTOM' ? 'Dato scelto' : displaySensitiveType(finding.type, state.translator.locale))}</strong><p>${escapeHtml(finding.value)}</p></div></label>`).join('');
+  $$('[data-guided-finding]').forEach((input) => input.addEventListener('change', () => { guidedState.findings[Number(input.dataset.guidedFinding)].selected = input.checked; }));
+}
+
+function renderGuidedRecipes(expanded = false) {
+  const recipes = listGuidedRecipes(state.translator.locale);
+  $('#guided-recipes').innerHTML = recipes.slice(0, expanded ? recipes.length : 6).map((recipe) => `<button class="guided-recipe" type="button" data-guided-recipe="${recipe.id}" aria-pressed="${recipe.id === guidedState.recipeId}">${escapeHtml(recipe.label)}</button>`).join('');
+  $('#guided-show-more').textContent = expanded ? 'Mostra meno' : 'Mostra altro';
+  $('#guided-show-more').dataset.expanded = String(expanded);
+  $$('[data-guided-recipe]').forEach((button) => button.addEventListener('click', () => {
+    guidedState.recipeId = button.dataset.guidedRecipe;
+    renderGuidedRecipes(expanded);
+    renderGuidedQuestions();
+  }));
+}
+
+function renderGuidedQuestions() {
+  if (!guidedState.recipeId) { $('#guided-questions').innerHTML = ''; return; }
+  $('#guided-questions').innerHTML = getRecipeQuestions(guidedState.recipeId, state.translator.locale).map((question) => `<fieldset class="guided-question"><legend>${escapeHtml(question.label)}</legend><div class="guided-options">${question.options.map((option, index) => `<label><input type="radio" name="guided-${question.id}" value="${escapeHtml(option.value)}" ${index === 0 ? 'checked' : ''}> ${escapeHtml(option.label)}</label>`).join('')}</div></fieldset>`).join('');
+}
+
+function collectGuidedAnswers() {
+  const answers = {};
+  getRecipeQuestions(guidedState.recipeId, state.translator.locale).forEach((question) => { answers[question.id] = $(`input[name="guided-${question.id}"]:checked`)?.value ?? ''; });
+  return answers;
+}
+
+function openGuidedPrivacyReceipt(mode) {
+  guidedReceiptMode = mode;
+  const selected = guidedState.findings.filter((finding) => finding.selected).length;
+  $('#guided-privacy-summary').textContent = selected ? `${selected} ${selected === 1 ? 'dato è stato sostituito' : 'dati sono stati sostituiti'} nella versione pronta.` : 'Non hai selezionato dati da sostituire.';
+  $('#guided-open-ai-confirm').textContent = mode === 'ai' ? 'Apri in un’IA' : 'Condividi';
+  $('#guided-privacy-dialog').showModal();
+}
+
+$('#guided-input').addEventListener('input', (event) => scheduleGuidedScan(event.target.value));
+$('#guided-file-input').addEventListener('change', (event) => importLocalFile(event, '#guided-input'));
+$('#guided-findings-summary').addEventListener('click', () => {
+  runGuidedScan($('#guided-input').value);
+  guidedState = transitionGuidedWorkflow(guidedState, 'OPEN_REVIEW');
+  renderGuidedFindings(); showGuidedStep('review');
+});
+$('#guided-review-done').addEventListener('click', () => {
+  const next = guidedState.returnStep || 'input';
+  guidedState = transitionGuidedWorkflow(guidedState, 'CLOSE_REVIEW');
+  showGuidedStep(next);
+});
+$$('[data-guided-select]').forEach((button) => button.addEventListener('click', () => {
+  const selected = button.dataset.guidedSelect === 'all';
+  guidedState.findings.forEach((finding) => { finding.selected = selected; });
+  renderGuidedFindings();
+}));
+$('#guided-add-finding').addEventListener('click', () => { $('#guided-manual-value').value = ''; $('#guided-add-dialog').showModal(); });
+$('#guided-manual-confirm').addEventListener('click', () => {
+  const before = guidedState.findings.length;
+  guidedState.findings = addManualFindings($('#guided-input').value, $('#guided-manual-value').value, guidedState.findings);
+  $('#guided-add-dialog').close(); renderGuidedFindings();
+  if (guidedState.findings.length === before) toast('Dato non trovato oppure già selezionato.');
+});
+$('#guided-show-more').addEventListener('click', () => renderGuidedRecipes($('#guided-show-more').dataset.expanded !== 'true'));
+$$('[data-guided-back]').forEach((button) => button.addEventListener('click', () => {
+  if (guidedState.step === 'review') {
+    const next = guidedState.returnStep || 'input'; guidedState = transitionGuidedWorkflow(guidedState, 'CLOSE_REVIEW'); showGuidedStep(next); return;
+  }
+  showGuidedStep(guidedState.step === 'result' ? 'purpose' : 'input');
+}));
+$('#guided-primary-action').addEventListener('click', () => {
+  if (guidedState.step === 'input') {
+    const content = $('#guided-input').value;
+    if (!content.trim()) return toast('Inserisci o apri prima un contenuto.');
+    runGuidedScan(content);
+    guidedState = transitionGuidedWorkflow({ ...guidedState, hasContent: true }, 'CONTINUE');
+    renderGuidedRecipes(false); showGuidedStep('purpose'); return;
+  }
+  if (guidedState.step === 'purpose') {
+    if (!guidedState.recipeId) return toast('Scegli prima cosa vuoi ottenere.');
+    guidedState.answers = collectGuidedAnswers();
+    const protectedResult = maskFindings($('#guided-input').value, guidedState.findings, { scope: guidedState.maskScope });
+    guidedState.mapping = protectedResult.mapping;
+    state.mapping = protectedResult.mapping;
+    guidedState.result = buildGuidedPrompt({ recipeId: guidedState.recipeId, answers: guidedState.answers, content: protectedResult.text, locale: state.translator.locale });
+    $('#guided-result').value = guidedState.result;
+    persistentStore.saveRecent({ id: String(Date.now()), title: listGuidedRecipes(state.translator.locale).find(({ id }) => id === guidedState.recipeId)?.label || 'Lavoro guidato', markdown: guidedState.result });
+    setWillyState('complete'); showGuidedStep('result'); return;
+  }
+  openGuidedPrivacyReceipt('ai');
+});
+$('#guided-share-result').addEventListener('click', () => openGuidedPrivacyReceipt('share'));
+$('#guided-open-ai-confirm').addEventListener('click', async () => {
+  $('#guided-privacy-dialog').close();
+  await shareText($('#guided-result').value, guidedReceiptMode === 'ai');
+});
+renderGuidedRecipes(false);
+
 $('#to-protect').addEventListener('click', () => {
   $('#protect-input').value = $('#markdown-output').value || $('#source-input').value;
   showView('protect', true);
@@ -289,13 +516,13 @@ $('#protect-input').addEventListener('input', (event) => {
   toast(state.translator.locale === 'it' ? 'Risposta riconosciuta: puoi ripristinare i dati.' : 'Response recognised: you can restore your data.');
 });
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
-  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = state.translator.t(button.dataset.goalKey);
+  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); state.selectedTemplate = button.dataset.template; $('#goal-input').value = state.translator.t(button.dataset.goalKey);
 }));
 
 $('#prepare-button').addEventListener('click', () => {
   const content = $('#prepare-input').value || state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value;
   if (!content.trim()) return toast(state.translator.t('dynamic.convertFirst'));
-  const result = buildPromptPack({ goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
+  const result = buildPromptPack({ template: state.selectedTemplate, goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
   $('#prompt-output').value = result;
   showWorkflowPhase('prepare', 'result');
   revealResult('#prompt-output');
@@ -304,7 +531,7 @@ $('#prepare-button').addEventListener('click', () => {
   award(15); toast(state.translator.t('dynamic.packSaved'));
 });
 
-async function shareText(text) {
+async function shareText(text, aiOnly = false) {
   let shareCopy = text;
   if (containsWebLinks(text)) {
     const dialog = $('#share-links-dialog');
@@ -317,8 +544,12 @@ async function shareText(text) {
     if (choice === 'remove') shareCopy = removeWebLinks(text);
   }
   try {
-    if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text: shareCopy });
-    else { await copyText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+    const title = state.translator.t('dynamic.shareTitle');
+    const result = aiOnly
+      ? await outboundShare.shareWithInstalledAI(shareCopy, title)
+      : await outboundShare.shareAnywhere(shareCopy, title);
+    if (result?.unavailable) { await copyText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+    else if (result?.fallback) toast(state.translator.t('dynamic.noAIApps'));
   } catch (error) {
     if (error?.name !== 'AbortError') toast(state.translator.locale === 'it' ? 'Condivisione non riuscita. Il testo resta qui.' : 'Sharing failed. Your text is still here.');
   }
@@ -349,6 +580,12 @@ $$('[data-share-result]').forEach((button) => button.addEventListener('click', a
   const text = $(`#${button.dataset.shareResult}`).value;
   if (!text.trim()) return toast(state.translator.t('dynamic.noShare'));
   await shareText(text);
+}));
+
+$$('[data-ai-share-result]').forEach((button) => button.addEventListener('click', async () => {
+  const text = $(`#${button.dataset.aiShareResult}`).value;
+  if (!text.trim()) return toast(state.translator.t('dynamic.noShare'));
+  await shareText(text, true);
 }));
 
 function renderHistory() {

@@ -16,9 +16,17 @@ export function normalizeToMarkdown(input) {
   return normalized.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-export function buildPromptPack({ goal, constraints = [], content, outputLanguage = 'same' }) {
+const templateInstructions = {
+  email: ['# Istruzioni Email', '- Proponi un oggetto chiaro.', '- Scrivi un corpo completo con tono professionale.', '- Concludi con una richiesta finale esplicita.', '- Non inventare fatti o dettagli assenti.'],
+  post: ['# Istruzioni Post', '- Crea un’apertura chiara.', '- Organizza il corpo in modo leggibile.', '- Concludi con un invito all’azione pertinente.', '- Inserisci hashtag solo se utili.'],
+  summary: ['# Istruzioni Riassunto', '- Estrai i punti principali.', '- Mantieni nomi e date presenti.', '- Separa decisioni e prossimi passi.', '- Indica separatamente le informazioni incerte.'],
+  checklist: ['# Istruzioni Checklist', '- Per ogni voce indica azione, responsabile, scadenza, priorità e dipendenze.', '- Segnala i campi mancanti senza inventarli.'],
+};
+
+export function buildPromptPack({ template, goal, constraints = [], content, outputLanguage = 'same' }) {
   const sections = [];
   if (goal?.trim()) sections.push(`# Obiettivo\n\n${goal.trim()}`);
+  if (templateInstructions[template]) sections.push(templateInstructions[template].join('\n'));
   const cleanConstraints = constraints.map((item) => item.trim()).filter(Boolean);
   if (cleanConstraints.length) {
     sections.push(`# Vincoli\n\n${cleanConstraints.map((item) => `- ${item}`).join('\n')}`);
