@@ -215,6 +215,7 @@ Non generare una nuova APK dopo ogni correzione. Il secondo APK viene creato sol
 4. semplificare Prepara e Risultato eliminando titoli, spiegazioni e azioni duplicate;
 5. presentare l'anteprima responsive all'utente prima del merge;
 6. eseguire suite completa, build web, controllo credenziali, sync Capacitor e soltanto allora una singola build manuale APK.
+7. aggiungere l'onboarding di Willy approvato, mostrato solo al primo avvio dell'installazione, prima di generare il secondo APK.
 
 Flusso UI approvato:
 
@@ -224,6 +225,54 @@ Flusso UI approvato:
 Piano eseguibile: `docs/superpowers/plans/2026-08-25-second-android-smoke-test.md`.
 
 La modalità voce è un'opportunità futura esplicita: `Parla → trascrivi → revisiona → proteggi → condividi`. Non implementarla in questo incremento e non assumere che il riconoscimento sia locale senza verificarlo sul dispositivo.
+
+## Onboarding di Willy approvato
+
+L'onboarding viene mostrato soltanto al primo avvio della singola installazione. Senza account o server non si promette che resti nascosto dopo cancellazione dei dati o reinstallazione. Deve essere rivedibile dalle impostazioni.
+
+Interazione approvata:
+
+- quattro schermate, avanzamento con un tap in un'area libera;
+- comando `Salta` sempre disponibile;
+- indicatori di avanzamento discreti;
+- pulsante finale `Partiamo!`;
+- animazioni leggere, senza video: dissolvenza, lieve galleggiamento e cambio posa;
+- rispetto della preferenza di sistema per movimento ridotto;
+- immagini di Willy scontornate, trasparenti e ottimizzate;
+- rispetto degli inset Android e delle aree sicure.
+
+Testo definitivo:
+
+1. `Ciao, io sono Willy! 👋` / `Sei pronto a lavorare con me?`
+2. `Prima di iniziare un lavoro con un chatbot, passa da qui. In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.`
+3. `Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere. Alla fine del lavoro torni qui e ripristiniamo tutto.`
+4. `La sicurezza è una priorità: nulla viene condiviso online senza una tua scelta.` / `Hai tu il comando.`
+
+L'onboarding posiziona il prodotto come passaggio da usare prima e dopo il lavoro con un chatbot. Non deve promettere anonimizzazione garantita, sicurezza assoluta o funzionamento integralmente offline.
+
+## Trascrizione cloud facoltativa con Groq — decisione futura
+
+Groq può essere valutato soltanto dopo vault cifrato, consenso/ricevuta privacy e Share Target. Non attivare ora API reali.
+
+- modalità facoltativa BYOK: ogni utente usa esclusivamente la propria chiave Groq;
+- nessuna chiave, spesa o quota intestata al proprietario dell'app;
+- chiave protetta con Android Keystore, mai in storage web in chiaro;
+- consenso esplicito prima che l'audio lasci il telefono;
+- arresto su limite gratuito/errore di quota, senza fallback o passaggio automatico a pagamento;
+- nessuna promessa che piano gratuito, limiti o validità delle chiavi restino invariati nel tempo;
+- modalità locale/on-device preferita quando realmente disponibile e verificata.
+
+## Desktop QR locale e sblocco Premium — decisione futura
+
+Il desktop resta dopo i gate di sicurezza e comunica soltanto sulla rete locale, senza relay o account obbligatori.
+
+- Free: una sessione al giorno della durata di 10 minuti;
+- il timer parte solo quando la connessione QR è stabilita;
+- timer e preavvisi visibili; nessuna perdita o interruzione brusca di un'operazione già iniziata;
+- limite conservato localmente, senza promessa antifrode assoluta dopo cambio data, cancellazione dati o reinstallazione;
+- alla scadenza viene presentato lo sblocco Premium;
+- Premium: sblocco desktop senza limiti tramite acquisto una tantum;
+- nessun pagamento o prezzo implementato prima del gate documentato e della validazione con utenti reali.
 
 ## Ultima verifica nota — 25 agosto 2026
 
