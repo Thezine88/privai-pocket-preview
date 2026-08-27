@@ -53,6 +53,7 @@ const COPY = {
     keepDates: 'Mantieni le date e le scadenze così come sono scritte.',
     placeholders: 'Il contenuto contiene segnaposto fra parentesi quadre (per esempio [NOME_1], [EMAIL_2]): sostituiscono dati riservati. Riportali identici nella risposta, senza tradurli, abbreviarli, formattarli in grassetto o cambiare le parentesi.',
     onlyResult: 'Rispondi con il solo risultato richiesto, senza premesse né commenti finali.',
+    askIfUnclear: 'Se il contesto non è chiaro o non basta per un risultato completo ed efficace, non procedere alla cieca: fai prima almeno 5 domande mirate su ciò che ti manca (per esempio, per un post: a chi si rivolge, con che tono, in che stile).',
     languages: { it: 'Italiano', en: 'Inglese' },
   },
   en: {
@@ -64,6 +65,7 @@ const COPY = {
     keepDates: 'Keep dates and deadlines exactly as written.',
     placeholders: 'The content contains square-bracket placeholders (for example [NOME_1], [EMAIL_2]) standing in for confidential data. Reproduce them exactly, without translating, shortening, bolding them or changing the brackets.',
     onlyResult: 'Reply with the requested result only, no preamble or closing commentary.',
+    askIfUnclear: 'If the context is unclear or not enough for a complete, effective result, do not guess: first ask at least 5 targeted questions about what is missing (for a post, for example: audience, tone, writing style).',
     languages: { it: 'Italian', en: 'English' },
   },
 };
@@ -94,7 +96,7 @@ export function buildRequest({ instructions = [], content = '', outputLanguage =
 
   const rules = [copy.noInvent, copy.keepDates];
   if (containsPlaceholders(body)) rules.push(copy.placeholders);
-  rules.push(copy.onlyResult);
+  rules.push(copy.onlyResult, copy.askIfUnclear);
   sections.push(`# ${copy.rules}\n\n${rules.map((line) => `- ${line}`).join('\n')}`);
 
   if (copy.languages[outputLanguage]) {

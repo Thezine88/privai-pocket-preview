@@ -382,6 +382,7 @@ spett spettabile egregio gentile oggetto riferimento allegato allegati cordiali 
 banca banco studio legale assicurazioni ospedale clinica istituto fondazione associazione
 via viale piazza corso largo vicolo strada località iva codice fiscale partita
 srl spa snc sas societa società ditta impresa
+media social comunicazione marketing strategist manager digital brand content account
 `.trim().split(/\s+/));
 
 function escapeRegExp(value) {
@@ -486,7 +487,12 @@ export function detectSensitiveData(text, { vault = [] } = {}) {
 function propagateSurnames(source, accepted) {
   const extra = [];
 
-  for (const finding of accepted.filter((item) => item.type === 'NAME')) {
+  // Solo i nomi certi (titolo o nome di battesimo riconosciuto) propagano il
+  // cognome. Il livello "forse" è un'ipotesi debole su due parole maiuscole:
+  // propagarlo vorrebbe dire mascherare ovunque anche solo "Media" o
+  // "Strategist" perché comparivano una volta accanto a un'altra maiuscola —
+  // esattamente il falso positivo segnalato dall'uso reale.
+  for (const finding of accepted.filter((item) => item.type === 'NAME' && !item.maybe)) {
     const parti = finding.value.split(/\s+/).filter((parte) => parte.length > 2);
     if (parti.length < 2) continue;
 

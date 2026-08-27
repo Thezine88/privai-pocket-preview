@@ -519,25 +519,12 @@ async function applyProtection() {
       retention: state.retention,
     });
     state.jobId = job.id;
-    renderVaultNote(job);
     renderNavBadge();
   } else {
     state.jobId = null;
-    renderVaultNote(null);
   }
 
   setPhase('send');
-}
-
-function renderVaultNote(job) {
-  const node = $('#vault-note');
-  if (!node) return;
-  if (!job) {
-    node.textContent = t('privacy.localBody');
-    return;
-  }
-  const key = vault.secure ? 'vault.savedSecure' : 'vault.savedPlain';
-  node.textContent = t(key, { retention: retentionLabel(job, state.locale) });
 }
 
 /* =================================================================== */
@@ -752,7 +739,7 @@ async function renderVault() {
   const jobs = await vault.listJobs();
   const host = $('#vault-jobs');
 
-  host.innerHTML = jobs.length ? '' : emptyStateHTML(t('vault.noJobs'), 'assets/tool-history.webp');
+  host.innerHTML = jobs.length ? '' : emptyStateHTML(t('vault.noJobs'), 'assets/tool-prepare.webp');
   jobs.forEach((job) => {
     const count = Object.keys(job.mapping).length;
     const row = document.createElement('div');
@@ -814,7 +801,7 @@ async function renderRecent() {
   const recent = (await store.get('recent')) ?? [];
   const host = $('#vault-recent');
   if (!recent.length) {
-    host.innerHTML = emptyStateHTML(t('vault.noRecent'), 'assets/tool-prepare.webp');
+    host.innerHTML = emptyStateHTML(t('vault.noRecent'), 'assets/tool-history.webp');
     return;
   }
   host.innerHTML = recent.map(recentRowHTML).join('');
@@ -1249,7 +1236,21 @@ async function init() {
   if (!(await store.get('onboarded'))) showOnboarding(0);
 
   // Condivisione in ingresso: è la strada principale, non un extra.
-  createInbound(({ text }) => {
+  //
+  // Non è detto che sia contenuto nuovo: se l'utente condivide nell'app la
+  // risposta di un'IA (Gemini, ChatGPT…) invece di tornarci e incollarla, il
+  // testo condiviso contiene i NOSTRI segnaposto. Va verso il ripristino, non
+  // verso una nuova scansione — altrimenti l'app tratta la risposta come un
+  // documento da proteggere e il ripristino non parte mai.
+  createInbound(async ({ text }) => {
+    const mapping = await vault.combinedMapping();
+    if (shouldOfferRestore(text, mapping).offer) {
+      toast(t('toast.received'));
+      $('#reply').value = text;
+      goto('restore', 'fwd');
+      await runRestore();
+      return;
+    }
     toast(t('toast.received'));
     setSource(text, { jumpToCheck: true });
   }).start();

@@ -196,7 +196,7 @@ Il server di anteprima (`.claude/launch.json` nella cartella padre) punta a `rep
 
 ### Non fare ora (deciso esplicitamente, non dimenticato)
 
-Chatbot generico finanziato dallo sviluppatore; login Google/Drive prima del vault cifrato (già fatto: Keystore); gamification complessa prima di dimostrare la retention; claim «100% anonimo» o «sicurezza assoluta»; qualunque API a consumo pagata dal proprietario; rinominare il progetto senza la verifica formale del marchio (§2).
+Chatbot generico finanziato dallo sviluppatore; login Google/Drive prima del vault cifrato (già fatto: Keystore); **economia a gettoni/sblocchi** (proposta e scartata esplicitamente: un'app di sicurezza vende fiducia, un layer di gamification rischia di farla somigliare a un gioco proprio dove deve sembrare seria, e l'azione centrale — proteggere un testo — resta a bassa frequenza a prescindere dai punti); claim «100% anonimo» o «sicurezza assoluta»; qualunque API a consumo pagata dal proprietario; rinominare il progetto senza la verifica formale del marchio (§2). L'obiettivo di fondo (uso quotidiano, non solo creator) resta perseguito dai punti 5 e 7 della roadmap sopra, non da un'economia dedicata.
 
 ---
 

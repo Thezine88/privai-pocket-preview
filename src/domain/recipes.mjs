@@ -198,78 +198,6 @@ export const RECIPES = [
     ],
   },
   {
-    id: 'chase',
-    icon: 'chase',
-    label: t('Sollecito o contestazione', 'Chase or complaint'),
-    hint: t('Con il tono giusto, senza scriverlo a caldo', 'The right tone, not written in anger'),
-    base: t(
-      'Scrivi un sollecito professionale basato sul contenuto. Riporta i riferimenti presenti e chiudi con una richiesta chiara e una scadenza.',
-      'Write a professional chaser based on the content. Cite the references present and close with a clear request and a deadline.',
-    ),
-    questions: [
-      {
-        id: 'temperature',
-        label: t('Quanto fermo?', 'How firm?'),
-        options: [
-          opt('polite', t('Cortese', 'Polite'), t('Primo sollecito: tono cortese, presume una dimenticanza.', 'First reminder: polite tone, assume an oversight.'), true),
-          opt('firm', t('Fermo', 'Firm'), t('Secondo sollecito: tono fermo, ricorda i precedenti tentativi.', 'Second reminder: firm tone, recall previous attempts.')),
-          opt('formal', t('Formale', 'Formal notice'), t('Messa in mora: tono formale e circostanziato, con richiamo alle conseguenze previste. Non citare norme che non compaiono nel contenuto.', 'Formal notice: precise and formal, referring to the stated consequences. Do not cite laws absent from the content.')),
-        ],
-      },
-    ],
-  },
-  {
-    id: 'quote',
-    icon: 'quote',
-    label: t('Preventivo', 'Quote'),
-    hint: t('Voci, condizioni, validità', 'Line items, terms, validity'),
-    base: t(
-      'Prepara un preventivo strutturato con voci, quantità, importi, condizioni di pagamento e termine di validità. Se un dato manca, segnalalo fra parentesi quadre invece di inventarlo.',
-      'Prepare a structured quote with line items, quantities, amounts, payment terms and validity. If a value is missing, flag it in square brackets instead of inventing it.',
-    ),
-    questions: [
-      {
-        id: 'detail',
-        label: t('Quanto dettagliato?', 'How detailed?'),
-        options: [
-          opt('simple', t('Sintetico', 'Simple'), t('Poche voci, un totale.', 'Few line items, one total.'), true),
-          opt('full', t('Voce per voce', 'Itemised'), t('Dettaglia ogni voce con quantità e prezzo unitario.', 'Detail each item with quantity and unit price.')),
-        ],
-      },
-    ],
-  },
-  {
-    id: 'minutes',
-    icon: 'minutes',
-    label: t('Verbale di riunione', 'Meeting minutes'),
-    hint: t('Da appunti sparsi a decisioni', 'From scattered notes to decisions'),
-    base: t(
-      'Trasforma gli appunti in un verbale: partecipanti, argomenti, decisioni prese, azioni assegnate con responsabile e scadenza, punti rinviati. Segnala i campi mancanti senza inventarli.',
-      'Turn the notes into minutes: attendees, topics, decisions, assigned actions with owner and deadline, deferred points. Flag missing fields rather than inventing them.',
-    ),
-    questions: [],
-  },
-  {
-    id: 'questions',
-    icon: 'questions',
-    label: t('Che domande devo fare', 'What should I ask'),
-    hint: t('Cosa non stai considerando', 'What you are not considering'),
-    base: t(
-      'Non rispondere: elenca le domande che chi legge dovrebbe porre prima di procedere, ordinate per importanza, spiegando in una riga perché ciascuna conta.',
-      'Do not answer: list the questions the reader should ask before proceeding, ordered by importance, each with a one-line reason why it matters.',
-    ),
-    questions: [
-      {
-        id: 'who',
-        label: t('A chi le farai?', 'Who will you ask?'),
-        options: [
-          opt('pro', t('A un professionista', 'A professional'), t('Le domande sono per un consulente: possono essere tecniche.', 'The questions are for an adviser: they may be technical.'), true),
-          opt('counterpart', t('Alla controparte', 'The other party'), t('Le domande sono per la controparte: formulale in modo diplomatico.', 'The questions are for the other party: phrase them diplomatically.')),
-        ],
-      },
-    ],
-  },
-  {
     id: 'post',
     icon: 'post',
     label: t('Post social', 'Social post'),
@@ -281,7 +209,8 @@ export const RECIPES = [
         label: t('Dove lo pubblichi?', 'Where will you post?'),
         options: [
           opt('linkedin', t('LinkedIn', 'LinkedIn'), t('Per LinkedIn: registro professionale, massimo 1.300 caratteri, niente hashtag in eccesso.', 'For LinkedIn: professional register, 1,300 characters max, few hashtags.'), true),
-          opt('instagram', t('Instagram', 'Instagram'), t('Per Instagram: apertura che ferma lo scorrimento, righe brevi, hashtag pertinenti in fondo.', 'For Instagram: a scroll-stopping opening, short lines, relevant hashtags at the end.')),
+          opt('instagram', t('Instagram', 'Instagram'), t('Per Instagram: apertura che ferma lo scorrimento, righe brevi. Massimo 4 hashtag pertinenti in fondo, scelti anche per la SEO della piattaforma (parole chiave che il pubblico cerca davvero, non slogan).', 'For Instagram: a scroll-stopping opening, short lines. At most 4 relevant hashtags at the end, chosen for the platform’s SEO too (keywords people actually search, not slogans).')),
+          opt('tiktok', t('TikTok', 'TikTok'), t('Per TikTok: scrivi la didascalia del video, diretta e colloquiale. Massimo 4 hashtag pertinenti, scelti anche per la SEO della piattaforma (parole chiave che il pubblico cerca davvero, non slogan).', 'For TikTok: write the video caption, direct and conversational. At most 4 relevant hashtags, chosen for the platform’s SEO too (keywords people actually search, not slogans).')),
           opt('facebook', t('Facebook', 'Facebook'), t('Per Facebook: tono colloquiale e diretto.', 'For Facebook: conversational and direct.')),
         ],
       },
