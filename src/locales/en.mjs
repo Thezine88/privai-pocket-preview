@@ -203,6 +203,12 @@ export const en = Object.freeze({
   'toast.limitJobs': 'The free plan keeps {count} vault jobs. The oldest one will be replaced.',
   'toast.limitEntries': 'The free plan saves {count} words. Go Pro for no limits.',
 
+  /* --- quick settings tile --- */
+  'quickProtect.restored': 'Restored',
+  'quickProtect.nothing': 'Nothing to hide',
+  'quickProtect.empty': 'Nothing to protect on the clipboard',
+  'quickProtect.error': 'The tile could not complete the action',
+
   'pdf.reading': 'Reading the PDF on your phone…',
   'pdf.imported': 'PDF read: {count} pages',
   'pdf.error.PDF_SCAN_ONLY': 'This PDF contains images only. Reading scans arrives with Pro.',

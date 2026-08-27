@@ -37,6 +37,13 @@ test('sharing a document opens straight on the findings screen: zero taps to see
   assert.match(app, /jumpToCheck/);
 });
 
+test('the quick-settings tile runs headless: no screen is drawn when the native flag is set', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /__privaiQuickProtect/);
+  assert.match(app, /decideQuickProtect/);
+  assert.match(app, /Capacitor\?\.Plugins\?\.QuickProtect/);
+});
+
 test('the round trip back from the AI takes one tap, not seven', async () => {
   // Misurato sulla v1: 3 tocchi all'andata, 7-8 al ritorno. La barra del
   // rientro riconosce i SEGNAPOSTO NOSTRI negli appunti e basta.

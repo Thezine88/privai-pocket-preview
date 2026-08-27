@@ -224,6 +224,12 @@ export const it = Object.freeze({
   'toast.limitJobs': 'Nel piano gratuito puoi tenere {count} lavori in cassaforte. Il più vecchio verrà sostituito.',
   'toast.limitEntries': 'Nel piano gratuito puoi salvare {count} parole. Passa a Pro per non avere limiti.',
 
+  /* --- riquadro impostazioni rapide --- */
+  'quickProtect.restored': 'Ripristinato',
+  'quickProtect.nothing': 'Niente da nascondere',
+  'quickProtect.empty': 'Niente da proteggere negli appunti',
+  'quickProtect.error': 'Il riquadro non è riuscito a completare l’azione',
+
   /* --- pdf --- */
   'pdf.reading': 'Sto leggendo il PDF sul telefono…',
   'pdf.imported': 'PDF letto: {count} pagine',

@@ -24,6 +24,7 @@ import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs'
 import { greetingForHour } from './domain/greeting.mjs';
 import { iconSvg } from './icons.mjs';
 import { swipeOutcome, clampDrag, lockAxis, SWIPE_ACTION_WIDTH } from './domain/swipe.mjs';
+import { decideQuickProtect } from './domain/quickProtect.mjs';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -1244,10 +1245,70 @@ function closeOnboarding() {
 }
 
 /* =================================================================== */
+/* Riquadro Impostazioni Rapide — nessuna schermata                    */
+/* =================================================================== */
+
+/**
+ * Punto d'ingresso headless per QuickProtectActivity: l'Activity vive meno
+ * di un secondo e non deve mai disegnare nulla. Decide con la stessa
+ * funzione pura di src/domain/quickProtect.mjs, poi scrive gli appunti,
+ * eventualmente salva il lavoro, e chiede al plugin nativo di mostrare un
+ * Toast e chiudersi — qualunque errore finisce comunque nel Toast e nella
+ * chiusura, l'Activity non deve mai restare aperta.
+ */
+async function runQuickProtect() {
+  const plugin = globalThis.Capacitor?.Plugins?.QuickProtect;
+  try {
+    const prefs = (await store.get('prefs')) ?? {};
+    state.locale = normalizeLocale(prefs.locale ?? navigator.language);
+    state.t = createTranslator(state.locale);
+    state.plan = prefs.plan ?? 'free';
+
+    const clip = await readClipboard();
+    const mapping = await vault.combinedMapping();
+    const entries = await vault.listEntries();
+    const decision = decideQuickProtect(clip, mapping, entries);
+
+    if (decision.action === 'restore') {
+      await writeClipboard(decision.text);
+      await plugin?.toast?.({ message: t('quickProtect.restored') });
+    } else if (decision.action === 'mask') {
+      await writeClipboard(decision.text);
+      const limits = planOf(state.plan);
+      const jobs = await vault.listJobs();
+      const limited = !isUnlimited(limits.openJobs) && jobs.length >= limits.openJobs;
+      await vault.saveJob({
+        title: titleFromText(decision.text, defaultJobTitle()),
+        mapping: decision.mapping,
+        protectedText: decision.text,
+        findingsCount: decision.count,
+        retention: clampRetention(prefs.retention ?? DEFAULT_RETENTION, limits.maxRetention),
+      });
+      const base = t(decision.count === 1 ? 'vault.itemsCountOne' : 'vault.itemsCount', { count: decision.count });
+      const message = limited ? `${base} · ${t('toast.limitJobs', { count: limits.openJobs })}` : base;
+      await plugin?.toast?.({ message });
+    } else if (decision.action === 'nothing') {
+      await plugin?.toast?.({ message: t('quickProtect.nothing') });
+    } else {
+      await plugin?.toast?.({ message: t('quickProtect.empty') });
+    }
+  } catch {
+    await plugin?.toast?.({ message: t('quickProtect.error') });
+  } finally {
+    await plugin?.finish?.();
+  }
+}
+
+/* =================================================================== */
 /* Avvio                                                               */
 /* =================================================================== */
 
 async function init() {
+  if (globalThis.__privaiQuickProtect) {
+    await runQuickProtect();
+    return;
+  }
+
   await vault.purgeExpired();
 
   const prefs = (await store.get('prefs')) ?? {};
