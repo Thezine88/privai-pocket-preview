@@ -6,6 +6,7 @@ import {
   countKnownPlaceholders, contextAround, riskOf, shouldOfferRestore,
   isValidFiscalCode, isValidIban, isValidVatNumber, isValidCard,
 } from '../src/domain/pii.mjs';
+import { decideQuickProtect } from '../src/domain/quickProtect.mjs';
 import { normalizeToMarkdown, buildRequest, titleFromText, containsPlaceholders } from '../src/domain/markdown.mjs';
 import { createVault, RETENTION, retentionLabel, clampRetention } from '../src/domain/vault.mjs';
 import { getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor, RECIPES } from '../src/domain/recipes.mjs';
@@ -552,6 +553,44 @@ test('non propone nulla sugli appunti che non ci riguardano', () => {
 test('senza lavori in cassaforte non si tocca mai gli appunti', () => {
   assert.equal(shouldOfferRestore('Gentile [NOME_1]', {}).offer, false);
   assert.equal(shouldOfferRestore('Gentile [NOME_1]', null).offer, false);
+});
+
+/* ------------------------------------------------------------------ */
+/* Riquadro Impostazioni Rapide: decisione senza schermata             */
+/* ------------------------------------------------------------------ */
+
+test('appunti vuoti: il riquadro non fa nulla', () => {
+  assert.deepEqual(decideQuickProtect('', {}), { action: 'empty' });
+  assert.deepEqual(decideQuickProtect('   ', {}), { action: 'empty' });
+  assert.deepEqual(decideQuickProtect(null, {}), { action: 'empty' });
+});
+
+test('appunti con nostri segnaposto: il riquadro ripristina invece di rimascherare', () => {
+  const mapping = { '[NOME_1]': 'Marco Bianchi', '[EMAIL_1]': 'marco@studio.it' };
+  const risultato = decideQuickProtect('Gentile [NOME_1], la ricontatto a [EMAIL_1].', mapping);
+  assert.equal(risultato.action, 'restore');
+  assert.equal(risultato.text, 'Gentile Marco Bianchi, la ricontatto a marco@studio.it.');
+});
+
+test('testo nuovo con dati ad alto rischio: il riquadro maschera', () => {
+  const risultato = decideQuickProtect('Contattami a mario.rossi@email.it per il progetto.', {});
+  assert.equal(risultato.action, 'mask');
+  assert.equal(risultato.count, 1);
+  assert.match(risultato.text, /\[EMAIL_1\]/);
+  assert.equal(risultato.mapping['[EMAIL_1]'], 'mario.rossi@email.it');
+});
+
+test('testo nuovo senza nulla da nascondere: il riquadro non tocca gli appunti', () => {
+  const risultato = decideQuickProtect('Comprare pane, latte, uova.', {});
+  assert.deepEqual(risultato, { action: 'nothing' });
+});
+
+test('il riquadro rispetta anche la rubrica personale, non solo i pattern automatici', () => {
+  const risultato = decideQuickProtect(
+    'Il progetto Fenice parte lunedì.', {}, [{ value: 'Fenice', type: 'CUSTOM' }],
+  );
+  assert.equal(risultato.action, 'mask');
+  assert.equal(risultato.mapping['[RISERVATO_1]'], 'Fenice');
 });
 
 test('ogni chiave usata in index.html esiste nelle traduzioni', async () => {
