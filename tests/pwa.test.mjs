@@ -54,3 +54,12 @@ test('service worker precache list has no stale query-string versioning', async 
   const shell = worker.match(/const SHELL = \[([\s\S]*?)\];/)?.[1] ?? '';
   assert.doesNotMatch(shell, /\?v=\d/);
 });
+
+test('il manifest Android dichiara il tile e la sua activity invisibile', async () => {
+  const manifest = await readFile(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+  assert.match(manifest, /android:name="\.QuickProtectTileService"/);
+  assert.match(manifest, /android:permission="android\.permission\.BIND_QUICK_SETTINGS_TILE"/);
+  assert.match(manifest, /android\.service\.quicksettings\.action\.QS_TILE/);
+  assert.match(manifest, /android:name="\.QuickProtectActivity"/);
+  assert.match(manifest, /android:theme="@style\/AppTheme\.QuickProtect"/);
+});
