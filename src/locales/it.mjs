@@ -229,6 +229,7 @@ export const it = Object.freeze({
   'quickProtect.nothing': 'Niente da nascondere',
   'quickProtect.empty': 'Niente da proteggere negli appunti',
   'quickProtect.error': 'Il riquadro non è riuscito a completare l’azione',
+  'quickProtect.tooSoon': 'Aspetta un attimo prima di riprovare',
 
   /* --- pdf --- */
   'pdf.reading': 'Sto leggendo il PDF sul telefono…',

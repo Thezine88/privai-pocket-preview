@@ -44,6 +44,22 @@ test('the quick-settings tile runs headless: no screen is drawn when the native 
   assert.match(app, /Capacitor\?\.Plugins\?\.QuickProtect/);
 });
 
+test('the quick-settings tile signal cannot race the app boot: both sides check readiness first', async () => {
+  // Se il segnale nativo arriva dopo il controllo sincrono in cima a
+  // init(), l'app aprirebbe l'interfaccia normale invece di restare
+  // invisibile. Stessa stretta di mano già provata su device per la
+  // condivisione in ingresso (__privaiReady/ShareTargetPlugin).
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /__privaiQuickProtectReady/);
+  assert.match(app, /privai:quickprotect/);
+});
+
+test('a second quick-settings tap within the debounce window does not silently un-mask the clipboard', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /QUICK_PROTECT_DEBOUNCE_MS/);
+  assert.match(app, /quickProtectLastRun/);
+});
+
 test('the round trip back from the AI takes one tap, not seven', async () => {
   // Misurato sulla v1: 3 tocchi all'andata, 7-8 al ritorno. La barra del
   // rientro riconosce i SEGNAPOSTO NOSTRI negli appunti e basta.

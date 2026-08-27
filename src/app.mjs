@@ -1249,6 +1249,33 @@ function closeOnboarding() {
 /* =================================================================== */
 
 /**
+ * Il tocco vale una volta ogni tre secondi. Senza schermo l'utente non ha
+ * modo di vedere se il tocco precedente ha avuto effetto, e un doppio tocco
+ * ravvicinato cadrebbe nel ramo "ripristina" (il testo appena mascherato
+ * contiene i nostri segnaposto) — rimettendo il dato vero negli appunti
+ * subito prima di un incolla, l'esatto contrario di quello che l'app deve
+ * fare.
+ */
+const QUICK_PROTECT_DEBOUNCE_MS = 3000;
+
+/** Appunti via il plugin nativo, che non richiede il documento a fuoco: è
+ *  l'unica strada affidabile per un'Activity mai toccata dall'utente. Il
+ *  ripiego sulle funzioni generiche resta per il ramo web/PWA, dove il
+ *  plugin nativo non esiste. */
+async function quickProtectRead(plugin) {
+  if (plugin?.read) {
+    const result = await plugin.read();
+    return typeof result?.value === 'string' ? result.value : null;
+  }
+  return readClipboard();
+}
+
+async function quickProtectWrite(plugin, text) {
+  if (plugin?.write) { await plugin.write({ value: text }); return; }
+  await writeClipboard(text);
+}
+
+/**
  * Punto d'ingresso headless per QuickProtectActivity: l'Activity vive meno
  * di un secondo e non deve mai disegnare nulla. Decide con la stessa
  * funzione pura di src/domain/quickProtect.mjs, poi scrive gli appunti,
@@ -1264,16 +1291,30 @@ async function runQuickProtect() {
     state.t = createTranslator(state.locale);
     state.plan = prefs.plan ?? 'free';
 
-    const clip = await readClipboard();
+    const lastRun = (await store.get('quickProtectLastRun')) ?? 0;
+    const now = Date.now();
+    if (now - lastRun < QUICK_PROTECT_DEBOUNCE_MS) {
+      await plugin?.toast?.({ message: t('quickProtect.tooSoon') });
+      return;
+    }
+    await store.set('quickProtectLastRun', now);
+
+    const clip = await quickProtectRead(plugin);
     const mapping = await vault.combinedMapping();
     const entries = await vault.listEntries();
     const decision = decideQuickProtect(clip, mapping, entries);
 
     if (decision.action === 'restore') {
-      await writeClipboard(decision.text);
+      await quickProtectWrite(plugin, decision.text);
+      // Stessa ambiguità già accettata dal ripristino manuale dagli appunti
+      // (resumeRestore → runRestore): quando il ripristino viene da una
+      // mappa combinata di più lavori, non c'è un lavoro "giusto" solo da
+      // segnare. Si prende il più recente, coerente con il resto dell'app.
+      const jobs = await vault.listJobs();
+      if (jobs[0]) await vault.markRestored(jobs[0].id);
       await plugin?.toast?.({ message: t('quickProtect.restored') });
     } else if (decision.action === 'mask') {
-      await writeClipboard(decision.text);
+      await quickProtectWrite(plugin, decision.text);
       const limits = planOf(state.plan);
       const jobs = await vault.listJobs();
       const limited = !isUnlimited(limits.openJobs) && jobs.length >= limits.openJobs;
@@ -1308,6 +1349,14 @@ async function init() {
     await runQuickProtect();
     return;
   }
+  // Il segnale nativo potrebbe arrivare dopo il controllo sopra, non prima:
+  // stessa stretta di mano già provata su device per la condivisione in
+  // ingresso (vedi createInbound in domain/intake.mjs e ShareTargetPlugin).
+  // Fra il controllo sincrono e questa riga non c'è nessuna istruzione
+  // asincrona, quindi non esiste una finestra in cui il segnale nativo
+  // arrivi "nel mezzo" senza che né il deposito né l'evento lo raggiungano.
+  globalThis.__privaiQuickProtectReady = true;
+  globalThis.addEventListener('privai:quickprotect', () => { runQuickProtect(); }, { once: true });
 
   await vault.purgeExpired();
 

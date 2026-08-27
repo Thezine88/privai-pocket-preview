@@ -208,6 +208,7 @@ export const en = Object.freeze({
   'quickProtect.nothing': 'Nothing to hide',
   'quickProtect.empty': 'Nothing to protect on the clipboard',
   'quickProtect.error': 'The tile could not complete the action',
+  'quickProtect.tooSoon': 'Wait a moment before trying again',
 
   'pdf.reading': 'Reading the PDF on your phone…',
   'pdf.imported': 'PDF read: {count} pages',
