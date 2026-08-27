@@ -37,21 +37,26 @@ test('service worker tries the network first, so an update is never stuck behind
 
 test('service worker precaches the complete app shell, module by module', async () => {
   // Elencare a mano gli asset attesi non si accorge mai di un modulo NUOVO
-  // dimenticato — che è l'unico errore che capita davvero. Qui la lista
-  // attesa si ricava dal disco: aggiungere un file a src/domain/ e scordarlo
-  // nel service worker fa fallire questo test.
+  // dimenticato — che è l'unico errore che capita davvero. Qui la lista si
+  // ricava dal disco: ogni .mjs sotto src/ (a qualunque livello) deve
+  // comparire nella lista SHELL, non solo da qualche parte nel file.
   const { readdir } = await import('node:fs/promises');
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
 
-  const fissi = [
-    './index.html', './styles.css', './manifest.webmanifest',
-    './src/app.mjs', './src/icons.mjs', './src/locales/it.mjs', './src/locales/en.mjs',
-  ];
-  const moduli = (await readdir(new URL('../src/domain/', import.meta.url)))
-    .filter((nome) => nome.endsWith('.mjs'))
-    .map((nome) => `./src/domain/${nome}`);
+  // Solo il contenuto dell'array SHELL: una menzione dentro un commento non
+  // mette nulla in cache, e non deve poter far passare il test.
+  const shell = worker.slice(worker.indexOf('const SHELL'), worker.indexOf('];', worker.indexOf('const SHELL')));
 
-  const mancanti = [...fissi, ...moduli].filter((asset) => !worker.includes(asset));
+  const moduli = [];
+  for (const dir of ['', 'domain/', 'locales/']) {
+    const voci = await readdir(new URL(`../src/${dir}`, import.meta.url), { withFileTypes: true });
+    for (const voce of voci) {
+      if (voce.isFile() && voce.name.endsWith('.mjs')) moduli.push(`./src/${dir}${voce.name}`);
+    }
+  }
+
+  const attesi = ['./index.html', './styles.css', './manifest.webmanifest', ...moduli];
+  const mancanti = attesi.filter((asset) => !shell.includes(asset));
   assert.deepEqual(mancanti, [], `moduli assenti dal precache del service worker: ${mancanti.join(', ')}`);
 });
 

@@ -1325,20 +1325,31 @@ async function runQuickProtect() {
 
     const clip = await quickProtectRead(plugin);
 
-    // Un tocco oltre la finestra sopra, sullo stesso risultato che abbiamo
-    // già scritto noi: un'IA vera non risponde mai con un testo identico
-    // byte per byte a quello che le abbiamo appena mandato. Se coincide,
-    // non è una nuova risposta da ripristinare — è lo stesso tocco di
-    // prima. Questo toglie il rischio per sempre, non solo per 3 secondi.
-    const lastWritten = await store.get('quickProtectLastWritten');
-    if (clip && lastWritten && (await fingerprint(clip)) === lastWritten) {
-      await plugin?.toast?.({ message: t('quickProtect.nothing') });
-      return;
-    }
-
     const mapping = await vault.combinedMapping();
     const entries = await vault.listEntries();
     const decision = decideQuickProtect(clip, mapping, entries);
+
+    // La guardia vale SOLO sul ripristino, mai sul mascheramento.
+    //
+    // Il rischio è il secondo tocco su un testo che abbiamo appena
+    // mascherato noi: contiene i nostri segnaposto, quindi verrebbe letto
+    // come una risposta dell'IA da ripristinare, rimettendo i dati veri
+    // negli appunti proprio prima di un incolla. Un'IA non risponde mai con
+    // un testo identico byte per byte a quello che le è stato mandato: se
+    // coincide, non è una risposta nuova.
+    //
+    // Applicarla anche al mascheramento sarebbe però peggio del problema:
+    // dopo un ripristino l'utente può benissimo voler rimascherare lo
+    // stesso testo per una domanda di seguito, e si sentirebbe rispondere
+    // «niente da nascondere» su un testo pieno di dati veri — un messaggio
+    // falso, che porta a incollare dati in chiaro credendoli protetti.
+    if (decision.action === 'restore') {
+      const lastWritten = await store.get('quickProtectLastWritten');
+      if (lastWritten && (await fingerprint(clip)) === lastWritten) {
+        await plugin?.toast?.({ message: t('quickProtect.nothing') });
+        return;
+      }
+    }
 
     if (decision.action === 'restore') {
       await quickProtectWrite(plugin, decision.text);
@@ -1369,6 +1380,12 @@ async function runQuickProtect() {
     } else if (decision.action === 'nothing') {
       await plugin?.toast?.({ message: t('quickProtect.nothing') });
     } else {
+      // Appunti vuoti: può anche voler dire che la lettura non è riuscita
+      // (su Android 10+ capita finché la finestra non ha davvero il fuoco).
+      // Riapriamo subito la finestra del rimbalzo, altrimenti chi ritocca
+      // il riquadro per riprovare — cioè la reazione naturale — si sente
+      // dire «aspetta un attimo» proprio quando avrebbe ragione a insistere.
+      await store.set('quickProtectLastRun', 0);
       await plugin?.toast?.({ message: t('quickProtect.empty') });
     }
   } catch {

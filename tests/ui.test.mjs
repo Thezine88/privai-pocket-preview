@@ -46,6 +46,18 @@ test('the quick-settings tile runs headless: no screen is drawn when the native 
   assert.match(app, /decideQuickProtect/);
 });
 
+test('only the quick-settings Activity may register QuickProtectPlugin, never MainActivity', async () => {
+  // È l'invariante su cui poggia tutto il rilevamento headless: se un
+  // giorno qualcuno registrasse questo plugin anche in MainActivity,
+  // l'app NORMALE partirebbe headless e non disegnerebbe più nulla.
+  const base = '../android/app/src/main/java/app/privai/pocket/';
+  const main = await readFile(new URL(`${base}MainActivity.java`, import.meta.url), 'utf8');
+  const tile = await readFile(new URL(`${base}QuickProtectActivity.java`, import.meta.url), 'utf8');
+  assert.doesNotMatch(main, /QuickProtectPlugin/,
+    'MainActivity non deve registrare QuickProtectPlugin: l\'app normale partirebbe senza interfaccia');
+  assert.match(tile, /registerPlugin\(QuickProtectPlugin\.class\)/);
+});
+
 test('a second quick-settings tap does not silently un-mask the clipboard, at any distance in time', async () => {
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
   assert.match(app, /QUICK_PROTECT_DEBOUNCE_MS/);
@@ -54,6 +66,14 @@ test('a second quick-settings tap does not silently un-mask the clipboard, at an
   // che il riquadro stesso ha appena scritto: un'IA non risponde mai con
   // un testo identico byte per byte a quello appena mandato.
   assert.match(app, /quickProtectLastWritten/);
+  // …e vale SOLO sul ripristino: applicarla anche al mascheramento
+  // direbbe «niente da nascondere» su un testo pieno di dati veri, e chi
+  // legge quel messaggio incolla dati in chiaro credendoli protetti.
+  assert.match(
+    app,
+    /if \(decision\.action === 'restore'\) \{\s*\n\s*const lastWritten = await store\.get\('quickProtectLastWritten'\)/,
+    'la guardia sul contenuto deve stare dentro il ramo "restore", mai prima della decisione',
+  );
 });
 
 test('the round trip back from the AI takes one tap, not seven', async () => {
