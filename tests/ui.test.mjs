@@ -166,3 +166,28 @@ test('intake icons match what the buttons actually do', async () => {
   const intake = html.slice(html.indexOf('id="intake-paste"'), html.indexOf('id="intake-file"') + 400);
   assert.match(intake, /<svg/);
 });
+
+test('the luminous system flow exposes the daily habit and concrete stages', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  for (const hook of [
+    'data-system-stage="today"',
+    'id="home-primary-action"',
+    'id="protection-motion"',
+    'id="recipe-outcomes"',
+    'id="restore-comparison"',
+  ]) assert.match(html, new RegExp(hook));
+  assert.match(html, /Condividi → PrivAI/);
+  assert.doesNotMatch(html, /class="nav-item" data-goto="settings"/);
+});
+
+test('the luminous motion is finite, accessible and controller-driven', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(css, /\.protection-scan/);
+  assert.match(css, /\.protection-particle/);
+  const luminous = css.slice(css.indexOf('/* Luminous System Flow'));
+  assert.doesNotMatch(luminous, /protection-(?:scan|particle|vault)[^}]*infinite/s);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(app, /function showSystemStage/);
+  assert.match(app, /restore-comparison/);
+});

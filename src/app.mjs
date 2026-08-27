@@ -154,6 +154,22 @@ function applyLocale(locale) {
 
 const VIEW_ORDER = ['home', 'work', 'restore', 'vault', 'settings', 'plans'];
 
+function showSystemStage(stage, direction = 'fwd') {
+  const routes = {
+    today: ['home'],
+    input: ['work', 'text'],
+    review: ['work', 'check'],
+    outcome: ['work', 'send'],
+    restore: ['restore'],
+    vault: ['vault'],
+  };
+  const route = routes[stage];
+  if (!route) return false;
+  goto(route[0], direction);
+  if (route[1]) setPhase(route[1]);
+  return true;
+}
+
 function goto(view, direction) {
   const from = VIEW_ORDER.indexOf(state.view);
   const to = VIEW_ORDER.indexOf(view);
@@ -510,6 +526,7 @@ async function addManualMask() {
 /* =================================================================== */
 
 async function applyProtection() {
+  $('#protection-motion')?.setAttribute('data-processing', '');
   const result = maskFindings(state.source, state.findings);
   state.masked = result.text;
   state.mapping = result.mapping;
@@ -537,7 +554,8 @@ async function applyProtection() {
     state.jobId = null;
   }
 
-  setPhase('send');
+  $('#protection-motion')?.removeAttribute('data-processing');
+  showSystemStage('outcome');
 }
 
 /* =================================================================== */
@@ -692,6 +710,7 @@ async function renderRestore() {
     label.textContent = t('restore.job', { title: job.title, count });
   }
   $('#restore-result').hidden = true;
+  $('#restore-comparison').hidden = true;
   $('#restore-missing').hidden = true;
 }
 
@@ -712,6 +731,18 @@ async function runRestore() {
 
   $('#restored').value = result.text;
   $('#restore-result').hidden = false;
+
+  const comparison = $('#restore-comparison');
+  const restoredPair = Object.entries(mapping).find(([placeholder]) => (
+    reply.includes(placeholder) || reply.includes(placeholder.replaceAll('_', ' '))
+  ));
+  if (restoredPair) {
+    $('#restore-before').textContent = restoredPair[0];
+    $('#restore-after').textContent = restoredPair[1];
+    comparison.hidden = false;
+  } else {
+    comparison.hidden = true;
+  }
 
   const missing = $('#restore-missing');
   if (result.missing.length) {
