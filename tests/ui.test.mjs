@@ -78,13 +78,13 @@ test('every previously mixed-language surface is connected to runtime translatio
 
 test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /styles\.css\?v=18/);
-  assert.match(html, /src\/app\.mjs\?v=18/);
+  assert.match(html, /styles\.css\?v=19/);
+  assert.match(html, /src\/app\.mjs\?v=19/);
 });
 
 test('offline shell includes the complete approved Willy onboarding', async () => {
   const sw = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /privai-pocket-v18/);
+  assert.match(sw, /privai-pocket-v19/);
   for (const asset of [
     'willy-welcome.webp',
     'willy-prepare.webp',
@@ -132,6 +132,15 @@ test('greeting separates the emoji from its wrapping text', async () => {
   assert.match(html, /id="greeting-text"/);
   assert.match(app, /greeting-emoji/);
   assert.match(app, /greeting-text/);
+});
+
+test('compact home actions leave breathing room beside the greeting without shrinking touch targets', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.top-actions[^}]*gap:\s*3px/s);
+  assert.match(css, /\.token-balance[^}]*height:\s*40px/s);
+  assert.match(css, /\.token-balance img[^}]*width:\s*32px/s);
+  assert.match(css, /\.top-actions \.icon-button[^}]*min-width:\s*44px/s);
+  assert.match(css, /\.info-button[^}]*min-width:\s*44px/s);
 });
 
 test('home hero stays compact and greeting text wraps within its own column', async () => {

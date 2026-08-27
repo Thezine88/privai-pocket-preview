@@ -1,13 +1,13 @@
-import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=18';
-import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=18';
-import { createStore } from './domain/storage.mjs?v=18';
-import { greetingForHour } from './domain/greeting.mjs?v=18';
-import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=18';
-import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=18';
-import { createOutboundShare } from './domain/outbound-share.mjs?v=18';
-import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=18';
-import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=18';
-import { createOnboardingState } from './domain/onboarding.mjs?v=18';
+import { normalizeToMarkdown, buildPromptPack } from './domain/markdown.mjs?v=19';
+import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from './domain/pii.mjs?v=19';
+import { createStore } from './domain/storage.mjs?v=19';
+import { greetingForHour } from './domain/greeting.mjs?v=19';
+import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=19';
+import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=19';
+import { createOutboundShare } from './domain/outbound-share.mjs?v=19';
+import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=19';
+import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=19';
+import { createOnboardingState } from './domain/onboarding.mjs?v=19';
 
 const persistentStore = createStore(localStorage);
 const sessionStore = createStore(sessionStorage);
