@@ -78,13 +78,13 @@ test('every previously mixed-language surface is connected to runtime translatio
 
 test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /styles\.css\?v=19/);
-  assert.match(html, /src\/app\.mjs\?v=19/);
+  assert.match(html, /styles\.css\?v=20/);
+  assert.match(html, /src\/app\.mjs\?v=20/);
 });
 
 test('offline shell includes the complete approved Willy onboarding', async () => {
   const sw = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /privai-pocket-v19/);
+  assert.match(sw, /privai-pocket-v20/);
   for (const asset of [
     'willy-welcome.webp',
     'willy-prepare.webp',
@@ -287,4 +287,23 @@ test('Willy onboarding is skippable, replayable and exposes four concise steps',
   assert.match(html, /assets\/willy-protect-v3\.webp/);
   assert.match(css, /@font-face\{font-family:Willy Rounded/);
   assert.match(css, /\.onboarding-copy p\+p\{margin-top:/);
+  assert.match(css, /\.onboarding-slide\[hidden\]\{display:none!important\}/);
+  assert.match(app, /pointerdown/);
+  assert.match(app, /pointerup/);
+  assert.match(app, /swipeStepDelta/);
+});
+
+test('opening motion and primary touch feedback stay accessible', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const manifest = await readFile(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+  assert.match(html, /class="app-enter"/);
+  assert.match(css, /@keyframes app-open/);
+  assert.match(css, /\.app-enter \.app-shell\{animation:app-open/);
+  assert.match(css, /--shadow:[^;]*0 8px 20px/);
+  assert.match(css, /\.haptic-press:active/);
+  assert.match(app, /navigator\.vibrate\?\.\(12\)/);
+  assert.match(app, /prefers-reduced-motion: reduce/);
+  assert.match(manifest, /android\.permission\.VIBRATE/);
 });

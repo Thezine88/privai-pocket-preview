@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createOnboardingState } from '../src/domain/onboarding.mjs';
+import { createOnboardingState, swipeStepDelta } from '../src/domain/onboarding.mjs';
 
 function memoryStorage() {
   const values = new Map();
@@ -24,4 +24,10 @@ test('allows settings to reopen the onboarding without forgetting completion', (
   assert.equal(state.shouldShow(), false);
   assert.equal(state.canReplay(), true);
   assert.equal(state.shouldShow(), false);
+});
+
+test('swipe navigation ignores taps and maps horizontal gestures to slide steps', () => {
+  assert.equal(swipeStepDelta(200, 145), 1);
+  assert.equal(swipeStepDelta(145, 200), -1);
+  assert.equal(swipeStepDelta(200, 170), 0);
 });
