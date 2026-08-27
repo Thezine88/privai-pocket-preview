@@ -340,6 +340,7 @@ body[data-action="on"] .shell {
   transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 .intake-btn:active { transform: translateY(2px) scale(.99); }
+.intake-btn:disabled { opacity: .5; pointer-events: none; }
 .intake-btn .glyph {
   width: 40px; height: 40px; border-radius: var(--r-sm);
   display: grid; place-items: center;
@@ -355,6 +356,13 @@ body[data-action="on"] .shell {
   border-radius: var(--r-md);
   background: var(--safe-soft); border: 1px solid var(--safe-line);
   color: var(--safe); font-size: 13px; font-weight: 700; line-height: 1.35;
+}
+/* Lettura PDF in corso: stesso guscio del suggerimento sopra, ma un tono
+   neutro invece del verde "tutto ok" — qui non è ancora finito nulla. */
+.intake-hint-busy { background: var(--surface-2); border-color: var(--line-2); color: var(--ink-2); }
+.intake-hint-busy .pulse {
+  width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+  background: currentColor; animation: pulse 2.4s var(--ease) infinite;
 }
 
 /* --- lavoro in cassaforte --- */

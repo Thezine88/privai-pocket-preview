@@ -245,6 +245,19 @@ function setAction({ note = '', label = '', onClick = null, disabled = false }) 
 }
 
 function updateAction() {
+  if (state.view === 'home') {
+    // Le card di ingresso stanno in cima, fuori dalla zona comoda per il
+    // pollice su schermi grandi. Quando la home è vuota (nessun lavoro,
+    // nessuna richiesta recente) è anche l'unica azione possibile: la
+    // duplichiamo nella barra ancorata, stessa scorciatoia di sempre.
+    if ($('#home-willy').hidden) return setAction({});
+    return setAction({
+      note: '',
+      label: t('intake.paste'),
+      onClick: () => $('#intake-paste').click(),
+    });
+  }
+
   if (state.view === 'work') {
     if (state.phase === 'text') {
       const count = state.findings.length;
@@ -1005,6 +1018,7 @@ async function renderHome() {
   });
 
   renderNavBadge();
+  updateAction();
 }
 
 /* =================================================================== */
@@ -1139,12 +1153,26 @@ function drawQr(payload) {
 /* File                                                                */
 /* =================================================================== */
 
+/**
+ * L'estrazione di un PDF può durare più dei 2,6s di un Toast, specie su un
+ * telefono modesto o un file di più pagine: senza uno stato persistente
+ * l'utente si ritrova davanti a uno schermo fermo e silenzioso proprio
+ * mentre l'unica cosa in corso è invisibile (il parsing, non la UI).
+ */
+function setFileBusy(active) {
+  $('#intake-busy').hidden = !active;
+  $('#intake-hint-share').hidden = active;
+  $('#intake-paste').disabled = active;
+  $('#intake-file').disabled = active;
+}
+
 async function importFile(event) {
   const [file] = event.target.files;
   if (!file) return;
+  const pdf = isPdfFile(file);
+  if (pdf) setFileBusy(true);
   try {
-    if (isPdfFile(file)) {
-      toast(t('pdf.reading'));
+    if (pdf) {
       const result = await extractTextFromPdf(file);
       setSource(result.text);
       toast(t('pdf.imported', { count: result.pages }));
@@ -1158,6 +1186,7 @@ async function importFile(event) {
     toast(t(`pdf.error.${code}`));
   } finally {
     event.target.value = '';
+    if (pdf) setFileBusy(false);
   }
 }
 

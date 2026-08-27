@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <script>
     // Applica subito la scelta di tema salvata, prima che il CSS venga
     // valutato: senza questo, chi ha scelto "Scuro" vedrebbe un lampo del
@@ -97,9 +97,13 @@
             </span>
           </button>
         </div>
-        <div class="intake-hint" style="margin-top:12px">
+        <div class="intake-hint" id="intake-hint-share" style="margin-top:12px">
           <span aria-hidden="true">↗</span>
           <span data-i18n="intake.shareHint">Oppure condividi qualsiasi documento con PrivAI dal menu «Condividi» del telefono.</span>
+        </div>
+        <div class="intake-hint intake-hint-busy" id="intake-busy" style="margin-top:12px" hidden>
+          <span class="pulse" aria-hidden="true"></span>
+          <span data-i18n="pdf.reading">Sto leggendo il PDF sul telefono…</span>
         </div>
       </div>
 
