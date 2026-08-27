@@ -5,11 +5,11 @@
 const CACHE = 'privai-v2';
 const SHELL = [
   './', './index.html', './styles.css', './manifest.webmanifest',
-  './src/app.mjs',
+  './src/app.mjs', './src/icons.mjs',
   './src/domain/greeting.mjs', './src/domain/i18n.mjs', './src/domain/intake.mjs',
   './src/domain/markdown.mjs', './src/domain/pdf.mjs', './src/domain/pii.mjs',
-  './src/domain/plan.mjs', './src/domain/recipes.mjs', './src/domain/share.mjs',
-  './src/domain/vault.mjs',
+  './src/domain/plan.mjs', './src/domain/quickProtect.mjs', './src/domain/recipes.mjs',
+  './src/domain/share.mjs', './src/domain/swipe.mjs', './src/domain/vault.mjs',
   './src/locales/it.mjs', './src/locales/en.mjs',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
   './assets/willy-welcome.webp', './assets/willy-protect-v3.webp',

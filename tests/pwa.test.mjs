@@ -36,15 +36,23 @@ test('service worker tries the network first, so an update is never stuck behind
 });
 
 test('service worker precaches the complete app shell, module by module', async () => {
+  // Elencare a mano gli asset attesi non si accorge mai di un modulo NUOVO
+  // dimenticato — che è l'unico errore che capita davvero. Qui la lista
+  // attesa si ricava dal disco: aggiungere un file a src/domain/ e scordarlo
+  // nel service worker fa fallire questo test.
+  const { readdir } = await import('node:fs/promises');
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  for (const asset of [
-    './index.html', './styles.css', './manifest.webmanifest', './src/app.mjs',
-    './src/domain/pii.mjs', './src/domain/vault.mjs', './src/domain/recipes.mjs',
-    './src/domain/plan.mjs', './src/domain/intake.mjs', './src/domain/markdown.mjs',
-    './src/locales/it.mjs', './src/locales/en.mjs',
-  ]) {
-    assert.match(worker, new RegExp(asset.replaceAll('.', '\.')));
-  }
+
+  const fissi = [
+    './index.html', './styles.css', './manifest.webmanifest',
+    './src/app.mjs', './src/icons.mjs', './src/locales/it.mjs', './src/locales/en.mjs',
+  ];
+  const moduli = (await readdir(new URL('../src/domain/', import.meta.url)))
+    .filter((nome) => nome.endsWith('.mjs'))
+    .map((nome) => `./src/domain/${nome}`);
+
+  const mancanti = [...fissi, ...moduli].filter((asset) => !worker.includes(asset));
+  assert.deepEqual(mancanti, [], `moduli assenti dal precache del service worker: ${mancanti.join(', ')}`);
 });
 
 test('service worker precache list has no stale query-string versioning', async () => {

@@ -71,6 +71,7 @@ export const en = Object.freeze({
   'send.language': 'Response language',
   'send.preview': 'What actually gets sent',
   'send.openAI': 'Open in an AI',
+  'send.comeBack': 'When the reply comes back, return here: I recognise it and restore the real data in one tap.',
   'send.copyOnly': 'Copy',
   'language.same': 'Same as content',
 

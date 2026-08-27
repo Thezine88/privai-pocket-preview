@@ -37,27 +37,23 @@ test('sharing a document opens straight on the findings screen: zero taps to see
   assert.match(app, /jumpToCheck/);
 });
 
-test('the quick-settings tile runs headless: no screen is drawn when the native flag is set', async () => {
+test('the quick-settings tile runs headless: no screen is drawn when the native plugin is present', async () => {
+  // Niente segnale da iniettare e quindi nessuna corsa da chiudere:
+  // QuickProtectPlugin esiste solo quando l'Activity nativa lo registra,
+  // mai in un avvio normale — la sua sola presenza basta.
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
-  assert.match(app, /__privaiQuickProtect/);
-  assert.match(app, /decideQuickProtect/);
   assert.match(app, /Capacitor\?\.Plugins\?\.QuickProtect/);
+  assert.match(app, /decideQuickProtect/);
 });
 
-test('the quick-settings tile signal cannot race the app boot: both sides check readiness first', async () => {
-  // Se il segnale nativo arriva dopo il controllo sincrono in cima a
-  // init(), l'app aprirebbe l'interfaccia normale invece di restare
-  // invisibile. Stessa stretta di mano già provata su device per la
-  // condivisione in ingresso (__privaiReady/ShareTargetPlugin).
-  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
-  assert.match(app, /__privaiQuickProtectReady/);
-  assert.match(app, /privai:quickprotect/);
-});
-
-test('a second quick-settings tap within the debounce window does not silently un-mask the clipboard', async () => {
+test('a second quick-settings tap does not silently un-mask the clipboard, at any distance in time', async () => {
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
   assert.match(app, /QUICK_PROTECT_DEBOUNCE_MS/);
   assert.match(app, /quickProtectLastRun/);
+  // La vera garanzia non è il tempo trascorso, ma il confronto col testo
+  // che il riquadro stesso ha appena scritto: un'IA non risponde mai con
+  // un testo identico byte per byte a quello appena mandato.
+  assert.match(app, /quickProtectLastWritten/);
 });
 
 test('the round trip back from the AI takes one tap, not seven', async () => {

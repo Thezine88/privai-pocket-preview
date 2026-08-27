@@ -13,17 +13,17 @@ import com.getcapacitor.BridgeActivity;
  * pagina se non la nascondiamo esplicitamente, quindi qui la mettiamo
  * INVISIBLE e a sfondo trasparente prima che carichi qualunque contenuto.
  *
- * Il segnale verso app.mjs usa la stessa stretta di mano a due vie già
- * provata su device per la condivisione in ingresso (vedi
- * ShareTargetPlugin.deliver() e src/domain/intake.mjs): se lo script del
- * modulo principale non ha ancora controllato il segnale quando arriva
- * questa chiamata, lo depositiamo su window e lui lo troverà al controllo
- * sincrono in cima a init(); se invece il modulo è già partito e si è messo
- * in ascolto (window.__privaiQuickProtectReady), gli mandiamo l'evento
- * invece di un deposito che nessuno rileggerebbe più. Un semplice deposito
- * "e basta" lascerebbe una finestra di corsa reale: qui non ce n'è, perché
- * fra il controllo del deposito e la messa in ascolto in app.mjs non passa
- * nessun'altra istruzione asincrona.
+ * Nessun segnale da iniettare nella pagina, e quindi nessuna corsa da
+ * gestire: QuickProtectPlugin è registrato SOLO qui, mai in MainActivity,
+ * quindi la sua sola presenza su window.Capacitor.Plugins.QuickProtect
+ * basta ad app.mjs per riconoscere l'avvio headless — lo stesso modo in
+ * cui ogni altro plugin nativo di questo progetto viene rilevato (vedi
+ * nativePlugin() in src/domain/vault.mjs). Una prima versione di questo
+ * file usava un deposito su window scritto con evaluateJavascript, con la
+ * motivazione (sbagliata) che ricalcasse un meccanismo già provato su
+ * device: non lo era, e soffriva della stessa corsa fra l'iniezione e
+ * l'esecuzione dello script della pagina. Controllare la presenza del
+ * plugin invece elimina la corsa alla radice, senza inventare nulla.
  *
  * Si chiude da sola tramite QuickProtectPlugin.finish(), mai restando
  * aperta più di quanto serve a decidere cosa fare degli appunti.
@@ -38,11 +38,5 @@ public class QuickProtectActivity extends BridgeActivity {
 
         getBridge().getWebView().setBackgroundColor(Color.TRANSPARENT);
         getBridge().getWebView().setVisibility(View.INVISIBLE);
-
-        getBridge().getWebView().post(() -> getBridge().getWebView().evaluateJavascript(
-            "(function(){"
-          + "if(window.__privaiQuickProtectReady){window.dispatchEvent(new CustomEvent('privai:quickprotect'));}"
-          + "else{window.__privaiQuickProtect=true;}"
-          + "})();", null));
     }
 }

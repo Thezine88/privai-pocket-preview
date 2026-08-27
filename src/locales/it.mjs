@@ -83,6 +83,7 @@ export const it = Object.freeze({
   'send.language': 'Lingua della risposta',
   'send.preview': 'Cosa parte davvero',
   'send.openAI': 'Apri in un’IA',
+  'send.comeBack': 'Quando arriva la risposta, torna qui: la riconosco e rimetto i dati veri con un tocco.',
   'send.copyOnly': 'Copia',
   'language.same': 'Come il contenuto',
 
