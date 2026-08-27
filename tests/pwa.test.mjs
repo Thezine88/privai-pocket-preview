@@ -17,15 +17,15 @@ test('service worker never caches query-bearing requests and only falls back for
   assert.match(sw, /cache\.put\(url\.pathname/);
 });
 
-test('service worker cache is advanced for the approved onboarding release', async () => {
+test('service worker cache is advanced for the content-first release', async () => {
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(worker, /privai-pocket-v21/);
+  assert.match(worker, /privai-pocket-v22/);
 });
 
 test('service worker precaches the complete app shell', async () => {
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(worker, /privai-pocket-v21/);
-  for (const asset of ['./index.html', './styles.css', './src/app.mjs', './src/domain/workflow.mjs', './src/domain/share.mjs', './src/domain/pdf.mjs', './vendor/pdf.mjs', './vendor/pdf.worker.mjs', './src/locales/it.mjs', './src/locales/en.mjs', './manifest.webmanifest', './assets/reward-token.webp', './assets/tool-markdown.webp', './assets/tool-protect.webp', './assets/tool-prepare.webp', './assets/tool-history.webp']) {
+  assert.match(worker, /privai-pocket-v22/);
+  for (const asset of ['./index.html', './styles.css', './src/app.mjs', './src/domain/workflow.mjs', './src/domain/guided-workflow.mjs', './src/domain/share.mjs', './src/domain/pdf.mjs', './vendor/pdf.mjs', './vendor/pdf.worker.mjs', './src/locales/it.mjs', './src/locales/en.mjs', './manifest.webmanifest', './assets/reward-token.webp', './assets/tool-markdown.webp', './assets/tool-protect.webp', './assets/tool-prepare.webp', './assets/tool-history.webp']) {
     assert.match(worker, new RegExp(asset.replaceAll('.', '\\.')));
   }
 });

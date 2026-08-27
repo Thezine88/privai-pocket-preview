@@ -78,13 +78,13 @@ test('every previously mixed-language surface is connected to runtime translatio
 
 test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /styles\.css\?v=21/);
-  assert.match(html, /src\/app\.mjs\?v=21/);
+  assert.match(html, /styles\.css\?v=22/);
+  assert.match(html, /src\/app\.mjs\?v=22/);
 });
 
 test('offline shell includes the complete approved Willy onboarding', async () => {
   const sw = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /privai-pocket-v21/);
+  assert.match(sw, /privai-pocket-v22/);
   for (const asset of [
     'willy-welcome.webp',
     'willy-prepare.webp',
@@ -165,16 +165,18 @@ test('home hero stays compact and greeting text wraps within its own column', as
   assert.match(css, /\.view\.active \.hero-card[^}]*padding:\s*16px 20px!important/s);
 });
 
-test('Samsung-compatible light scheme and compact collaboration stay in fixed navigation', async () => {
+test('Samsung-compatible light scheme and macro navigation stay fixed', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(html, /name="color-scheme" content="only light"/);
   assert.match(css, /color-scheme:\s*only light/);
-  const fixedFooter = html.match(/<footer class="bottom-bar">([\s\S]*?)<\/footer>/)?.[1] ?? '';
-  assert.match(fixedFooter, /class="collab-pill"[^>]*instagram\.com\/notizieartificiali\.ai/);
+  const fixedFooter = html.match(/<footer class="bottom-bar macro-bottom-bar">([\s\S]*?)<\/footer>/)?.[1] ?? '';
+  assert.match(fixedFooter, /class="macro-nav"/);
+  assert.match(fixedFooter, />Lavora</);
+  assert.match(fixedFooter, />Cassaforte</);
+  assert.match(fixedFooter, />Impostazioni</);
   assert.doesNotMatch(html, /class="home-collab"/);
-  assert.match(css, /\.bottom-bar \.collab-pill\.collab-pill[^}]*backdrop-filter:\s*blur\(18px\) saturate\(160%\)/s);
-  assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto/);
+  assert.match(css, /\.macro-nav[^}]*grid-template-columns:repeat\(3,1fr\)/s);
 });
 
 test('protect and prepare accept independent local documents', async () => {
@@ -260,6 +262,45 @@ test('responsive redesign keeps actions visible and respects reduced motion', as
   assert.match(css, /\.workflow-phase\[data-phase-active\]/);
   assert.match(css, /@media\s*\(max-width:\s*380px\)/);
   assert.match(css, /\.result-actions-sticky/);
+});
+
+test('content-first shell exposes stable macro navigation and one sticky action', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  for (const label of ['Lavora', 'Cassaforte', 'Impostazioni']) assert.match(html, new RegExp(`>${label}<`));
+  assert.equal((html.match(/id="guided-primary-action"/g) ?? []).length, 1);
+  assert.match(html, /id="guided-primary-action"[^>]*>Cosa ti serve\?</);
+  assert.match(html, /data-view="legacy-tools"/);
+  assert.match(html, /id="guided-input"/);
+  assert.match(html, /id="guided-findings-summary"/);
+  assert.match(css, /\.macro-nav-item[^}]*min-height:\s*44px/s);
+  assert.match(css, /\.guided-action-bar[^}]*position:\s*fixed/s);
+});
+
+test('guided controller scans automatically and protects before leaving the app', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /domain\/guided-workflow\.mjs/);
+  assert.match(app, /function scheduleGuidedScan/);
+  assert.match(app, /setTimeout\([^)]*250/s);
+  assert.match(app, /guided-file-input/);
+  assert.match(app, /function renderGuidedFindings/);
+  assert.match(app, /addManualFindings/);
+  assert.match(html, /id="guided-privacy-dialog"/);
+  assert.match(html, /id="guided-open-ai-confirm"/);
+  assert.doesNotMatch(html, /id="guided-scan-button"/);
+});
+
+test('guided motion and haptics are functional, brief and configurable', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /id="haptics-toggle"/);
+  assert.match(app, /ai-pocket:haptics/);
+  assert.match(app, /function setWillyState/);
+  for (const state of ['ready', 'scanning', 'attention', 'complete']) assert.match(app, new RegExp(`'${state}'`));
+  assert.match(css, /\.guided-step-enter[^}]*animation:[^;]*(?:\.18s|\.2s|\.22s|180ms|200ms|220ms)/s);
+  assert.match(css, /prefers-reduced-motion:\s*reduce[\s\S]*\.guided-willy/s);
 });
 
 test('future voice and rewards are labelled honestly without browser recording', async () => {

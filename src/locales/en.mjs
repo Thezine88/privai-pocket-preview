@@ -106,6 +106,8 @@ export const en = Object.freeze({
   'protect.noneSummary': 'No structured data found. Review the text anyway.',
   'protect.replacedSummary': '{count} items replaced on your phone. Review the result before sharing.',
   'settings.language': 'App language',
+  'settings.haptics': 'Haptic feedback',
+  'settings.hapticsBody': 'A brief vibration on primary actions.',
   'settings.apiNote': 'Connect your own key only if you want cloud services. Real calls remain disabled in this version until keys are protected by Android Keystore.',
   'settings.localBody': 'Conversion and protection do not use cloud services.',
   'settings.localTitle': 'Local mode active',

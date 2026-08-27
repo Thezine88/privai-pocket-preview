@@ -11,7 +11,7 @@
   <link rel="preload" as="image" href="assets/willy-prepare.webp">
   <link rel="preload" as="image" href="assets/willy-protect-v3.webp">
   <link rel="preload" as="image" href="assets/willy-control.webp">
-  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="styles.css?v=22">
   <style>.field select{width:100%;min-height:40px;border:0;outline:0;background:transparent;font:inherit;color:#111114}.privacy-warning{margin:12px 0;padding:14px 16px;border-radius:18px;background:#fff3e8;color:#6f3a15;font-size:13px;line-height:1.45;overflow-wrap:anywhere}[data-i18n]{overflow-wrap:anywhere}</style>
   <title>PrivAI Pocket</title>
 </head>
@@ -41,22 +41,33 @@
 
     <main>
       <section class="view active" data-view-panel="home">
-        <article class="hero-card">
-          <div class="hero-copy">
-            <span class="privacy-chip"><span class="pulse"></span><span data-i18n="home.deviceOnly">Solo sul dispositivo</span></span>
-            <h2 data-i18n="home.heroTitle">Prima proteggi. Poi chiedi all’IA.</h2>
-            <p data-i18n="home.heroBody">Ordina il testo e controlla i dati sensibili, tutto sul telefono.</p>
-            <button class="primary-button" data-view="convert"><span data-i18n="home.start">Inizia ora</span> <span>→</span></button>
-          </div>
-        </article>
+        <div class="guided-work" id="guided-workflow">
+          <section class="guided-step" data-guided-step="input">
+            <span class="privacy-chip"><span class="pulse"></span><span>Solo sul dispositivo</span></span>
+            <div class="guided-heading"><div><p class="eyebrow">DA DOVE PARTIAMO</p><h2>Incolla, scrivi o apri un file</h2></div><img src="assets/willy-welcome.webp" alt="" class="guided-willy" data-willy-state="ready"></div>
+            <div class="editor-card input-editor guided-editor"><div class="editor-heading"><label for="guided-input">Il tuo contenuto</label></div><textarea id="guided-input" placeholder="Scrivi o incolla qui…"></textarea></div>
+            <label class="secondary-button file-button guided-file"><span>Apri un file</span><input id="guided-file-input" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"></label>
+            <button class="guided-scan-summary" id="guided-findings-summary" type="button" aria-expanded="false"><span aria-hidden="true">✓</span><span><strong>Controllo locale pronto</strong><small>Inserisci un contenuto: valuterò automaticamente i dati sensibili.</small></span><span aria-hidden="true">›</span></button>
+            <p class="guided-privacy-note">Il controllo è di base e può non riconoscere dati legati al contesto. Prima di condividere potrai verificare tutto.</p>
+            <button class="text-button guided-tools-link" data-view="legacy-tools">Altri strumenti</button>
+          </section>
+          <section class="guided-step" data-guided-step="review" hidden><button class="back-button" data-guided-back>← Indietro</button><img src="assets/willy-protect-v3.webp" alt="" class="guided-willy guided-willy-inline" data-willy-state="attention"><p class="eyebrow">CONTROLLO PRIVATO</p><h2 class="screen-title">Cosa ho trovato</h2><div id="guided-findings" class="findings"></div><div class="guided-review-actions"><button type="button" data-guided-select="all">Nascondi tutto</button><button type="button" data-guided-select="none">Non nascondere nulla</button><button type="button" id="guided-add-finding">Nascondi altro…</button></div><button class="primary-button full" id="guided-review-done">Conferma scelte</button></section>
+          <section class="guided-step" data-guided-step="purpose" hidden><button class="back-button" data-guided-back>← Indietro</button><img src="assets/willy-prepare.webp" alt="" class="guided-willy guided-willy-inline" data-willy-state="ready"><p class="eyebrow">IL RISULTATO CHE TI SERVE</p><h2 class="screen-title">Cosa ti serve?</h2><div id="guided-recipes" class="guided-recipe-grid"></div><button class="text-button" id="guided-show-more" type="button">Mostra altro</button><div id="guided-questions"></div></section>
+          <section class="guided-step" data-guided-step="result" hidden><button class="back-button" data-guided-back>← Modifica</button><img src="assets/willy-control.webp" alt="" class="guided-willy guided-willy-inline" data-willy-state="complete"><p class="eyebrow">PRONTO DA USARE</p><h2 class="screen-title">Il tuo blocco</h2><article class="editor-card output tall"><textarea id="guided-result" aria-label="Risultato guidato"></textarea></article><div class="result-actions"><button data-copy-result="guided-result">Copia</button><button id="guided-share-result">Condividi</button></div></section>
+        </div>
+      </section>
 
-        <div class="section-heading"><div><p class="eyebrow" data-i18n="home.quickActions">AZIONI RAPIDE</p><h2 data-i18n="home.tools">I tuoi strumenti</h2></div></div>
+      <section class="view" data-view-panel="legacy-tools">
+        <button class="back-button" data-view="home">← Lavora</button>
+        <p class="eyebrow">SCORCIATOIE</p><h2 class="screen-title" data-i18n="home.tools">Altri strumenti</h2>
         <div class="tool-grid">
           <button class="tool-card orange" data-view="convert"><img src="assets/tool-markdown.webp" alt=""><strong data-i18n="tool.convert">Converti in Markdown</strong><small data-i18n="tool.convertBenefit">Testi ordinati in un tocco</small></button>
           <button class="tool-card dark" data-view="protect"><img src="assets/tool-protect.webp" alt=""><strong data-i18n="tool.protect">Proteggi i dati</strong><small data-i18n="tool.protectBenefit">Riduci i dati da condividere</small></button>
           <button class="tool-card cream" data-view="prepare"><img src="assets/tool-prepare.webp" alt=""><strong data-i18n="tool.prepare">Prepara per l’IA</strong><small data-i18n="tool.prepareBenefit">Richieste più chiare e utili</small></button>
           <button class="tool-card white" data-view="history"><img src="assets/tool-history.webp" alt=""><strong data-i18n="tool.history">Cronologia</strong><small data-i18n="tool.historyBenefit">Ritrova i lavori sul telefono</small></button>
         </div>
+        <div class="legacy-quick-actions"><button class="secondary-button" id="add-button">Apri rapidamente</button><button class="secondary-button" id="voice-entry" aria-label="Microfono, in arrivo">Voce · In arrivo</button></div>
+        <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="collab.aria" aria-label="Apri notizieartificiali.ai su Instagram"><span></span><small data-i18n="collab.label">in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
         <article class="pro-card"><div><span class="pro-badge" data-i18n="pro.badge">PRO · IN ARRIVO</span><h3 data-i18n="pro.homeTitle">Più lavori, meno passaggi</h3><p data-i18n="pro.homeBody">Anteprima delle funzioni pensate per chi userà PrivAI ogni giorno.</p></div><button data-view="plans" data-i18n="pro.discover">Scopri Pro</button></article>
       </section>
 
@@ -159,6 +170,7 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
         <button class="back-button" data-view="home">← Home</button>
         <p class="eyebrow" data-i18n="settings.privacy">CONTROLLO E PRIVACY</p><h2 class="screen-title" data-i18n="settings.title">Impostazioni</h2>
         <label class="field"><span data-i18n="settings.language">Lingua dell’app</span><select id="language-select"><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <label class="settings-toggle"><span><strong data-i18n="settings.haptics">Feedback tattile</strong><small data-i18n="settings.hapticsBody">Una breve vibrazione sui comandi principali.</small></span><input id="haptics-toggle" type="checkbox" role="switch" checked></label>
         <button class="secondary-button full" id="replay-onboarding" type="button" data-i18n="onboarding.replay">Rivedi la presentazione</button>
         <article class="settings-card privacy-settings"><span class="settings-icon">✓</span><div><h3 data-i18n="settings.localTitle">Modalità locale attiva</h3><p data-i18n="settings.localBody">Conversione e protezione non usano servizi cloud.</p></div></article>
         <div class="section-heading"><div><p class="eyebrow" data-i18n="settings.optional">FACOLTATIVO</p><h2 data-i18n="settings.personalApis">API personali</h2></div></div>
@@ -187,10 +199,13 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
       </section>
     </main>
 
-    <footer class="bottom-bar">
-      <a class="collab-pill" href="https://www.instagram.com/notizieartificiali.ai/" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="collab.aria" aria-label="Apri notizieartificiali.ai su Instagram"><span class="instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="instagram-dot" cx="17.5" cy="6.5" r="1"/></svg></span><small data-i18n="collab.label">in collaborazione con</small><strong>@notizieartificiali.ai</strong></a>
-      <button class="add-button" id="add-button" aria-label="Aggiungi contenuto"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-      <button class="voice-button" id="voice-entry" aria-label="Microfono, in arrivo"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M8.5 21h7"/></svg><span class="sr-only">In arrivo</span></button>
+    <footer class="bottom-bar macro-bottom-bar">
+      <div class="guided-action-bar"><button class="primary-button" id="guided-primary-action" type="button">Cosa ti serve?</button></div>
+      <nav class="macro-nav" aria-label="Navigazione principale">
+        <button class="macro-nav-item active" type="button" data-main-nav="home" data-view="home" aria-current="page"><b aria-hidden="true">⌂</b><span>Lavora</span></button>
+        <button class="macro-nav-item" type="button" data-main-nav="history" data-view="history"><b aria-hidden="true">▣</b><span>Cassaforte</span></button>
+        <button class="macro-nav-item" type="button" data-main-nav="settings" data-view="settings"><b aria-hidden="true">⚙</b><span>Impostazioni</span></button>
+      </nav>
     </footer>
   </div>
 
@@ -211,6 +226,27 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
       <p data-i18n="share.linksBody">WhatsApp e altre app potrebbero mostrare un’anteprima. Scegli cosa inviare.</p>
       <div class="dialog-actions"><button class="secondary-button" value="keep" data-i18n="share.keepLinks">Mantieni i link</button><button class="primary-button" value="remove" data-i18n="share.removeLinks">Condividi senza link</button></div>
       <button class="text-button" value="cancel" data-i18n="share.cancel">Annulla</button>
+    </form>
+  </dialog>
+
+  <dialog id="guided-add-dialog" aria-labelledby="guided-add-title">
+    <form method="dialog" class="dialog-card">
+      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
+      <p class="eyebrow">AGGIUNTA MANUALE</p><h2 id="guided-add-title">Cos’altro vuoi nascondere?</h2>
+      <p>Inserisci il dato esattamente come appare nel contenuto. Verranno selezionate tutte le occorrenze uguali.</p>
+      <label class="field"><span>Dato da nascondere</span><input id="guided-manual-value" autocomplete="off"></label>
+      <button class="primary-button full" id="guided-manual-confirm" value="cancel" type="button">Aggiungi</button>
+    </form>
+  </dialog>
+
+  <dialog id="guided-privacy-dialog" aria-labelledby="guided-privacy-title">
+    <form method="dialog" class="dialog-card">
+      <button class="dialog-close" value="cancel" aria-label="Chiudi">×</button>
+      <p class="eyebrow">PRIMA DI USCIRE DALL’APP</p><h2 id="guided-privacy-title">Controllo finale</h2>
+      <p id="guided-privacy-summary"></p>
+      <p class="privacy-warning">Il controllo locale è di base: verifica che nel blocco non siano rimasti dati che vuoi proteggere.</p>
+      <button class="primary-button full" id="guided-open-ai-confirm" value="cancel" type="button">Continua</button>
+      <button class="text-button" value="cancel">Torna a controllare</button>
     </form>
   </dialog>
 
@@ -252,6 +288,6 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
   </dialog>
 
   <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="src/app.mjs?v=21"></script>
+  <script type="module" src="src/app.mjs?v=22"></script>
 </body>
 </html>

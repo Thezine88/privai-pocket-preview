@@ -69,3 +69,23 @@ test('uses job-scoped placeholders and restores only exact known placeholders', 
   });
   assert.equal(restoreProtectedText('Segnaposto [[PRIVAI_OTHER_EMAIL_1]]', masked.mapping).restoredCount, 0);
 });
+
+test('detects structured Italian home addresses as selected findings', () => {
+  const findings = detectSensitiveData('Abito in Via Giuseppe Verdi 12/B, 20121 Milano.');
+  assert.deepEqual(findings.map(({ type, value, selected }) => [type, value, selected]), [
+    ['ADDRESS', 'Via Giuseppe Verdi 12/B, 20121 Milano', true],
+  ]);
+  assert.equal(displaySensitiveType('ADDRESS', 'it'), 'Indirizzo');
+  assert.equal(displaySensitiveType('ADDRESS', 'en'), 'Address');
+});
+
+test('does not treat an incomplete street reference as a home address', () => {
+  assert.equal(detectSensitiveData('Ci vediamo in via domani').some(({ type }) => type === 'ADDRESS'), false);
+});
+
+test('masks and restores a selected address locally', () => {
+  const text = 'Spedisci a Piazza della Repubblica 5, Roma.';
+  const masked = maskFindings(text, detectSensitiveData(text), { scope: 'HOME' });
+  assert.equal(masked.text, 'Spedisci a [[PRIVAI_HOME_ADDRESS_1]], Roma.');
+  assert.equal(restoreProtectedText(masked.text, masked.mapping).text, text);
+});

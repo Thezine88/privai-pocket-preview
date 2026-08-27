@@ -106,6 +106,8 @@ export const it = Object.freeze({
   'protect.noneSummary': 'Nessun dato strutturato trovato. Controlla comunque il testo.',
   'protect.replacedSummary': '{count} dati sostituiti sul telefono. Controlla il risultato prima di condividerlo.',
   'settings.language': 'Lingua dell’app',
+  'settings.haptics': 'Feedback tattile',
+  'settings.hapticsBody': 'Una breve vibrazione sui comandi principali.',
   'settings.apiNote': 'Collega una tua chiave solo se vuoi usare servizi cloud. Prima di ogni invio vedrai provider e contenuto. In questa versione le chiamate reali restano disattivate finché le chiavi non saranno protette da Android Keystore.',
   'settings.localBody': 'Conversione e protezione non usano servizi cloud.',
   'settings.localTitle': 'Modalità locale attiva',

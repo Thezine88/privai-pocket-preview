@@ -33,11 +33,15 @@ const detectors = [
   { type: 'CF', pattern: /\b[A-Z]{6}[0-9]{2}[A-EHLMPRST][0-9]{2}[A-Z][0-9]{3}[A-Z]\b/giu, validate: isValidFiscalCode },
   { type: 'IBAN', pattern: /\bIT[0-9]{2}[A-Z](?:[ ]?[0-9]){22}\b/giu, validate: isValidIban },
   { type: 'DATE', pattern: /\b(?:0?[1-9]|[12]\d|3[01])[\/.\-](?:0?[1-9]|1[0-2])[\/.\-](?:19|20)\d{2}\b/gu },
+  {
+    type: 'ADDRESS',
+    pattern: /\b(?:via|viale|piazza|corso|vicolo|largo|strada|piazzale)\s+(?:[\p{L}'’.-]+\s+){1,5}\d{1,4}(?:\s?[\/-]\s?[\p{L}\d]{1,4}|[\p{L}])?(?:,\s*\d{5}\s+[\p{L}'’.-]*[\p{L}'’](?:\s+[\p{L}'’.-]*[\p{L}'’]){0,2})?/giu,
+  },
 ];
 
 const sensitiveTypeLabels = {
-  it: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Telefono', CF: 'Codice fiscale', IBAN: 'IBAN', DATE: 'Data' },
-  en: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Phone', CF: 'Tax code', IBAN: 'IBAN', DATE: 'Date' },
+  it: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Telefono', CF: 'Codice fiscale', IBAN: 'IBAN', DATE: 'Data', ADDRESS: 'Indirizzo' },
+  en: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Phone', CF: 'Tax code', IBAN: 'IBAN', DATE: 'Date', ADDRESS: 'Address' },
 };
 
 export function displaySensitiveType(type, locale = 'it') {
