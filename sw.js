@@ -1,4 +1,4 @@
-const CACHE = 'privai-pocket-v17';
+const CACHE = 'privai-pocket-v18';
 const APP_SHELL = [
   './',
   './index.html',
@@ -25,6 +25,11 @@ const APP_SHELL = [
   './assets/tool-protect.webp',
   './assets/tool-prepare.webp',
   './assets/tool-history.webp',
+  './assets/willy-welcome.webp',
+  './assets/willy-prepare.webp',
+  './assets/willy-protect-v3.webp',
+  './assets/willy-control.webp',
+  './assets/fonts/willy-rounded.otf',
 ];
 
 self.addEventListener('install', (event) => {

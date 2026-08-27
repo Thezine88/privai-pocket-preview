@@ -78,8 +78,20 @@ test('every previously mixed-language surface is connected to runtime translatio
 
 test('versioned entry assets prevent old cached code from mixing with new HTML', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  assert.match(html, /styles\.css\?v=17/);
-  assert.match(html, /src\/app\.mjs\?v=17/);
+  assert.match(html, /styles\.css\?v=18/);
+  assert.match(html, /src\/app\.mjs\?v=18/);
+});
+
+test('offline shell includes the complete approved Willy onboarding', async () => {
+  const sw = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
+  assert.match(sw, /privai-pocket-v18/);
+  for (const asset of [
+    'willy-welcome.webp',
+    'willy-prepare.webp',
+    'willy-protect-v3.webp',
+    'willy-control.webp',
+    'fonts\/willy-rounded.otf',
+  ]) assert.match(sw, new RegExp(asset));
 });
 
 test('home uses visual tool cards and keeps reward tokens in the top bar', async () => {
@@ -251,6 +263,7 @@ test('AI actions are primary and never reuse the generic share binding', async (
 test('Willy onboarding is skippable, replayable and exposes four concise steps', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(html, /id="willy-onboarding"/);
   assert.match(html, /id="onboarding-skip"/);
   assert.match(html, /id="onboarding-start"/);
@@ -258,4 +271,11 @@ test('Willy onboarding is skippable, replayable and exposes four concise steps',
   assert.equal((html.match(/class="onboarding-slide/g) ?? []).length, 4);
   assert.match(app, /createOnboardingState/);
   assert.match(html, /data-onboarding-next/);
+  assert.match(html, /data-i18n="onboarding\.body2a"/);
+  assert.match(html, /data-i18n="onboarding\.body2b"/);
+  assert.match(html, /data-i18n="onboarding\.body3a"/);
+  assert.match(html, /data-i18n="onboarding\.body3b"/);
+  assert.match(html, /assets\/willy-protect-v3\.webp/);
+  assert.match(css, /@font-face\{font-family:Willy Rounded/);
+  assert.match(css, /\.onboarding-copy p\+p\{margin-top:/);
 });

@@ -26,3 +26,10 @@ test('makes missing keys visible instead of returning an empty label', () => {
 test('Italian and English expose the same complete interface keys', () => {
   assert.deepEqual(Object.keys(it).sort(), Object.keys(en).sort());
 });
+
+test('Willy onboarding keeps the two promises in slides two and three separate', () => {
+  assert.equal(it['onboarding.body2a'], 'Prima di iniziare un lavoro con un chatbot, passa da qui.');
+  assert.equal(it['onboarding.body2b'], 'In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.');
+  assert.equal(it['onboarding.body3a'], 'Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere.');
+  assert.equal(it['onboarding.body3b'], 'Alla fine del lavoro torni qui e ripristiniamo tutto.');
+});

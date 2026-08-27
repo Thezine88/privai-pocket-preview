@@ -239,13 +239,18 @@ Interazione approvata:
 - animazioni leggere, senza video: dissolvenza, lieve galleggiamento e cambio posa;
 - rispetto della preferenza di sistema per movimento ridotto;
 - immagini di Willy scontornate, trasparenti e ottimizzate;
+- Willy centrato nell'inquadratura, con testo vicino ma chiaramente separato;
+- carattere locale arrotondato e più riconoscibile, senza font o dipendenze di rete;
+- slide 2 e 3 divise in due paragrafi con pausa visiva;
+- posa con scudo ricavata dall'immagine originale, preservando il propulsore e il bagliore centrati;
+- testo `Partiamo!` centrato otticamente nel pulsante;
 - rispetto degli inset Android e delle aree sicure.
 
 Testo definitivo:
 
 1. `Ciao, io sono Willy! 👋` / `Sei pronto a lavorare con me?`
-2. `Prima di iniziare un lavoro con un chatbot, passa da qui. In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.`
-3. `Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere. Alla fine del lavoro torni qui e ripristiniamo tutto.`
+2. `Prima di iniziare un lavoro con un chatbot, passa da qui.` / pausa di paragrafo / `In pochi tocchi trasformeremo i tuoi contenuti in richieste utili per l’IA.`
+3. `Proteggeremo i dati sensibili: deciderai sempre tu cosa nascondere.` / pausa di paragrafo / `Alla fine del lavoro torni qui e ripristiniamo tutto.`
 4. `La sicurezza è una priorità: nulla viene condiviso online senza una tua scelta.` / `Hai tu il comando.`
 
 L'onboarding posiziona il prodotto come passaggio da usare prima e dopo il lavoro con un chatbot. Non deve promettere anonimizzazione garantita, sicurezza assoluta o funzionamento integralmente offline.

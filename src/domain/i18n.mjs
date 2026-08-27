@@ -1,5 +1,5 @@
-import { en } from '../locales/en.mjs?v=17';
-import { it } from '../locales/it.mjs?v=17';
+import { en } from '../locales/en.mjs?v=18';
+import { it } from '../locales/it.mjs?v=18';
 
 export const SUPPORTED_LOCALES = Object.freeze(['it', 'en']);
 
