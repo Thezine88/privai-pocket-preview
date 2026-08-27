@@ -50,14 +50,14 @@
 - Extend: `buildPromptPack({ template, goal, constraints, content, outputLanguage })`.
 - Template values: `email`, `post`, `summary`, `checklist`.
 
-- [ ] **Step 1: Scrivere quattro test fallenti** che richiedano output diversi:
+- [x] **Step 1: Scrivere quattro test fallenti** che richiedano output diversi:
   - Email: oggetto, corpo, tono professionale, richiesta finale e nessun fatto inventato.
   - Post: apertura, corpo, CTA e hashtag soltanto se utili.
   - Riassunto: punti principali, nomi/date, decisioni e informazioni incerte separate.
   - Checklist: azione, responsabile, scadenza, priorità e dipendenze; campi assenti segnalati.
-- [ ] **Step 2: Verificare RED** con `node --test tests/markdown.test.mjs tests/i18n.test.mjs`.
-- [ ] **Step 3: Implementare il minimo** aggiungendo le istruzioni del template selezionato al pacchetto Markdown; lasciare `Personalizza` facoltativo e chiuso.
-- [ ] **Step 4: Verificare GREEN** e controllare che ogni template mantenga integralmente il contenuto sorgente.
+- [x] **Step 2: Verificare RED** con `node --test tests/markdown.test.mjs tests/i18n.test.mjs`.
+- [x] **Step 3: Implementare il minimo** aggiungendo le istruzioni del template selezionato al pacchetto Markdown; lasciare `Personalizza` facoltativo e chiuso.
+- [x] **Step 4: Verificare GREEN** e controllare che ogni template mantenga integralmente il contenuto sorgente.
 - [ ] **Step 5: Commit** `feat(prepare): add complete local templates`.
 
 ### Task 3: Azioni di uscita distinte su Android
@@ -104,10 +104,37 @@
 - [ ] **Step 3: Semplificare l’inserimento** a titolo, quattro scelte, contenuto, obiettivo breve, `Prepara` e `Opzioni` chiuso.
 - [ ] **Step 4: Semplificare il risultato** a titolo `Pronto`, anteprima, `Scegli un’IA`, `Copia`, `Condividi` e link discreto `Modifica`.
 - [ ] **Step 5: Eliminare ripetizioni** come doppio “Pronto per l’IA” e tre pulsanti compressi nell’intestazione della card.
-- [ ] **Step 6: Verificare a 360, 390, 430 e 680 px**, in orientamento verticale e orizzontale, senza testo o azioni sotto la barra fissa.
-- [ ] **Step 7: Verificare italiano/inglese, testo grande e `prefers-reduced-motion`**.
-- [ ] **Step 8: Presentare l’anteprima all’utente e attendere approvazione** prima del merge.
-- [ ] **Step 9: Commit** `refactor(ui): simplify prepare and result flows`.
+- [ ] **Step 6: Applicare il linguaggio visivo approvato** senza nuove dipendenze: superfici rialzate soltanto per elementi toccabili, campi leggermente incassati, contenuti leggibili quasi piatti, un'unica azione arancione dominante e feedback di pressione discreto.
+- [ ] **Step 7: Ridurre ombre e bagliori decorativi** dove non comunicano interazione; usare spaziatura e raggruppamento per la gerarchia.
+- [ ] **Step 8: Verificare a 360, 390, 430 e 680 px**, in orientamento verticale e orizzontale, senza testo o azioni sotto la barra fissa.
+- [ ] **Step 9: Verificare italiano/inglese, testo grande e `prefers-reduced-motion`**.
+- [ ] **Step 10: Presentare l’anteprima all’utente e attendere approvazione** prima del merge.
+- [ ] **Step 11: Commit** `refactor(ui): simplify prepare and result flows`.
+
+### Task 4b: Onboarding di Willy al primo avvio
+
+**Files:**
+- Modify: `index.html`
+- Modify: `styles.css`
+- Modify: `src/app.mjs`
+- Modify: `src/locales/it.mjs`
+- Modify: `src/locales/en.mjs`
+- Add: quattro immagini trasparenti ottimizzate in `assets/`
+- Test: `tests/ui.test.mjs`
+- Test: `tests/i18n.test.mjs`
+
+**Interfaces:**
+- Persistenza locale: flag di completamento per la singola installazione.
+- Interazione: tap in area libera avanza; `Salta` chiude; `Partiamo!` chiude dall'ultima schermata.
+
+- [ ] **Step 1: Scrivere test fallenti** per primo avvio, avanzamento, skip, completamento persistente e possibilità di riapertura dalle impostazioni.
+- [ ] **Step 2: Verificare RED** con `node --test tests/ui.test.mjs tests/i18n.test.mjs`.
+- [ ] **Step 3: Integrare il minimo onboarding a quattro schermate** con il testo definitivo registrato in `HANDOFF.md`.
+- [ ] **Step 4: Integrare le quattro pose approvate di Willy** come immagini trasparenti responsive, senza video o librerie di animazione.
+- [ ] **Step 5: Implementare dissolvenza e lieve galleggiamento in CSS**, disabilitati con `prefers-reduced-motion`.
+- [ ] **Step 6: Rendere `Salta`, indicatori e `Partiamo!` accessibili**, con target di tocco di almeno 44×44 px e focus visibile.
+- [ ] **Step 7: Verificare GREEN**, primo avvio per installazione, riapertura dalle impostazioni, safe area e assenza di rete.
+- [ ] **Step 8: Commit** `feat(onboarding): introduce Willy before the chatbot flow`.
 
 ### Task 5: Gate unico prima del secondo APK
 

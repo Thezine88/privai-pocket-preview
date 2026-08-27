@@ -12,7 +12,7 @@ const sessionStore = createStore(sessionStorage);
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
-const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', selectedTemplate: 'checklist', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
 const workflows = {
   convert: createWorkflowState('convert'),
   protect: createWorkflowState('protect'),
@@ -289,13 +289,13 @@ $('#protect-input').addEventListener('input', (event) => {
   toast(state.translator.locale === 'it' ? 'Risposta riconosciuta: puoi ripristinare i dati.' : 'Response recognised: you can restore your data.');
 });
 $$('#template-chips button').forEach((button) => button.addEventListener('click', () => {
-  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); $('#goal-input').value = state.translator.t(button.dataset.goalKey);
+  $$('#template-chips button').forEach((item) => item.classList.remove('active')); button.classList.add('active'); state.selectedTemplate = button.dataset.template; $('#goal-input').value = state.translator.t(button.dataset.goalKey);
 }));
 
 $('#prepare-button').addEventListener('click', () => {
   const content = $('#prepare-input').value || state.protectedText || $('#protected-output').value || state.markdown || $('#markdown-output').value;
   if (!content.trim()) return toast(state.translator.t('dynamic.convertFirst'));
-  const result = buildPromptPack({ goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
+  const result = buildPromptPack({ template: state.selectedTemplate, goal: $('#goal-input').value, constraints: $('#constraints-input').value.split('\n'), content, outputLanguage: $('#output-language-select').value });
   $('#prompt-output').value = result;
   showWorkflowPhase('prepare', 'result');
   revealResult('#prompt-output');

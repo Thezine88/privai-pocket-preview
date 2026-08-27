@@ -40,3 +40,19 @@ test('omits output language instructions when keeping the content language', () 
   const result = buildPromptPack({ goal: 'Riassumi', content: 'Hello', outputLanguage: 'same' });
   assert.doesNotMatch(result, /Output language|Lingua del risultato/);
 });
+
+const templateCases = [
+  ['email', ['# Istruzioni Email', 'oggetto', 'corpo', 'tono professionale', 'richiesta finale', 'Non inventare fatti']],
+  ['post', ['# Istruzioni Post', 'apertura', 'corpo', 'invito all’azione', 'hashtag solo se utili']],
+  ['summary', ['# Istruzioni Riassunto', 'punti principali', 'nomi e date', 'decisioni', 'informazioni incerte']],
+  ['checklist', ['# Istruzioni Checklist', 'azione', 'responsabile', 'scadenza', 'priorità', 'dipendenze', 'Segnala i campi mancanti']],
+];
+
+for (const [template, expectedInstructions] of templateCases) {
+  test(`adds complete ${template} instructions without altering the source content`, () => {
+    const source = 'Mario incontra il cliente il 2 settembre.';
+    const result = buildPromptPack({ template, goal: 'Aiutami', content: source });
+    for (const instruction of expectedInstructions) assert.match(result, new RegExp(instruction, 'i'));
+    assert.match(result, new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  });
+}
