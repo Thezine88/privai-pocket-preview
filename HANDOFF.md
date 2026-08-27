@@ -167,32 +167,41 @@ Il server di anteprima (`.claude/launch.json` nella cartella padre) punta a `rep
 3. **Provare su un telefono vero**: installare l'APK, condividere un PDF/testo da WhatsApp o Gmail, verificare che l'app si apra già sulla schermata dei dati trovati. Poi il ciclo completo: proteggi → incolla in ChatGPT → chiudi tutto → riapri il giorno dopo → verifica che il ripristino funzioni ancora.
 4. **«Elabora testo»**: verificare che PrivAI compaia nel menu che appare selezionando del testo in un'altra app — il gesto più veloce che Android permetta.
 
+### Il salto di qualità (deciso il 27/08/2026: chiudere ogni punto in cui i dati già passano, prima di aggiungerne di nuovi)
+
+Il ragionamento: PrivAI diventa indispensabile non con una funzione in più, ma quando appare da sé in ogni posto dove le persone già spostano contenuti verso un'IA, senza cambiare abitudini. Ordine di priorità:
+
+5. **Riquadro nelle impostazioni rapide di Android** («Proteggi gli appunti»): copi qualcosa, scendi la tendina, tocchi — protetto senza aprire l'app. È il salto da «un'altra app» a «un riflesso».
+6. **Ponte desktop via QR** (priorità alzata, era in fondo alla lista): l'infrastruttura di sessione è pronta ma il canale fra telefono e PC non esiste ancora. È il differenziale più grande e meno realizzato della visione di prodotto — chi scrive prompt lunghi lo fa spesso da desktop, non da telefono.
+7. **Screenshot via OCR**: estendere lo `ShareTargetPlugin` già scritto ad accettare anche `image/*`, passare il testo estratto (Android ML Kit Text Recognition, on-device, gratuito) nella pipeline di rilevamento esistente. Prima versione: estrai e rileva come una richiesta normale, **non** redigere l'immagine — un box mal piazzato o un OCR che manca una riga darebbe una falsa sensazione di sicurezza, e qui la sicurezza è il core.
+8. **Widget in home screen** («Proteggi appunti» con un tocco): complementare al riquadro nelle impostazioni rapide, ma molto più scopribile per chi non è un power user — il pubblico target dichiarato (chi usa l'IA ogni giorno ma non è pratico).
+
+**Scartato esplicitamente**: Accessibility Service o tastiera personalizzata per leggere tutto ciò che si scrive in ogni app — tecnicamente fattibile ma somiglia troppo a uno spyware agli occhi di Play Store e degli utenti; il rischio reputazionale supera il beneficio per un'app che vende fiducia sulla privacy.
+
 ### Prossimi passi — per l'uso quotidiano
 
-5. **Riquadro nelle impostazioni rapide di Android** («Proteggi gli appunti»): copi qualcosa, scendi la tendina, tocchi — protetto senza aprire l'app. È il salto da «un'altra app» a «un riflesso», e nessuno strumento concorrente può farlo (girano tutti su desktop).
-6. **Notifica persistente** mentre un lavoro è aperto in cassaforte.
-7. **La rubrica si costruisce da sola**: «Hai nascosto *Rossi* tre volte: vuoi che lo faccia sempre?»
-8. **Registro di ciò che esce dal telefono**: dimostra la promessa di privacy invece di limitarsi a dichiararla.
+9. **Notifica persistente** mentre un lavoro è aperto in cassaforte.
+10. **La rubrica si costruisce da sola**: «Hai nascosto *Rossi* tre volte: vuoi che lo faccia sempre?»
+11. **Registro di ciò che esce dal telefono**: dimostra la promessa di privacy invece di limitarsi a dichiararla.
 
 ### Il piano creator (obiettivo esplicito: pubblicità tramite creator YouTube/TikTok/Instagram)
 
-9. **Modalità dimostrazione**: un documento finto ma realistico, per chi vuole girare un video senza esporre dati veri. *Prova già raccolta*: nelle schermate della vecchia app usate per il confronto in questa sessione, il testo di esempio era un pezzo del CV del proprietario — per mostrare l'app ha dovuto mostrare i propri dati.
-10. Scheda «prima → dopo» condivisibile, costruita solo sul documento dimostrativo.
-11. Ricette pensate per i creator stessi («Rispondi a una proposta di sponsorizzazione»).
-12. Codice creator via Google Play (nessun server, nessun account) — la revenue share va verificata prima di prometterla a qualcuno.
+12. **Modalità dimostrazione**: un documento finto ma realistico, per chi vuole girare un video senza esporre dati veri. *Prova già raccolta*: nelle schermate della vecchia app usate per il confronto in questa sessione, il testo di esempio era un pezzo del CV del proprietario — per mostrare l'app ha dovuto mostrare i propri dati.
+13. Scheda «prima → dopo» condivisibile, costruita solo sul documento dimostrativo.
+14. Ricette pensate per i creator stessi («Rispondi a una proposta di sponsorizzazione»).
+15. Codice creator via Google Play (nessun server, nessun account) — la revenue share va verificata prima di prometterla a qualcuno.
 
 ### Monetizzazione (dopo i primi utenti, non prima)
 
-13. Cassaforte con blocco biometrico.
-14. Più documenti insieme (batch).
-15. Word (.docx) — il formato in cui arrivano contratti e verbali negli studi italiani.
-16. Pagamenti con Play Billing — ultimo passo, non primo: il prezzo si decide guardando quanto tempo l'app fa risparmiare a chi la usa già.
+16. Cassaforte con blocco biometrico.
+17. Più documenti insieme (batch).
+18. Word (.docx) — il formato in cui arrivano contratti e verbali negli studi italiani.
+19. Pagamenti con Play Billing — ultimo passo, non primo: il prezzo si decide guardando quanto tempo l'app fa risparmiare a chi la usa già.
 
 ### Qualità e fossato
 
-17. Banco di prova del rilevamento su qualche centinaio di documenti reali, non 28 frasi scritte da me.
-18. Livello neurale per i nomi mai introdotti prima (il caso che continuiamo a sbagliare) — verificare prima la licenza di rizzo-pii.
-19. Canale della modalità desktop via QR.
+20. Banco di prova del rilevamento su qualche centinaio di documenti reali, non 28 frasi scritte da me.
+21. Livello neurale per i nomi mai introdotti prima (il caso che continuiamo a sbagliare) — verificare prima la licenza di rizzo-pii.
 
 ### Non fare ora (deciso esplicitamente, non dimenticato)
 
