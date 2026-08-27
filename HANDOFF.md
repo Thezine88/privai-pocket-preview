@@ -1,267 +1,217 @@
 # PrivAI Pocket — Handoff operativo
 
-**Aggiornato:** 25 agosto 2026  
-**Repository:** `Thezine88/privai-pocket-preview`  
-**Anteprima pubblica:** `https://thezine88.github.io/privai-pocket-preview/`  
-**Fase:** validazione PWA pubblica; progetto Android/Capacitor presente, APK ancora da compilare e provare su telefono reale.
+**Aggiornato:** 27 agosto 2026
+**Repository:** `Thezine88/privai-pocket-preview`
+**Ramo di lavoro:** `lavoro-locale-v2` — locale, **mai pushato**, main non toccato
+**Fase:** riscrittura architetturale completa (v2) fatta e verificata; APK reale ancora da compilare e provare su telefono.
 
-## Vincolo economico non negoziabile
+> **Leggi questo file per intero prima di scrivere codice.** Contiene decisioni di due sessioni diverse: quelle economiche/di naming/di sicurezza (sezioni 1-5) restano valide e non sono state ridiscusse in questa sessione; tutto il resto (sezione 6 in poi) è il lavoro appena fatto.
 
-Il proprietario del progetto non vuole sostenere costi operativi o abbonamenti per fare funzionare l'app. Ogni proposta deve quindi funzionare senza server obbligatori, API pagate dallo sviluppatore, database cloud a consumo o traffico finanziato dal proprietario.
+---
 
-Sono ammessi soltanto:
+## 1 · Vincolo economico non negoziabile
 
-- elaborazione e archiviazione locale;
-- librerie gratuite con licenza compatibile;
-- funzioni native del sistema operativo;
-- servizi opzionali configurati e pagati direttamente dall'utente tramite una propria chiave (`BYOK`);
-- spazio Google Drive o simile appartenente all'utente, solo se in futuro sarà possibile mantenere la promessa di privacy;
-- costi una tantum/istituzionali per pubblicare sugli store e commissioni applicate dagli store alle vendite.
+Il proprietario non vuole sostenere costi operativi o abbonamenti per far funzionare l'app. Ogni proposta deve funzionare senza server obbligatori, API pagate dallo sviluppatore, database cloud a consumo o traffico finanziato dal proprietario.
 
-Non confondere ChatGPT Plus o Claude Pro con crediti API: gli abbonamenti personali non possono essere usati come backend dell'app. Qualunque funzione futura che generi un costo per richiesta deve essere respinta o sottoposta a una nuova decisione esplicita.
+Ammessi solo: elaborazione/archiviazione locale, librerie gratuite con licenza compatibile, funzioni native del sistema operativo, servizi opzionali pagati dall'utente con una propria chiave (BYOK), costi una tantum/istituzionali per gli store.
 
-## Promessa del prodotto
+ChatGPT Plus e Claude Pro **non sono API**: gli abbonamenti personali non possono finanziare il backend dell'app. Qualunque funzione che generi un costo per richiesta va respinta o sottoposta a una nuova decisione esplicita.
 
-PrivAI Pocket prepara testi per l'IA senza obbligare l'utente a consegnare i dati originali: il telefono crea una versione protetta, l'utente la invia all'assistente scelto e può ripristinare localmente i dati nel risultato.
+**Coerenza verificata in questa sessione:** tutto il lavoro fatto rispetta il vincolo — nessun server, nessuna API a pagamento, solo Android Keystore/librerie MIT-ISC gratuite.
 
-La formulazione corretta è «controllo locale base» e «versione protetta». Non promettere anonimizzazione garantita, sicurezza assoluta o crittografia quando si tratta soltanto di sostituzione con segnaposto.
+## 2 · Naming — stato ancora aperto
 
-## Decisioni approvate
+`PrivAI Pocket` resta **solo il nome operativo**, non approvato come marchio. Nomi già esplorati e scartati per collisioni: `Scudo`, `Mio`, `SoloMio`, `StayMine`, `Scrubit` (collisione diretta con un'app sanitaria attiva e i domini scrubit.com/.ai), più una decina di altri mai approvati (`Den`, `Lair`, `Psst`, `Prima`, `Tana`, `Zac`, `Cloqra`, `Cevyra`, `Pryqo`, `Terviq`, `Veyru`, `RestaTuo`, `RestaMio`, `MioPrima`, `DatiMiei`, `MioScudo`).
 
-- Android prima, iOS dopo la validazione.
-- Nucleo local-first, leggero e indipendente da API pagate dallo sviluppatore.
-- ChatGPT Plus e Claude Pro non sono API e non finanziano il funzionamento dell'app.
-- Ogni strumento è utilizzabile da solo; resta disponibile anche un percorso guidato Converti → Proteggi → Prepara → Ripristina.
-- Ogni strumento mostra una sola fase alla volta: inserimento, eventuale revisione e risultato. Il risultato sostituisce il modulo lungo e mantiene Copia/Condividi subito visibili.
-- Parole visibili: «Proteggi», «Nascondi», «Versione protetta» e «Ripristina»; evitare «mascheramento» nell'interfaccia.
-- Copia e Condividi sono azioni primarie su ogni risultato.
-- Il limite Free è ancora da validare. La precedente ipotesi era tre azioni al giorno per strumento, ma la direzione più comprensibile è un'unica quota di «lavori protetti al giorno»; non implementare la monetizzazione definitiva senza test utenti.
-- Pro: convenienza e funzioni locali/desktop; nessun costo API illimitato a carico dello sviluppatore.
-- «Continua sul computer» sarà Pro, ma resta bloccato finché non supera i gate di sicurezza nativi.
-- Nessun relay cloud va attivato ora.
-- Identità visiva: bianco caldo, arancione e nero, card arrotondate, ombre e icone 3D semplici.
-- Barra inferiore fissa con effetto glass, collegamento Instagram completo, pulsante `+` e microfono visibile ma dichiarato `In arrivo`.
-- Interfaccia italiano/inglese; il testo dell'utente non viene tradotto automaticamente.
-- Nessuna esclusione per modello commerciale del telefono: degradazione per funzione/capacità.
+Prima di rinominare codice, package Android, repository o materiali grafici: nuova shortlist + verifica formale EUIPO/UIBM (classi 9 e 42), App Store, Google Play, domini, social. **Non è successo altro su questo fronte in questa sessione.**
 
-## Naming — stato aperto
+## 3 · Promessa del prodotto
 
-Il nome definitivo non è stato scelto. `PrivAI Pocket` resta esclusivamente il nome operativo del progetto e non va considerato approvato come marchio commerciale.
+Non è più «tre strumenti da scegliere» ma **un flusso unico**: condividi un documento → l'app mostra subito cosa nasconde → scegli cosa ti serve (10 tipi di richiesta) → apri in un'IA → torni e ripristini con un tocco.
 
-Direzione preferita: un nome corto, memorabile e pronunciabile in italiano e inglese, possibilmente legato al concetto «i dati sono miei / restano dell'utente». Può essere una parola, un inglesismo, un modo di dire o un suono, ma non deve sacrificare chiarezza, ricercabilità e possibilità di tutela.
+Formulazione corretta: «controllo locale» e «versione protetta». **Mai** «anonimizzazione garantita», «sicurezza assoluta» o simili — il meccanismo è sostituzione con segnaposto, non crittografia dei contenuti.
 
-Screening preliminare già svolto, non equivalente a una ricerca legale:
+**Nota da non perdere:** il tema **non è più forzato al chiaro** come nella v1 (che dichiarava `color-scheme: only light` nel codice). In Impostazioni c'è un selettore **Sistema / Chiaro / Scuro** — l'utente sceglie, l'app non decide per lui. La preferenza è salvata e applicata prima ancora che il CSS venga valutato, senza lampi del tema sbagliato al riavvio. Dettagli tecnici in §6.11 punto 5.
 
-- `Scudo`: semanticamente forte, ma già utilizzato da software di firewall/privacy e da progetti software documentali; sconsigliato.
-- `Mio`: memorabile ma troppo generico e già presente in più prodotti e assistenti IA; sconsigliato da solo.
-- `SoloMio`: già utilizzato storicamente da società/prodotti software e in altri settori; sconsigliato.
-- `StayMine`: esiste una società `STAYMINE s.r.o.` con attività di pubblicazione software; inoltre collide semanticamente con la piattaforma privacy `Mine`; ritirato dalla shortlist.
-- `Scrubit`: ritirato dopo lo screening. Esistono già un'app software attiva per sale operatorie chiamata Scrubit, il dominio `scrubit.com`, il dominio `scrubit.ai` e progetti `ScrubIT AI`/`Scrub.it` relativi a protezione PII e preparazione di testo con IA. Collisione diretta e rischio elevato.
-- `Den`, `Lair`, `Psst`, `Prima`, `Tana`, `Zac`, `Cloqra`, `Cevyra`, `Pryqo`, `Terviq`, `Veyru`, `RestaTuo`, `RestaMio`, `MioPrima`, `DatiMiei` e `MioScudo`: esplorati ma non approvati.
+## 4 · Sicurezza richiesta per Android (dalla sessione precedente — ora scritta, non ancora verificata su device)
 
-Prima di rinominare codice, package Android, repository o materiali grafici occorre scegliere una nuova shortlist e verificare formalmente EUIPO/UIBM, classi 9 e 42, App Store, Google Play, domini e account social. Non dichiarare un nome «libero» sulla sola base di una ricerca web.
+1. Corrispondenze e chiavi con Android Keystore/AES-GCM → **scritto**: `SecureStorePlugin.java`.
+2. Escludere dati/mapping/segreti da URL, log, analytics, backup → rispettato nel codice; da riverificare con uno strumento reale su APK compilato.
+3. Share Target Android nativo, senza query string/cache web → **scritto**: `ShareTargetPlugin.java` + `<queries>`/intent-filter nel manifest.
+4. Separare ogni lavoro con un id, impedire ripristino incrociato → **fatto**: ogni lavoro in cassaforte ha un id proprio, `combinedMapping()` unisce le mappe solo per riconoscere una risposta, non per confonderle.
+5. Cancellazione immediata e scadenza automatica → **fatto**: scadenza scelta dall'utente (1h/1g/7g/per sempre), «Cancella tutto» in Impostazioni.
+6. Testare installazione/sospensione/riavvio/cancellazione/condivisione su device reale → **non fatto**, nessun ambiente con SDK Android disponibile in questa sessione.
 
-## Funzioni operative nella PWA
+Malware, root/jailbreak, tastiere compromesse, app destinatarie: fuori dal perimetro di PrivAI, dichiarato esplicitamente.
 
-- Conversione e normalizzazione in Markdown.
-- Import indipendente di file `.txt`, `.md` e PDF con testo selezionabile nelle sezioni Converti, Proteggi e Prepara.
-- Lettura PDF locale tramite PDF.js 5.6.205 incluso nell'app, fino a 15 MB e 50 pagine; nessun documento viene inviato a un servizio esterno.
-- Rilevamento locale deterministico di email, telefoni, codici fiscali validi, IBAN validi, URL e date.
-- Segnaposto stabili e legati al singolo lavoro.
-- Ripristino esatto locale durante la sessione, con conferma e possibilità di cancellare le corrispondenze.
-- Riconoscimento dei soli segnaposto appartenenti al lavoro corrente e apertura automatica di Ripristina quando una risposta nota viene incollata nel flusso Proteggi.
-- Preparazione di istruzioni Markdown per assistenti IA esterni.
-- Copia e condivisione; rimozione del link Instagram dal payload condiviso.
-- Apertura dell'assistente IA scelto; il ritorno del risultato avviene oggi tramite incolla manuale.
-- Cronologia locale limitata e cancellazione individuale.
-- Contatore Free, gettoni dichiarati Beta, saluti variabili, italiano/inglese e anteprima vantaggi Pro dichiarata `In arrivo`.
-- Menu animato del pulsante `+` con una sola azione «Sfoglia file»: il selettore riconosce automaticamente testo, Markdown e PDF.
-- Micro-interazioni e PWA offline con cache `v17`, inclusi lettore PDF, worker e stato dei workflow.
-- Le etichette tecniche dei dati sono tradotte per l'utente (`TELEPHONENUM` → `Telefono`) e ogni flusso dispone di un comando `Pulisci`.
-- Aprendo Converti, Proteggi o Prepara dalla Home viene sempre mostrata la fase iniziale indipendente, senza riutilizzare la schermata risultato di un altro strumento.
-- Configurazione BYOK dimostrativa, senza chiamate reali e senza persistenza di chiavi.
-- Il comando per svuotare un lavoro è ora un cestino contestuale dentro ciascun editor di Converti, Proteggi, Prepara e Ripristina. Compare solo quando c'è testo; se esiste già un risultato chiede conferma.
+## 5 · Collegamento desktop via QR — decisione architetturale (invariata)
 
-## Limiti e problemi aperti
+Nessun relay cloud. Telefono e computer sulla stessa rete (o hotspot dal telefono); il QR contiene solo indirizzo locale + credenziali effimere, mai dati; originali/mapping/chiavi permanenti restano sul telefono; il computer riceve di default solo la versione protetta. Ordine obbligatorio: **APK reale → Keystore → Share Target nativo → threat review → protocollo locale cifrato → desktop QR.**
 
-- È ancora una PWA di validazione: non equivale all'APK nativo definitivo.
-- Le corrispondenze per il ripristino sono in memoria di sessione e possono sparire se pagina/app viene chiusa o ricaricata.
-- Il Web Share Target in ingresso è disabilitato: un flusso GET potrebbe esporre testo in URL, cronologia o cache.
-- La risposta di ChatGPT/Claude deve ancora essere incollata manualmente nell'app.
-- Il CSS richiede esplicitamente il tema chiaro e gestisce 360–380 px, ma Chrome, Samsung Internet e PWA installata devono ancora essere verificati su dispositivi reali.
-- Il rilevatore base non trova necessariamente nomi, organizzazioni, indirizzi liberi o identificatori contestuali.
-- I PDF protetti da password, danneggiati o oltre i limiti vengono rifiutati senza sostituire il testo già presente.
-- I PDF composti soltanto da immagini richiedono OCR locale, che non è ancora operativo.
-- Non sono operativi: login Google, Drive, pagamenti, partner creator, OCR, voce, iOS e desktop bridge. Il microfono non chiede permessi e apre soltanto una spiegazione trasparente.
+Documenti vincolanti (precedenti al vincolo di zero costi — dove parlano di relay cloud sono superati da questa sezione): `docs/specs/2026-08-24-privai-bridge-security-spec.md`, `docs/superpowers/plans/2026-08-24-privai-bridge.md`.
 
-## Sicurezza richiesta per Android
+**Stato in questa sessione:** l'infrastruttura di accoppiamento (conteggio sessioni, timer, codice a 6 lettere) è scritta in `src/domain/plan.mjs` e funziona nei test; il **canale fra i due dispositivi non esiste ancora** — resta una decisione di prodotto da prendere prima di scrivere altro codice qui.
 
-Prima di dichiarare il flusso sicuro e prima di introdurre il desktop:
+---
 
-1. Conservare corrispondenze e chiavi con Android Keystore e AES-GCM.
-2. Escludere dati, mapping e segreti da URL, log, analytics, crash report e backup.
-3. Implementare un Share Target Android nativo con conferma, senza query string o cache web.
-4. Separare ogni lavoro con un `jobId`; impedire il ripristino con mapping di un altro lavoro.
-5. Offrire cancellazione immediata e scadenza automatica.
-6. Testare installazione, sospensione, riavvio, cancellazione e condivisione su dispositivo reale.
+## 6 · Cosa è successo in questa sessione (in ordine)
 
-Malware, root/jailbreak, tastiere compromesse e applicazioni destinatarie non sono controllabili da PrivAI Pocket e devono essere dichiarati fuori dal perimetro.
+### 6.1 — Audit della v1 e analisi UX
+Analizzata la v1 (estratta dall'APK fornito) su due fronti: un audit strutturato (17 rilievi, 3 bloccanti — mappa dei segnaposto solo in memoria, nessuna condivisione in ingresso, rilevamento senza nomi/indirizzi) e cinque osservazioni dirette dell'utente (icone poco chiare, scroll eccessivo, animazioni di Willy assenti, domande a scelta multipla, transizioni). Report pubblicati come artefatti.
 
-## Decisione aggiornata sul collegamento desktop QR
+### 6.2 — Riscrittura completa (v2)
+Da tre strumenti separati (Converti/Proteggi/Prepara) a un **flusso unico**. Moduli nuovi in `src/domain/`:
+- `pii.mjs` — rilevamento a 4 livelli (checksum matematici → rubrica personale → dizionari/struttura → livello debole "forse", sempre deselezionato)
+- `vault.mjs` — cassaforte persistente (sopravvive alla chiusura dell'app, a differenza della v1)
+- `recipes.mjs` — 10 tipi di richiesta con domande a scelta multipla, sempre preselezionate
+- `plan.mjs` — piani (**la protezione non si paga mai**, protetto da un test dedicato)
+- `intake.mjs` — condivisione in ingresso/uscita, lettura appunti con ripiego nativo
+- `markdown.mjs`, `swipe.mjs` — normalizzazione testo, logica pura dello swipe-per-eliminare
 
-Il collegamento resta fattibile, ma deve rispettare il vincolo di zero costi operativi. L'architettura raccomandata è quindi **locale**, senza relay cloud:
+### 6.3 — Rilevamento: da 50% a 97,3%
+Confrontato con `rizzo-pii` (modello neurale, licenza dei pesi da verificare prima di un eventuale uso commerciale). Costruito un banco di prova (`tests/banco-di-prova.mjs`, 28 frasi reali) che ha fatto emergere e correggere tre bug veri: titoli con elisione non riconosciuti, un flag regex avido che «mangiava» il testo dopo un IBAN o un titolo, un nome troncato lasciando l'ultima lettera in chiaro. Ora **97,3%, zero falsi positivi**, con soglia minima che fa fallire la build se il rilevamento peggiora.
 
-1. telefono e computer sono sulla stessa rete Wi-Fi oppure il telefono crea un hotspot;
-2. l'app Android avvia una sessione locale temporanea e mostra un QR;
-3. il QR contiene soltanto indirizzo locale e credenziali/chiavi effimere, mai documenti o dati personali;
-4. il computer apre nel browser un'interfaccia servita o autorizzata dal telefono;
-5. originali, mapping e chiavi permanenti restano sul telefono; il computer riceve per impostazione predefinita soltanto la versione protetta;
-6. il risultato dell'IA ancora protetto torna al telefono per il ripristino;
-7. mostrare la versione ripristinata sul computer deve essere una scelta esplicita, perché in quel momento i dati personali lasciano il telefono;
-8. chiudendo la sessione, token e chiavi effimere vengono eliminati.
+### 6.4 — Scoperta: il repository era indietro rispetto all'APK
+Il repo `Thezine88/privai-pocket-preview` (ultimo commit `953c364`) **non conteneva** `onboarding.mjs`, `outbound-share.mjs`, il plugin `OutboundSharePlugin` nativo, né il blocco `<queries>` nel manifest — tutte cose presenti nell'APK compilato che l'utente ha fornito all'inizio. Quel lavoro esisteva solo dentro il binario, mai committato.
 
-Il QR serve all'accoppiamento, non costituisce da solo una misura di sicurezza. Servono cifratura applicativa, token casuali monouso, conferma sul telefono, scadenza per inattività, revoca immediata e chiavi locali protette con Android Keystore.
+**Decisione presa:** un'unica riconciliazione invece di due lavori separati. Clonato il repo in una cartella locale, creato il ramo `lavoro-locale-v2`, e su quello:
+- sostituito l'intero livello web con la v2
+- riscritti da zero i tre plugin nativi (il sorgente originale di `OutboundSharePlugin` non era recuperabile, essendo solo nel `.dex` compilato)
+- **`SecureStorePlugin.java`**: niente `androidx.security:security-crypto` (è ancora in alpha) — Android Keystore diretto, AES-GCM, IV distinto per ogni valore
+- **`ShareTargetPlugin.java`**: gestisce sia l'avvio a freddo (`window.__privaiShared`) sia l'app già aperta (evento `privai:shared`) — coprirne solo uno fa funzionare la condivisione a giorni alterni
+- **`MainActivity.java`**: registra i plugin prima di `super.onCreate()`, gestisce sia `onCreate` sia `onNewIntent`
+- **`AndroidManifest.xml`**: `<queries>` con i 5 pacchetti IA + 3 intent-filter (`SEND` testo, `SEND` PDF, `PROCESS_TEXT`)
 
-Limiti dichiarati: reti di hotel/uffici possono isolare i dispositivi; l'app può essere sospesa dal sistema; iOS richiede gestione del permesso rete locale; il comportamento deve essere provato su dispositivi reali. Non promettere che il desktop bridge funzioni su qualsiasi rete.
+### 6.5 — Riconciliazione della suite di test (non un merge meccanico)
+La suite esistente era **un test blindato sulla v1**: verificava ID, colori, testi e il vecchio flusso a tre strumenti. Confronto file per file:
+- **tenuti invariati** (moduli identici/compatibili): `greeting`, `share`, `pdf`, `capacitor`, `package-safety`
+- **corretto**: `build-web.test.mjs` — bug preesistente (non mio), il controllo di sicurezza sul percorso falliva sempre su Windows (confronto con `${source}/` a barra diritta contro `resolve()` che produce backslash); in CI su Ubuntu restava invisibile
+- **ritirati** perché il modulo non esiste più o il test contraddiceva una scelta di prodotto esplicita: `i18n` (pretendeva fallback inglese, contro «l'app parte in italiano»), `markdown`, `pii`, `storage`, `workflow`
+- **riscritti da zero** su contratti veri della v2: `ui.test.mjs`, `pwa.test.mjs`
 
-Documenti vincolanti:
+**Stato attuale: 102 test, tutti verdi.** Verificato anche `cap sync android` (sincronizzazione Capacitor vera, eseguita con successo più volte).
 
-- `docs/specs/2026-08-24-privai-bridge-security-spec.md`
-- `docs/superpowers/plans/2026-08-24-privai-bridge.md`
+### 6.6 — Bug reali trovati usando l'app, non leggendo il codice
+1. Titolo del lavoro in cassaforte costruito sul testo **originale**: il nome del cliente finiva in chiaro nell'elenco proprio del lavoro appena protetto — corretto, ora si costruisce sul testo mascherato.
+2. Service worker cache-first: dopo un aggiornamento gli utenti sarebbero rimasti bloccati sul codice vecchio — invertito a network-first.
+3. `[hidden]` non vinceva sempre: una classe che imposta `display` con la stessa specificità lo annullava se dichiarata prima nel foglio di stile.
+4. `navigator.clipboard.readText()` fallisce silenziosamente su Android **proprio al rientro da un'altra app** (documento senza fuoco) — cioè nel momento esatto in cui serve di più. Aggiunto ripiego sul plugin nativo `Clipboard`.
+5. `:focus-visible` forzava un `border-radius` di 4px sull'anello di messa a fuoco, indipendentemente dalla forma dell'elemento — su una card arrotondata a 20px creava uno scontro visivo (il «bordo colorato» segnalato dall'utente). Rimosso il raggio forzato.
+6. Contrasto sfondo/card in tema scuro: rapporto **1,11** (quasi impercettibile) — misurato, non solo percepito. Portato a 1,28/1,49.
 
-Questi due documenti sono precedenti al vincolo definitivo di zero costi: dove prevedono relay cloud, tetto di spesa o backend remoto sono superati dalla presente sezione e devono essere aggiornati prima dell'implementazione.
+### 6.7 — Il ciclo condivisione → ripristino, misurato e ridotto
+Contati i tocchi reali: **3 all'andata, 7-8 al ritorno** (l'asimmetria che fa abbandonare un'app). Costruita una barra di rientro che riconosce — solo se negli appunti ci sono i **nostri** segnaposto — la risposta dell'IA e propone il ripristino con un tocco. Non legge mai gli appunti «alla cieca»: se non c'è nulla di nostro, non se ne accorge nemmeno (verificato con un test dedicato).
 
-Ordine obbligatorio: APK reale → Keystore → Share Target nativo → threat review → protocollo locale cifrato → desktop QR. Non creare account Cloudflare, relay o backend di produzione. Un relay remoto è fuori perimetro finché resta valido il vincolo zero costi operativi.
+### 6.8 — Icone: da glifi Unicode grezzi a Lucide
+Trovati 16 glifi Unicode usati come icone (`≡`, `⌕`, `⌂` per «cassaforte con blocco» che sembrava letteralmente una casa). Costruita una libreria condivisa (`src/icons.mjs`); su suggerimento dell'utente, confrontata la resa con **Lucide** (stessa famiglia dietro le icone shadcn) e adottata per **18 icone su 20** — l'ingranaggio disegnato a mano, confrontato fianco a fianco, si leggeva peggio. Licenza ISC/MIT attribuita in `vendor/LUCIDE-LICENSE.txt`, stesso schema già usato per pdf.js e il font. *Non* installato il pacchetto npm `lucide` (richiederebbe un bundler per il tree-shaking, che questo progetto evita di proposito).
 
-## Valutazione critica del prodotto — 25 agosto 2026
+### 6.9 — Swipe-per-eliminare sulle richieste recenti
+Logica pura testata in `src/domain/swipe.mjs` (soglie di apertura/cancellazione, blocco dell'asse orizzontale/verticale) + collegamento DOM in `app.mjs`. Tre comportamenti verificati: tocco semplice apre la richiesta, swipe parziale rivela «Elimina», swipe deciso (>132px) cancella in un solo gesto.
 
-Valutazione prudente dello stato attuale: **6,2/10**.
+### 6.10 — Micro-interazioni CSS (Lottie valutato e scartato)
+L'utente ha chiesto Lottie; **declinato con motivazione tecnica**: nessun file JSON sorgente disponibile (si esportano da After Effects o si scaricano da repository terzi di provenienza incerta), e un player da 30-40KB per un rimbalzo di 300ms è sproporzionato in una WebView senza bundler. Implementate invece 4 animazioni CSS pure, verificate con `getAnimations()` non a occhio: rimbalzo dell'icona attiva nella tab bar, piccolo scarto sull'icona delle schede di ingresso al tocco, «pop» sulle chip/schede ricetta selezionate, comparsa morbida delle finestre di dialogo. Tutte rispettano già la regola globale `prefers-reduced-motion`.
 
-- Problema affrontato: 8/10. La privacy prima di usare servizi IA è concreta e coerente.
-- Differenziazione: 7/10. Il ciclo Proteggi → usa qualsiasi IA → Ripristina localmente è il vantaggio distintivo.
-- Utilità quotidiana: 6/10. Markdown e preparazione prompt, isolati, non bastano come abitudine di massa.
-- Semplicità: 6,5/10. La home è chiara, ma i passaggi interni e il ritorno manuale dall'IA devono essere ridotti.
-- Affidabilità/privacy: 5,5/10. Il motore base e il mapping volatile non sono ancora sufficienti per una promessa commerciale forte.
-- Monetizzazione: 4,5/10. Pro e gettoni mostrano intenzioni, non ancora valore operativo verificato.
-- Prontezza alla pubblicazione commerciale: 5/10. È adatta a test controllati, non ancora a essere venduta come protezione completa.
+### 6.11 — Cinque correzioni puntuali dell'interfaccia
+1. Testo «a cono» nello stato vuoto (era `text-align:center` su una colonna troppo stretta) → allineato a sinistra dentro un blocco centrato.
+2. Il saluto («Mettimi alla prova») andava a capo sotto il razzo invece che sotto «Mettimi» → diviso in due colonne flex (emoji a larghezza fissa + testo).
+3. Riordinate le richieste: prime tre **Markdown → Email → Riassumi** (aggiunta «Scrivi in Markdown» come ricetta a sé, era la funzione «Converti» della v1 sparita nella riscrittura), il resto dietro «Altri tipi di richiesta».
+4. Icone di ingresso non pertinenti («Incolla un testo» usava l'illustrazione della bacchetta magica) → icone Lucide dedicate; rinominato in **«Scrivi un testo»** (il campo accetta anche testo digitato, non solo incollato).
+5. Tema **non più forzato**: selettore Sistema/Chiaro/Scuro in Impostazioni, con script anti-lampeggio nell'`<head>` che applica la preferenza salvata prima che il CSS venga valutato.
 
-La direzione strategica approvata è passare da «cassetto degli attrezzi IA» a **strato privato tra ciò che l'utente ha sul telefono e qualsiasi IA o applicazione**. La funzione principale deve vivere anche nel menu Condividi del telefono: ricevi contenuto → controlla localmente → revisione → condividi versione protetta → ricevi risposta → ripristina.
+### 6.12 — Cassaforte: allineamento e «troppo nero»
+Tre pattern diversi per lo stesso concetto di «stato vuoto» (uno centrato senza illustrazione, due righe di puro testo grigio) — unificati in un componente solo. Recuperate due illustrazioni rimaste orfane dopo le sostituzioni delle icone (l'orologio per «Lavori da ripristinare», la bacchetta per «Richieste recenti») invece di lasciarle come peso morto.
 
-Non esistono ancora dati verificati di product-market fit per questa specifica app. Adozione generale dell'IA e timori sulla privacy sostengono l'ipotesi, ma non dimostrano uso ricorrente o disponibilità a pagare. Servono test con utenti reali.
+---
 
-## Funzioni prioritarie per il salto di qualità
+## 7 · Stato dei file — dove guardare
 
-### P0 — necessarie prima della promessa commerciale
-
-1. **Share Target Android nativo:** ricevere testo, file, foto e PDF dal menu Condividi senza URL/query string.
-2. **Vault locale cifrato:** mapping persistente per lavoro, AES-GCM, Android Keystore, scadenza, cancellazione e opzionale biometria.
-3. **Revisione manuale semplice:** evidenziare risultati; aggiungere ciò che il rilevatore non ha trovato; rimuovere falsi positivi; rinominare segnaposto.
-4. **Ritorno e ripristino immediato:** condividere la risposta dell'IA nuovamente nell'app, associare il `jobId` corretto e ripristinare senza cercare la schermata.
-5. **Ricevuta privacy prima dell'uscita:** mostrare cosa è stato trovato, cosa è stato sostituito, cosa potrebbe non essere stato riconosciuto e quale app riceverà il contenuto.
-
-### P1 — funzioni quotidiane senza API pagate
-
-1. **OCR locale:** screenshot, fotografie e PDF scansionati. Valutare ML Kit bundled/gratuito su Android e Vision su iOS; controllare licenze, dimensione e comportamento offline prima dell'integrazione.
-2. **Voce orientata al risultato:** trasforma il parlato in messaggio, email, nota, checklist o richiesta per l'IA, poi protegge e condivide. Usare riconoscimento on-device quando disponibile; dichiarare con trasparenza quando il motore di sistema potrebbe usare la rete.
-3. **Pulizia link:** rimuovere parametri di tracciamento comuni mantenendo intatta la destinazione.
-4. **Pulizia metadati:** rimuovere localmente EXIF/geolocalizzazione dalle immagini e metadati supportati dai documenti prima della condivisione.
-5. **Azioni rapide:** widget/shortcut per Proteggi appunti, Scansiona, Nota vocale e Ripristina ultimo lavoro.
-
-### P2 — dopo sicurezza e validazione
-
-1. Desktop QR locale cifrato.
-2. Elaborazione batch e regole personalizzate Pro.
-3. Progetti e cronologia cifrati.
-4. Eventuale sincronizzazione cifrata nello spazio cloud dell'utente, solo dopo una specifica privacy dedicata.
-
-### Da non costruire ora
-
-- chatbot generico finanziato dallo sviluppatore;
-- directory Discover, community/chat e video Learn;
-- monitoraggio continuo degli appunti;
-- login Google/Drive prima del vault cifrato;
-- gamification complessa prima di dimostrare la retention;
-- claim «100% anonimo», «anonimizzazione garantita» o «sicurezza assoluta»;
-- qualsiasi funzione con API a consumo pagate dal proprietario.
-
-## Ipotesi di home futura da validare
-
-Per il pubblico generalista, le azioni dovrebbero esprimere obiettivi e non tecnologie:
-
-1. **Proteggi e condividi** — azione principale.
-2. **Scansiona** — foto, screenshot, PDF e documenti.
-3. **Parla** — messaggio, email, nota, checklist o richiesta IA.
-4. **Cronologia** — accesso secondario.
-
-Converti in Markdown, Prepara per l'IA e Ripristina rimangono funzioni, ma possono diventare modalità o passaggi interni invece di quattro prodotti equivalenti in home. Questa modifica non è ancora approvata per l'implementazione: va prima prototipata e confrontata con l'interfaccia corrente.
-
-## Android corrente
-
-- Capacitor 8.5.0; application ID `app.privai.pocket`.
-- `minSdkVersion = 24`, `compileSdkVersion = 36`, `targetSdkVersion = 36`.
-- Asset web sincronizzabili in `android/app/src/main/assets/public/`.
-- La compilazione locale è stata bloccata dal download di `gradle-8.14.3-all.zip` non raggiungibile nell'ambiente usato.
-- Nessun APK installabile è stato ancora validato.
-
-## Ultima verifica nota — 25 agosto 2026
-
-- `node --test`: 68 test superati, 0 falliti.
-- Test d'integrazione PDF: estrazione reale riuscita con il motore offline incluso.
-- `node scripts/build-web.mjs`: build web completata in `www/`.
-- `checkPackageSafety('www')`: `[]`; nessuna credenziale nota o configurazione di server remoto trovata nel pacchetto.
-- Localizzazione italiana/inglese completata per flussi, piani, API, cronologia, collaborazione, dialoghi e contenuti dinamici.
-- I valori predefiniti di Prepara cambiano lingua senza sovrascrivere ciò che l'utente ha già scritto.
-- Il segnaposto tecnico `TELEPHONENUM` è stato sostituito nell'output protetto dal leggibile `PHONE`.
-- Cache portata a `v17`; CSS, entry JavaScript e relativo grafo di moduli hanno query di versione per impedire combinazioni di file vecchi e nuovi.
-- Modifiche `v17` verificate e pubblicate sul branch `main`.
-- Non è disponibile un browser headless nel checkpoint: nessuna ispezione visuale reale a 360/390/430/680 px è stata eseguita in questo ambiente.
-- Il checkpoint non contiene `.git`: non sono stati creati commit e non è stato modificato GitHub.
-- Ultimo commit dei sorgenti/test prima dell'aggiornamento finale di questo handoff: `53eef4b7c67ba07996d987dea467f6d49f773efc`.
-
-Questi risultati devono essere rieseguiti: non considerarli prova dell'APK.
-
-## Prossime attività, in ordine
-
-- [x] Correggere localmente la barra inferiore perché il nome Instagram sia leggibile insieme a `+` e microfono.
-- [x] Forzare localmente il tema chiaro; resta da provarlo su Chrome, Samsung Internet e PWA installata.
-- [x] Pubblicare il cestino contestuale negli editor e invalidare la cache con `v16`.
-- [ ] Verificare visivamente la build servita da GitHub Pages su Chrome, Samsung Internet e PWA installata dopo l'aggiornamento del service worker.
-- [ ] Pubblicare e provare l'importazione PDF su Chrome e Samsung Internet con PDF reali semplici, multipagina e scansionati.
-- [ ] Ripristinare i metadati Git o continuare tramite il repository collegato.
-- [ ] Sincronizzare la PWA `v17` nel progetto Android.
-- [ ] Compilare, installare e smoke-testare l'APK su telefono reale.
-- [ ] Definire test di accettazione e implementare il vault Keystore/AES-GCM con test prima del codice.
-- [ ] Implementare revisione manuale dei dati trovati e ricevuta privacy.
-- [ ] Implementare il Share Target nativo e il ritorno/ripristino intuitivo dall'assistente IA.
-- [ ] Eseguire la revisione delle minacce e solo dopo iniziare il desktop QR locale.
-- [ ] Prototipare OCR locale su dispositivi Android di potenza diversa; misurare dimensione, velocità e affidabilità.
-- [ ] Progettare la modalità voce con distinzione verificabile tra riconoscimento on-device e servizio di rete.
-- [ ] Valutare pulizia link e metadati come secondo vantaggio quotidiano oltre al flusso IA.
-- [ ] Prototipare la home per obiettivi e confrontarla con quella attuale usando test utenti, senza eliminare le funzioni esistenti.
-- [ ] Testare con almeno un piccolo gruppo di utenti non tecnici: completamento del primo lavoro, errori, numero di tocchi, ritorno settimanale e disponibilità a pagare.
-- [ ] Validare prezzo Pro, limite Free e valore dei gettoni con utenti reali prima dei pagamenti.
-
-## File principali
-
-- `README.md`: avvio e quadro sintetico.
-- `HANDOFF.md`: fonte di verità per stato e prossime attività.
-- `docs/superpowers/specs/2026-08-24-privai-pocket-android-design.md`: perimetro Android originario.
-- `docs/specs/2026-08-24-privai-bridge-security-spec.md`: decisioni di sicurezza desktop.
-- `docs/superpowers/plans/2026-08-24-privai-bridge.md`: piano eseguibile e checklist.
-- `src/domain/`: Markdown, PDF, rilevamento, protezione, ripristino, contatori e persistenza.
-- `vendor/`: PDF.js, worker offline e licenza Apache-2.0.
-- `src/app.mjs`, `index.html`, `styles.css`: flussi e interfaccia.
-- `tests/`: test automatici.
-
-## Comandi
-
-```bash
-node --test tests/*.test.mjs
-npm run build:web
-npm run android:sync
-npm run android:debug
+```
+repo-github/                    ← cartella di lavoro canonica, ramo lavoro-locale-v2
+├── index.html, styles.css      ← v2 completa
+├── src/app.mjs                 ← orchestrazione, ~1300 righe
+├── src/icons.mjs                ← libreria icone (Lucide + 2 originali)
+├── src/domain/                 ← pii, vault, recipes, plan, intake, markdown, swipe,
+│                                  greeting, i18n, pdf, share (10 moduli)
+├── src/locales/it.mjs, en.mjs   ← 100% parità di chiavi, verificata da test
+├── tests/                      ← 102 test, node --test tests/*.test.mjs
+├── android/app/src/main/java/app/privai/pocket/
+│   ├── MainActivity.java        ← NUOVO
+│   ├── SecureStorePlugin.java   ← NUOVO — Keystore/AES-GCM
+│   ├── ShareTargetPlugin.java   ← NUOVO — condivisione in ingresso
+│   └── OutboundSharePlugin.java ← RISCRITTO (il sorgente originale non era recuperabile)
+├── android/app/src/main/AndroidManifest.xml  ← + <queries> + 3 intent-filter
+└── vendor/LUCIDE-LICENSE.txt    ← NUOVO
 ```
 
-## Prompt per riprendere in una nuova conversazione
+**48 file modificati/aggiunti, NESSUN commit creato, NESSUN push.** Tutto sul ramo locale `lavoro-locale-v2`. `git status --short` nella cartella per il diff completo.
 
-> Continua il progetto mobile privacy-first dal repository GitHub `Thezine88/privai-pocket-preview` e considera `HANDOFF.md` la fonte di verità. Leggilo integralmente insieme alla specifica Android e ai documenti del desktop bridge prima di modificare il codice. Il nome commerciale è ancora aperto; `PrivAI Pocket` è solo operativo e `Scrubit` è stato ritirato per collisioni. Vincolo non negoziabile: il proprietario non vuole costi operativi, server obbligatori o API pagate da lui. Mantieni originali, mapping e chiavi sul telefono; non promettere anonimizzazione garantita. Prima verifica repository/commit, riesegui i test e controlla la PWA pubblica. Procedi nell'ordine: APK reale → vault Keystore/AES-GCM → revisione manuale/ricevuta privacy → Share Target e ripristino → OCR/voce locali → desktop QR sulla rete locale. Non attivare relay, pagamenti, Google Drive o API reali prima dei gate documentati. Prima di implementare una nuova direzione UI, proponi il flusso e attendi approvazione.
+La cartella `privai-v2/` (sorella di `repo-github/`) è la **prima bozza superata** di questa riscrittura — l'ho abbandonata a metà sessione quando ho scoperto il repo GitHub, per lavorare direttamente nel clone reale. Non serve più; se ingombra si può cancellare, ma non contiene nulla che non sia già (meglio) dentro `repo-github`.
+
+Il server di anteprima (`.claude/launch.json` nella cartella padre) punta a `repo-github`. **Attenzione**: il browser tiene in cache i moduli ES per origine (host:porta) anche dopo aver svuotato la cache esplicitamente — se qualcosa non si aggiorna, cambiare porta nel launch.json è più affidabile di un semplice ricaricamento forzato.
+
+## 8 · Cosa NON è stato fatto / verificato
+
+- **Nessuna compilazione Gradle reale.** Questa macchina non ha Java né Android SDK. Il workflow `.github/workflows/android-debug.yml` (già presente nel repo, a `workflow_dispatch`) compila tutto su GitHub Actions — non serve installare nulla in locale, basta pushare il ramo e lanciarlo dalla pagina Actions.
+- **Nessun test su device reale.** Condivisione in ingresso, cassaforte su Keystore, tutto il ciclo condividi→proteggi→IA→ripristina: scritto e testato via unità/DOM, mai provato su un telefono vero.
+- **Nessun commit, nessun push.** Il ramo `lavoro-locale-v2` esiste solo su questa macchina.
+- **Canale della modalità desktop** (§5): infrastruttura pronta, canale fra i due dispositivi da decidere.
+- **Licenza dei pesi di rizzo-pii**: mai verificata: se fosse AGPL, incompatibile con un'app a pagamento.
+- **Banco di prova del rilevamento**: 28 frasi scritte da me — bastano per accorgersi di una regressione, non per dichiarare un livello di qualità commerciale.
+
+## 9 · Roadmap aggiornata, in ordine di priorità
+
+### Bloccanti — prima di tutto il resto
+
+1. **Rivedere il diff e fare un commit locale descrittivo.** 48 file non committati sono il rischio più concreto in questo momento — un `git stash` o un comando distruttivo per sbaglio li perderebbe. *(Non l'ho fatto da solo: creare commit non è un'azione che prendo senza che tu lo chieda esplicitamente.)*
+2. **Push del ramo + lancio del workflow Actions.** Un clic sulla pagina Actions del repo, pochi minuti, e si ottiene il primo APK reale con tutto il lavoro di questa sessione dentro.
+3. **Provare su un telefono vero**: installare l'APK, condividere un PDF/testo da WhatsApp o Gmail, verificare che l'app si apra già sulla schermata dei dati trovati. Poi il ciclo completo: proteggi → incolla in ChatGPT → chiudi tutto → riapri il giorno dopo → verifica che il ripristino funzioni ancora.
+4. **«Elabora testo»**: verificare che PrivAI compaia nel menu che appare selezionando del testo in un'altra app — il gesto più veloce che Android permetta.
+
+### Prossimi passi — per l'uso quotidiano
+
+5. **Riquadro nelle impostazioni rapide di Android** («Proteggi gli appunti»): copi qualcosa, scendi la tendina, tocchi — protetto senza aprire l'app. È il salto da «un'altra app» a «un riflesso», e nessuno strumento concorrente può farlo (girano tutti su desktop).
+6. **Notifica persistente** mentre un lavoro è aperto in cassaforte.
+7. **La rubrica si costruisce da sola**: «Hai nascosto *Rossi* tre volte: vuoi che lo faccia sempre?»
+8. **Registro di ciò che esce dal telefono**: dimostra la promessa di privacy invece di limitarsi a dichiararla.
+
+### Il piano creator (obiettivo esplicito: pubblicità tramite creator YouTube/TikTok/Instagram)
+
+9. **Modalità dimostrazione**: un documento finto ma realistico, per chi vuole girare un video senza esporre dati veri. *Prova già raccolta*: nelle schermate della vecchia app usate per il confronto in questa sessione, il testo di esempio era un pezzo del CV del proprietario — per mostrare l'app ha dovuto mostrare i propri dati.
+10. Scheda «prima → dopo» condivisibile, costruita solo sul documento dimostrativo.
+11. Ricette pensate per i creator stessi («Rispondi a una proposta di sponsorizzazione»).
+12. Codice creator via Google Play (nessun server, nessun account) — la revenue share va verificata prima di prometterla a qualcuno.
+
+### Monetizzazione (dopo i primi utenti, non prima)
+
+13. Cassaforte con blocco biometrico.
+14. Più documenti insieme (batch).
+15. Word (.docx) — il formato in cui arrivano contratti e verbali negli studi italiani.
+16. Pagamenti con Play Billing — ultimo passo, non primo: il prezzo si decide guardando quanto tempo l'app fa risparmiare a chi la usa già.
+
+### Qualità e fossato
+
+17. Banco di prova del rilevamento su qualche centinaio di documenti reali, non 28 frasi scritte da me.
+18. Livello neurale per i nomi mai introdotti prima (il caso che continuiamo a sbagliare) — verificare prima la licenza di rizzo-pii.
+19. Canale della modalità desktop via QR.
+
+### Non fare ora (deciso esplicitamente, non dimenticato)
+
+Chatbot generico finanziato dallo sviluppatore; login Google/Drive prima del vault cifrato (già fatto: Keystore); gamification complessa prima di dimostrare la retention; claim «100% anonimo» o «sicurezza assoluta»; qualunque API a consumo pagata dal proprietario; rinominare il progetto senza la verifica formale del marchio (§2).
+
+---
+
+## 10 · Comandi per riprendere
+
+```bash
+cd repo-github
+git status --short              # il diff completo di questa sessione
+node --test tests/*.test.mjs    # 102 test, devono restare verdi
+npm run build:web               # ricostruisce www/
+npx serve -l 4173 .             # anteprima locale — cambiare porta se qualcosa sembra "vecchio"
+```
+
+Per l'APK: `git push` del ramo (dopo eventuale commit) → GitHub → Actions → `Android debug APK` → Run workflow.
+
+## 11 · Prompt per riprendere in una nuova conversazione
+
+> Continua PrivAI Pocket. La fonte di verità è `HANDOFF.md` nella cartella `repo-github/` (ramo git `lavoro-locale-v2`, mai pushato) — leggilo integralmente prima di scrivere codice, comprese le sezioni 1-5 che vengono da una sessione precedente e restano valide (vincolo di zero costi operativi, naming ancora aperto, requisiti di sicurezza Android, architettura del desktop bridge). La sezione 6 è il log dettagliato di tutto il lavoro appena fatto: riscrittura completa in un flusso unico, tre plugin Android nativi scritti ma mai compilati né provati su device, rilevamento dati sensibili portato al 97,3%, 102 test automatici. Prima azione: rivedi il diff (`git status`) e proponi un commit locale descrittivo — non sono stati fatti commit finora, per scelta esplicita. Poi segui l'ordine della roadmap in sezione 9: push + workflow Actions per il primo APK reale, prova su un telefono vero il ciclo condividi→proteggi→IA→ripristina, poi il resto. Non introdurre server, API a pagamento o dipendenze che richiedano un bundler senza discuterne prima — il progetto è deliberatamente moduli ES puri, zero build step.

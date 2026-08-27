@@ -4,4 +4,6 @@
     <string name="title_activity_main">PrivAI Pocket</string>
     <string name="package_name">app.privai.pocket</string>
     <string name="custom_url_scheme">app.privai.pocket</string>
+    <!-- Etichetta con cui PrivAI compare nel menu Condividi e in "Elabora testo". -->
+    <string name="share_target_label">Proteggi con PrivAI</string>
 </resources>

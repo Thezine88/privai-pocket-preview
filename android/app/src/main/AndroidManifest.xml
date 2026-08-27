@@ -22,6 +22,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- ▼▼▼ AGGIUNTO ▼▼▼ -->
+            <!-- Testo condiviso da qualsiasi app: WhatsApp, Gmail, Note, Chrome.
+                 Con launchMode="singleTask" la condivisione arriva all'istanza
+                 esistente invece di aprirne una nuova. -->
+            <intent-filter android:label="@string/share_target_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <!-- Documenti condivisi. I PDF li legge pdf.js dentro la WebView. -->
+            <intent-filter android:label="@string/share_target_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
+
+            <!-- "Elabora testo": PrivAI compare nel menu che appare quando si
+                 seleziona del testo in un'altra app. È il gesto più veloce che
+                 Android permetta. -->
+            <intent-filter android:label="@string/share_target_label">
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- ▲▲▲ AGGIUNTO ▲▲▲ -->
+
         </activity>
 
         <provider
@@ -38,4 +65,17 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ▼▼▼ AGGIUNTO ▼▼▼ -->
+    <!-- Su Android 11 e successivi le app installate sono invisibili se non le
+         si dichiara qui. Senza questo blocco "Scegli un'IA" trova sempre zero
+         risultati, e non dà alcun errore: sembra solo che non funzioni. -->
+    <queries>
+        <package android:name="com.openai.chatgpt" />
+        <package android:name="com.anthropic.claude" />
+        <package android:name="com.google.android.apps.bard" />
+        <package android:name="com.microsoft.copilot" />
+        <package android:name="ai.perplexity.app.android" />
+    </queries>
+    <!-- ▲▲▲ AGGIUNTO ▲▲▲ -->
 </manifest>
