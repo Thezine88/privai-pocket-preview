@@ -45,6 +45,17 @@ test('registers separate Android choosers for generic sharing and installed AI a
   assert.doesNotMatch(plugin, /Log\.|System\.out|println/);
 });
 
+test('uses Willy face for the Android adaptive and legacy launcher icons', async () => {
+  const source = await readFile(new URL('../assets/willy-app-icon-face.png', import.meta.url));
+  const background = await readFile(new URL('../android/app/src/main/res/values/ic_launcher_background.xml', import.meta.url), 'utf8');
+  const foreground = await readFile(new URL('../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png', import.meta.url));
+  const legacy = await readFile(new URL('../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png', import.meta.url));
+  assert.equal(source.subarray(1, 4).toString(), 'PNG');
+  assert.match(background, /#FF6B00/);
+  assert.equal(foreground.subarray(1, 4).toString(), 'PNG');
+  assert.equal(legacy.subarray(1, 4).toString(), 'PNG');
+});
+
 test('builds a debug APK in CI without runtime service credentials', async () => {
   const workflow = await readFile(new URL('../.github/workflows/android-debug.yml', import.meta.url), 'utf8');
   assert.match(workflow, /on:\s*\n\s*workflow_dispatch:/);
