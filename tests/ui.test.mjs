@@ -237,3 +237,13 @@ test('future voice and rewards are labelled honestly without browser recording',
   assert.doesNotMatch(app, /getUserMedia\(/);
   assert.doesNotMatch(app, /webkitSpeechRecognition|new SpeechRecognition/);
 });
+
+test('AI actions are primary and never reuse the generic share binding', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(html, /data-ai-share-result="protected-output"/);
+  assert.match(html, /data-ai-share-result="prompt-output"/);
+  assert.match(html, /data-i18n="action\.chooseAI"/);
+  assert.doesNotMatch(html, /data-share-result="(?:protected|prompt)-output"[^>]*>Invia all’IA/);
+  assert.match(app, /shareWithInstalledAI/);
+});

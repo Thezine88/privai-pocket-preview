@@ -30,6 +30,21 @@ test('keeps Android content and controls outside system bars', async () => {
   assert.match(activity, /setAppearanceLightNavigationBars\(true\)/);
 });
 
+test('registers separate Android choosers for generic sharing and installed AI apps', async () => {
+  const activity = await readFile(new URL('../android/app/src/main/java/app/privai/pocket/MainActivity.java', import.meta.url), 'utf8');
+  const plugin = await readFile(new URL('../android/app/src/main/java/app/privai/pocket/OutboundSharePlugin.java', import.meta.url), 'utf8');
+  const manifest = await readFile(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+  assert.match(activity, /registerPlugin\(OutboundSharePlugin\.class\)/);
+  assert.match(plugin, /@PluginMethod[\s\S]*void share\(/);
+  assert.match(plugin, /@PluginMethod[\s\S]*void shareWithAI\(/);
+  assert.match(plugin, /Intent\.ACTION_SEND/);
+  for (const packageName of ['com.openai.chatgpt', 'com.anthropic.claude', 'com.google.android.apps.bard', 'com.microsoft.copilot', 'ai.perplexity.app.android']) {
+    assert.match(plugin, new RegExp(packageName.replaceAll('.', '\\.')));
+    assert.match(manifest, new RegExp(packageName.replaceAll('.', '\\.')));
+  }
+  assert.doesNotMatch(plugin, /Log\.|System\.out|println/);
+});
+
 test('builds a debug APK in CI without runtime service credentials', async () => {
   const workflow = await readFile(new URL('../.github/workflows/android-debug.yml', import.meta.url), 'utf8');
   assert.match(workflow, /on:\s*\n\s*workflow_dispatch:/);

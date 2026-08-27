@@ -76,12 +76,12 @@
 - Native: `OutboundShare.shareWithAI({ text, title })`.
 - Web adapter: `shareAnywhere(text, title)` and `shareWithInstalledAI(text, title)`.
 
-- [ ] **Step 1: Scrivere test fallenti** che separino copia, condivisione generica e IA e impediscano che `Invia all’IA` usi `data-share-result`.
-- [ ] **Step 2: Verificare RED** con `node --test tests/share.test.mjs tests/capacitor.test.mjs tests/ui.test.mjs`.
-- [ ] **Step 3: Implementare `share`** con `ACTION_SEND`, MIME `text/plain` e chooser Android nativo.
-- [ ] **Step 4: Implementare `shareWithAI`** limitando il chooser alle app installate note: ChatGPT (`com.openai.chatgpt`), Claude (`com.anthropic.claude`), Gemini (`com.google.android.apps.bard`), Copilot (`com.microsoft.copilot`) e Perplexity (`ai.perplexity.app.android`); se nessuna è presente, aprire il chooser generico con messaggio trasparente.
-- [ ] **Step 5: Non scrivere testo, package o intent nei log** e non persistere il payload.
-- [ ] **Step 6: Verificare GREEN** e mantenere `navigator.share` soltanto come fallback web/PWA.
+- [x] **Step 1: Scrivere test fallenti** che separino copia, condivisione generica e IA e impediscano che `Invia all’IA` usi `data-share-result`.
+- [x] **Step 2: Verificare RED** con `node --test tests/share.test.mjs tests/capacitor.test.mjs tests/ui.test.mjs`.
+- [x] **Step 3: Implementare `share`** con `ACTION_SEND`, MIME `text/plain` e chooser Android nativo.
+- [x] **Step 4: Implementare `shareWithAI`** limitando il chooser alle app installate note: ChatGPT (`com.openai.chatgpt`), Claude (`com.anthropic.claude`), Gemini (`com.google.android.apps.bard`), Copilot (`com.microsoft.copilot`) e Perplexity (`ai.perplexity.app.android`); se nessuna è presente, aprire il chooser generico con messaggio trasparente.
+- [x] **Step 5: Non scrivere testo, package o intent nei log** e non persistere il payload.
+- [x] **Step 6: Verificare GREEN** e mantenere `navigator.share` soltanto come fallback web/PWA.
 - [ ] **Step 7: Commit** `feat(android): separate copy share and AI actions`.
 
 ### Task 4: Riduzione del carico visivo

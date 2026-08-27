@@ -4,6 +4,7 @@ import { createStore } from './domain/storage.mjs?v=17';
 import { greetingForHour } from './domain/greeting.mjs?v=17';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs?v=17';
 import { containsWebLinks, removeWebLinks } from './domain/share.mjs?v=17';
+import { createOutboundShare } from './domain/outbound-share.mjs?v=17';
 import { extractTextFromPdf, isPdfFile, PdfImportError } from './domain/pdf.mjs?v=17';
 import { createWorkflowState, transitionWorkflow, containsKnownPlaceholder } from './domain/workflow.mjs?v=17';
 
@@ -13,6 +14,11 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const initialLocale = persistentStore.getLocale() ?? navigator.language;
 const state = { markdown: '', protectedText: '', findings: [], mapping: {}, maskScope: '', provider: '', selectedTemplate: 'checklist', points: Number(localStorage.getItem('ai-pocket:points') || 0), translator: createTranslator(initialLocale) };
+const outboundShare = createOutboundShare({
+  isNative: () => Boolean(globalThis.Capacitor?.isNativePlatform?.()),
+  nativePlugin: () => globalThis.Capacitor?.Plugins?.OutboundShare,
+  webShare: navigator.share?.bind(navigator),
+});
 const workflows = {
   convert: createWorkflowState('convert'),
   protect: createWorkflowState('protect'),
@@ -304,7 +310,7 @@ $('#prepare-button').addEventListener('click', () => {
   award(15); toast(state.translator.t('dynamic.packSaved'));
 });
 
-async function shareText(text) {
+async function shareText(text, aiOnly = false) {
   let shareCopy = text;
   if (containsWebLinks(text)) {
     const dialog = $('#share-links-dialog');
@@ -317,8 +323,12 @@ async function shareText(text) {
     if (choice === 'remove') shareCopy = removeWebLinks(text);
   }
   try {
-    if (navigator.share) await navigator.share({ title: state.translator.t('dynamic.shareTitle'), text: shareCopy });
-    else { await copyText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+    const title = state.translator.t('dynamic.shareTitle');
+    const result = aiOnly
+      ? await outboundShare.shareWithInstalledAI(shareCopy, title)
+      : await outboundShare.shareAnywhere(shareCopy, title);
+    if (result?.unavailable) { await copyText(shareCopy); toast(state.translator.t('dynamic.shareFallback')); }
+    else if (result?.fallback) toast(state.translator.t('dynamic.noAIApps'));
   } catch (error) {
     if (error?.name !== 'AbortError') toast(state.translator.locale === 'it' ? 'Condivisione non riuscita. Il testo resta qui.' : 'Sharing failed. Your text is still here.');
   }
@@ -349,6 +359,12 @@ $$('[data-share-result]').forEach((button) => button.addEventListener('click', a
   const text = $(`#${button.dataset.shareResult}`).value;
   if (!text.trim()) return toast(state.translator.t('dynamic.noShare'));
   await shareText(text);
+}));
+
+$$('[data-ai-share-result]').forEach((button) => button.addEventListener('click', async () => {
+  const text = $(`#${button.dataset.aiShareResult}`).value;
+  if (!text.trim()) return toast(state.translator.t('dynamic.noShare'));
+  await shareText(text, true);
 }));
 
 function renderHistory() {

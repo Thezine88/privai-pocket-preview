@@ -88,7 +88,8 @@
           <section class="workflow-phase" data-phase="result" hidden>
             <p class="eyebrow" data-i18n="convert.resultEyebrow">RISULTATO PRONTO</p><h2 class="screen-title" data-i18n="protect.output">Versione protetta</h2>
             <p class="screen-intro" id="protected-summary" data-i18n="protect.protectedSummary">I dati selezionati sono stati sostituiti sul telefono.</p>
-            <article class="editor-card output"><div class="result-header result-actions-sticky"><span data-i18n="protect.output">Versione protetta</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="action.share">Condividi</button><button data-share-result="protected-output" data-i18n="protect.openAI">Invia all’IA</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="La versione protetta apparirà qui…" aria-label="Versione protetta"></textarea></article>
+            <button class="primary-button full" data-ai-share-result="protected-output" data-i18n="action.chooseAI">Scegli un’IA</button>
+            <article class="editor-card output"><div class="result-header result-actions-sticky"><span data-i18n="protect.output">Versione protetta</span><div class="result-actions"><button data-copy-result="protected-output" data-i18n="action.copy">Copia</button><button data-share-result="protected-output" data-i18n="action.share">Condividi</button></div></div><textarea id="protected-output" data-i18n-placeholder="protect.outputPlaceholder" placeholder="La versione protetta apparirà qui…" aria-label="Versione protetta"></textarea></article>
             <button class="wide-action" id="to-prepare"><span data-i18n="protect.continue">Prepara per l’IA</span><span>→</span></button>
             <button class="text-button" data-workflow-edit="protect" type="button" data-i18n="action.editOriginal">Modifica originale</button>
             <button class="text-button" id="clear-mapping" type="button" data-i18n="restore.clear">Elimina le corrispondenze locali</button>
@@ -125,7 +126,9 @@ Mantieni date e scadenze</textarea></label><label class="field"><span data-i18n=
           </section>
           <section class="workflow-phase" data-phase="result" hidden>
             <p class="eyebrow" data-i18n="prepare.resultEyebrow">PRONTO DA USARE</p><h2 class="screen-title" data-i18n="prepare.ready">Pronto per l’IA</h2>
-            <article class="editor-card output tall"><div class="result-header result-actions-sticky"><span data-i18n="prepare.ready">Pronto per l’IA</span><div class="result-actions"><button data-copy-result="prompt-output" data-i18n="action.copy">Copia</button><button data-share-result="prompt-output" data-i18n="action.share">Condividi</button><button data-share-result="prompt-output">Invia all’IA</button></div></div><textarea id="prompt-output" aria-label="Pronto per l’IA"></textarea></article>
+            <article class="editor-card output tall"><div class="result-header result-actions-sticky"><span data-i18n="prepare.ready">Pronto per l’IA</span></div><textarea id="prompt-output" aria-label="Pronto per l’IA"></textarea></article>
+            <button class="primary-button full" data-ai-share-result="prompt-output" data-i18n="action.chooseAI">Scegli un’IA</button>
+            <div class="result-actions"><button data-copy-result="prompt-output" data-i18n="action.copy">Copia</button><button data-share-result="prompt-output" data-i18n="action.share">Condividi</button></div>
             <button class="text-button" data-workflow-edit="prepare" type="button" data-i18n="action.editRequest">Modifica richiesta</button>
           </section>
         </div>
