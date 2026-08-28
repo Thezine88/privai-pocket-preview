@@ -169,13 +169,16 @@ export const it = Object.freeze({
 
   /* --- desktop --- */
   'desktop.title': 'Continua sul computer',
-  'desktop.body': 'Apri privai.app/desk dal computer e inquadra il codice, oppure digita le sei lettere.',
+  'desktop.body': 'Apri l’app sul computer senza installare nulla: inquadra il QR, oppure condividi il link con te stesso — email, WhatsApp Web, note, quello che usi già.',
   'desktop.remaining': 'Ti restano {count} sessioni da {minutes} minuti.',
   'desktop.remainingOne': 'Ti resta 1 sessione da {minutes} minuti.',
   'desktop.none': 'Hai usato tutte le sessioni gratuite. Con Pro non si contano.',
   'desktop.unlimited': 'Sessioni illimitate.',
   'desktop.active': 'Sessione attiva: {minutes} minuti rimasti.',
   'desktop.timer': 'La sessione si chiude da sola fra {minutes}:{seconds}.',
+  'desktop.unavailable': 'Il collegamento al computer non è disponibile su questo dispositivo.',
+  'bridge.share': 'Condividi il link',
+  'bridge.shareTitle': 'Collega questo computer a PrivAI Pocket',
 
   /* --- nascondi altro --- */
   'manual.title': 'Nascondi altro',

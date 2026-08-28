@@ -476,10 +476,11 @@
 <dialog id="dlg-desktop">
   <form method="dialog" class="dialog-card">
     <h2 data-i18n="desktop.title">Continua sul computer</h2>
-    <p data-i18n="desktop.body">Apri privai.app/desk dal computer e inquadra il codice, oppure digita le sei lettere.</p>
+    <p data-i18n="desktop.body">Apri l’app sul computer senza installare nulla: inquadra il QR, oppure condividi il link con te stesso — email, WhatsApp Web, note, quello che usi già.</p>
     <div id="qr-holder" style="display:grid;place-items:center;padding:8px 0"></div>
-    <p style="text-align:center;font-size:26px;font-weight:900;letter-spacing:.18em" id="pairing-code"></p>
-    <p class="lead" style="text-align:center" id="desktop-timer"></p>
+    <p class="lead" id="desktop-link" style="text-align:center;word-break:break-all;font-size:12px"></p>
+    <button class="btn btn-soft btn-full" id="desktop-share" type="button" data-i18n="bridge.share">Condividi il link</button>
+    <p class="lead" style="text-align:center;margin-top:12px" id="desktop-timer"></p>
     <div class="dialog-actions">
       <button class="btn btn-soft" value="cancel" type="submit" data-i18n="action.close">Chiudi</button>
     </div>

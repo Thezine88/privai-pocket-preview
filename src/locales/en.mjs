@@ -152,13 +152,16 @@ export const en = Object.freeze({
   'plan.proBody': 'Unlimited vault and history, fingerprint lock, desktop with no time limit.',
 
   'desktop.title': 'Continue on your computer',
-  'desktop.body': 'Open privai.app/desk on your computer and scan the code, or type the six letters.',
+  'desktop.body': 'Open the app on your computer without installing anything: scan the QR, or share the link with yourself — email, WhatsApp Web, notes, whatever you already use.',
   'desktop.remaining': 'You have {count} sessions of {minutes} minutes left.',
   'desktop.remainingOne': 'You have 1 session of {minutes} minutes left.',
   'desktop.none': 'You have used all the free sessions. Pro does not count them.',
   'desktop.unlimited': 'Unlimited sessions.',
   'desktop.active': 'Session running: {minutes} minutes left.',
   'desktop.timer': 'The session closes itself in {minutes}:{seconds}.',
+  'desktop.unavailable': 'Connecting to a computer is not available on this device.',
+  'bridge.share': 'Share the link',
+  'bridge.shareTitle': 'Connect this computer to PrivAI Pocket',
 
   'manual.title': 'Hide something else',
   'manual.body': 'Type the word or phrase to hide: I replace it everywhere it appears in the text.',

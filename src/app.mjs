@@ -17,6 +17,7 @@ import { buildRequest, titleFromText } from './domain/markdown.mjs';
 import { createSecureStore, createRemoteStore, createVault, DEFAULT_RETENTION, retentionLabel, clampRetention } from './domain/vault.mjs';
 import { RECIPES, getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor } from './domain/recipes.mjs';
 import { planOf, PRO_BENEFITS, createDesktopSessions, pairingCode, isUnlimited } from './domain/plan.mjs';
+import { renderQrSvg } from './domain/qr.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
 import { createOutbound, createInbound, readClipboard, writeClipboard } from './domain/intake.mjs';
 import { containsWebLinks, removeWebLinks } from './domain/share.mjs';
@@ -1123,20 +1124,37 @@ function renderProBenefits() {
     </div>`).join('');
 }
 
-/* --- desktop via QR --- */
+/* --- desktop via QR/link --- */
 
 let desktopTimer = null;
 
 async function startDesktop() {
-  const code = pairingCode();
-  const result = await desktop.start(state.plan, code);
+  const bridgePlugin = globalThis.Capacitor?.Plugins?.BridgeServer;
+  if (!bridgePlugin) return toast(t('desktop.unavailable'));
+
+  const token = pairingCode();
+  const result = await desktop.start(state.plan, token);
   if (!result.ok) return toast(t('desktop.none'));
 
-  $('#pairing-code').textContent = result.session.code;
-  drawQr(`https://privai.app/desk#${result.session.code}`);
+  let native;
+  try {
+    native = await bridgePlugin.start({ token, endsAt: result.session.endsAt });
+  } catch {
+    await desktop.stop();
+    return toast(t('desktop.unavailable'));
+  }
+
+  const link = `https://thezine88.github.io/privai-pocket-preview/bridge/?ip=${encodeURIComponent(native.ip)}&porta=${native.port}&token=${encodeURIComponent(token)}`;
+  $('#qr-holder').innerHTML = renderQrSvg(link);
+  $('#desktop-link').textContent = link;
+  $('#desktop-share').onclick = () => outbound.shareAnywhere(link, t('bridge.shareTitle'));
+
   tickDesktop(result.session);
   await ask('#dlg-desktop');
+
   clearInterval(desktopTimer);
+  await bridgePlugin.stop?.();
+  await desktop.stop();
   renderSettings();
 }
 
@@ -1149,7 +1167,7 @@ function tickDesktop(session) {
     const minutes = Math.floor(left / 60000);
     const seconds = String(Math.floor((left % 60000) / 1000)).padStart(2, '0');
     node.textContent = t('desktop.timer', { minutes, seconds });
-    if (left <= 0) { clearInterval(desktopTimer); desktop.stop(); $('#dlg-desktop').close(); }
+    if (left <= 0) { clearInterval(desktopTimer); $('#dlg-desktop').close(); }
   };
   update();
   desktopTimer = setInterval(update, 1000);

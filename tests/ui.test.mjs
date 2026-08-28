@@ -212,3 +212,13 @@ test('bridge mode: un token nell\'URL senza bridge nativo significa il magazzino
   assert.match(app, /function bridgeToken/);
   assert.match(app, /dataset\.context\s*=\s*'desktop'/);
 });
+
+test('il ponte desktop non nomina più un dominio finto, e sa condividere un link vero', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /BridgeServer/);
+  assert.match(app, /renderQrSvg/);
+  assert.doesNotMatch(app, /privai\.app\/desk/);
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /privai\.app\/desk/);
+  assert.match(html, /id="desktop-share"/);
+});
