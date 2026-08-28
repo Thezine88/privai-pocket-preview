@@ -118,4 +118,31 @@ public class SecureStorePlugin extends Plugin {
         prefs().edit().remove(name).apply();
         call.resolve();
     }
+
+    /** Stessa lettura di get(), ma per essere chiamata da un altro plugin
+     *  Java (BridgeServerPlugin), non dal bridge Capacitor. Restituisce il
+     *  JSON già serializzato così com'è in memoria, null se assente o
+     *  illeggibile. Nessun prefisso aggiunto qui: come get(), si aspetta
+     *  la chiave già nella forma finale (chi chiama decide se aggiungere
+     *  PREFIX, esattamente come fa vault.mjs prima di native.get). */
+    public String readRaw(String key) {
+        String stored = prefs().getString(key, null);
+        if (stored == null) return null;
+        try {
+            return decrypt(stored);
+        } catch (Exception error) {
+            prefs().edit().remove(key).apply();
+            return null;
+        }
+    }
+
+    /** Stessa scrittura di set(), per uso diretto da un altro plugin Java. */
+    public void writeRaw(String key, String value) throws Exception {
+        prefs().edit().putString(key, encrypt(value)).apply();
+    }
+
+    /** Stessa cancellazione di remove(), per uso diretto da un altro plugin Java. */
+    public void removeRaw(String key) {
+        prefs().edit().remove(key).apply();
+    }
 }
