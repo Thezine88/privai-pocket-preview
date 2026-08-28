@@ -97,7 +97,11 @@ public class BridgeServerPlugin extends Plugin {
                     case PUT: {
                         String body = readBody(session);
                         org.json.JSONObject json = new org.json.JSONObject(body);
-                        secureStore.writeRaw(prefixedKey, org.json.JSONObject.valueToString(json.get("value")));
+                        Object value = json.get("value");
+                        String serialized = value instanceof String
+                            ? org.json.JSONObject.quote((String) value)
+                            : String.valueOf(value);
+                        secureStore.writeRaw(prefixedKey, serialized);
                         return newFixedLengthResponse(Response.Status.OK, "application/json", "{}");
                     }
                     case DELETE: {
@@ -115,6 +119,7 @@ public class BridgeServerPlugin extends Plugin {
         private String readBody(IHTTPSession session) throws IOException {
             String contentLength = session.getHeaders().get("content-length");
             int len = contentLength != null ? Integer.parseInt(contentLength) : 0;
+            if (len < 0 || len > 1_000_000) return "";
             byte[] buffer = new byte[len];
             int offset = 0;
             while (offset < len) {
