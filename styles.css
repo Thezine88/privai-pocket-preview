@@ -136,7 +136,13 @@ body {
   overscroll-behavior-y: none;
 }
 
-h1, h2, h3 { margin: 0; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
+/* 700 (Bold), non 800 (ExtraBold): Material 3 rileva che il peso extra-bold
+   viene percepito come "troppo pesante" da chi legge, e i suoi stessi
+   token per i titoli usano peso Regular affidando la gerarchia alla
+   dimensione, non al grassetto estremo. A 23-30px l'800 chiude le forme
+   delle lettere più del necessario — il 700 resta ben distinto dal corpo
+   del testo (400) senza perdere leggibilità. */
+h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
 p { margin: 0; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
