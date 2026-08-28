@@ -629,14 +629,14 @@ const blocks = {
 '██': '█',
 '█ ': '▀',
 ' █': '▄',
-' ': ' '
+'  ': ' '
 };
 
 const blocksLastLineNoMargin = {
 '██': '▀',
 '█ ': '▀',
 ' █': ' ',
-' ': ' '
+'  ': ' '
 };
 
 let ascii = '';
@@ -688,7 +688,7 @@ const max = size - margin;
 let y, x, r, p;
 
 const white = Array(cellSize+1).join('██');
-const black = Array(cellSize+1).join(' ');
+const black = Array(cellSize+1).join('  ');
 
 let ascii = '';
 let line = '';
