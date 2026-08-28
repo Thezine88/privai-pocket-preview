@@ -50,7 +50,7 @@ Nessun relay cloud. Telefono e computer sulla stessa rete (o hotspot dal telefon
 
 Documenti vincolanti (precedenti al vincolo di zero costi — dove parlano di relay cloud sono superati da questa sezione): `docs/specs/2026-08-24-privai-bridge-security-spec.md`, `docs/superpowers/plans/2026-08-24-privai-bridge.md`.
 
-**Stato in questa sessione:** l'infrastruttura di accoppiamento (conteggio sessioni, timer, codice a 6 lettere) è scritta in `src/domain/plan.mjs` e funziona nei test; il **canale fra i due dispositivi non esiste ancora** — resta una decisione di prodotto da prendere prima di scrivere altro codice qui.
+**Stato:** scritto (sessione del 28/08/2026) — `BridgeServerPlugin.java` (server locale, NanoHTTPD), `createRemoteStore` in `vault.mjs`, QR vero (`vendor/qrcode.mjs`, MIT), dialogo "Continua sul computer" completato con link condivisibile e paginetta pubblica di reindirizzamento (`bridge/index.html`, GitHub Pages — repuntato a `lavoro-locale-v2` e già live). Specifica in `docs/superpowers/specs/2026-08-28-desktop-bridge-design.md`, piano in `docs/superpowers/plans/2026-08-28-desktop-bridge.md`. **Non ancora compilato né provato su device** — nessun SDK Android in questa sessione, e nessuna rete Wi-Fi reale su cui provare il collegamento vero.
 
 ---
 
@@ -220,7 +220,7 @@ Il server di anteprima (`.claude/launch.json` nella cartella padre) punta a `rep
 Il ragionamento: PrivAI diventa indispensabile non con una funzione in più, ma quando appare da sé in ogni posto dove le persone già spostano contenuti verso un'IA, senza cambiare abitudini. Ordine di priorità:
 
 - ~~**Riquadro nelle impostazioni rapide di Android**~~ → **scritto e revisionato tre volte** (§7.3): `QuickProtectTileService.java` + `QuickProtectActivity.java` + `QuickProtectPlugin.java`, orchestrati da `runQuickProtect()` in `app.mjs` e dalla decisione pura in `src/domain/quickProtect.mjs`. Fonte di verità: `docs/superpowers/specs/2026-08-27-quick-settings-tile-design.md`. **Resta da provare su device** (punto 4 sopra).
-6. **Ponte desktop via QR** (priorità alzata, era in fondo alla lista): l'infrastruttura di sessione è pronta ma il canale fra telefono e PC non esiste ancora. È il differenziale più grande e meno realizzato della visione di prodotto — chi scrive prompt lunghi lo fa spesso da desktop, non da telefono.
+- ~~**Ponte desktop via QR**~~ → **scritto, da provare** (§5): `BridgeServerPlugin.java` (server locale, NanoHTTPD) + `createRemoteStore` in `vault.mjs` + QR vero (`vendor/qrcode.mjs`) + dialogo "Continua sul computer" completato + paginetta pubblica di reindirizzamento (`bridge/index.html`, GitHub Pages già repuntato a `lavoro-locale-v2` e live). Fonte di verità: `docs/superpowers/specs/2026-08-28-desktop-bridge-design.md`. **Resta da compilare e provare su device e rete Wi-Fi reale** — nessun SDK Android in questa sessione.
 7. **Screenshot via OCR**: estendere lo `ShareTargetPlugin` già scritto ad accettare anche `image/*`, passare il testo estratto (Android ML Kit Text Recognition, on-device, gratuito) nella pipeline di rilevamento esistente. Prima versione: estrai e rileva come una richiesta normale, **non** redigere l'immagine — un box mal piazzato o un OCR che manca una riga darebbe una falsa sensazione di sicurezza, e qui la sicurezza è il core.
 8. **Widget in home screen** («Proteggi appunti» con un tocco): complementare al riquadro nelle impostazioni rapide, ma molto più scopribile per chi non è un power user — il pubblico target dichiarato (chi usa l'IA ogni giorno ma non è pratico).
 
