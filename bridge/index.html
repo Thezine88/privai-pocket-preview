@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrivAI Pocket — Collega questo computer</title>
+<meta property="og:title" content="🔒 Collega questo computer a PrivAI Pocket">
+<meta property="og:description" content="Apri questo link sul computer che vuoi collegare al telefono, sulla stessa rete Wi-Fi.">
+<style>
+  @font-face {
+    font-family: "Willy Rounded";
+    src: url("../assets/fonts/willy-rounded.otf") format("opentype");
+    font-weight: 400 900;
+    font-display: swap;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid; place-items: center; text-align: center;
+    font-family: "Willy Rounded", ui-rounded, system-ui, sans-serif;
+    background: linear-gradient(160deg, #FF6B00 0%, #E85D00 60%, #C94E00 100%);
+    color: #fff;
+    padding: 24px;
+  }
+  h1 {
+    font-size: clamp(28px, 6vw, 44px);
+    margin: 0 0 12px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: apparso 500ms ease forwards;
+  }
+  p { font-size: 15px; opacity: .9; max-width: 42ch; margin: 0 auto; }
+  #errore { display: none; margin-top: 20px; font-size: 14px; opacity: .95; }
+  @keyframes apparso { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    h1 { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div>
+    <h1>Eccoti, iniziamo!</h1>
+    <p>Ti porto sul telefono che ha generato questo link…</p>
+    <p id="errore">Non riesco a raggiungerlo. Controlla che computer e telefono siano sulla stessa rete Wi-Fi (o collegati all'hotspot del telefono), poi riprova dal telefono.</p>
+  </div>
+  <script>
+    (function () {
+      var parametri = new URLSearchParams(location.search);
+      var ip = parametri.get('ip');
+      var porta = parametri.get('porta');
+      var token = parametri.get('token');
+      if (!ip || !porta || !token) {
+        document.getElementById('errore').style.display = 'block';
+        return;
+      }
+      var destinazione = 'http://' + ip + ':' + porta + '/?token=' + encodeURIComponent(token);
+      setTimeout(function () {
+        location.href = destinazione;
+        // Se il computer non è sulla stessa rete, la navigazione fallisce
+        // silenziosamente dal punto di vista di questa pagina (il browser
+        // mostra il proprio errore di connessione) — non c'è modo di
+        // intercettarlo da qui per mostrare il messaggio sopra invece.
+      }, 700);
+    })();
+  </script>
+</body>
+</html>
