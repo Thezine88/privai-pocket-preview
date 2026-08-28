@@ -8,7 +8,7 @@ import {
 } from '../src/domain/pii.mjs';
 import { decideQuickProtect } from '../src/domain/quickProtect.mjs';
 import { normalizeToMarkdown, buildRequest, titleFromText, containsPlaceholders } from '../src/domain/markdown.mjs';
-import { createVault, RETENTION, retentionLabel, clampRetention, WIPED_KEYS } from '../src/domain/vault.mjs';
+import { createVault, RETENTION, retentionLabel, clampRetention, WIPED_KEYS, createRemoteStore } from '../src/domain/vault.mjs';
 import { getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor, RECIPES } from '../src/domain/recipes.mjs';
 import { planOf, createDesktopSessions, pairingCode, isUnlimited } from '../src/domain/plan.mjs';
 import { createTranslator, normalizeLocale } from '../src/domain/i18n.mjs';
@@ -713,4 +713,59 @@ test('il markdown è la richiesta selezionata di default: è la prima voce visib
   // visivo nella vista predefinita.
   const primarie = RECIPES.filter((recipe) => recipe.primary).map((recipe) => recipe.id);
   assert.ok(primarie.includes('markdown'));
+});
+
+/* ------------------------------------------------------------------ */
+/* Ponte desktop: il magazzino remoto                                  */
+/* ------------------------------------------------------------------ */
+
+test('createRemoteStore legge un valore, col token nell\'intestazione', async () => {
+  const chiamate = [];
+  const fetchFinto = async (url, opts) => {
+    chiamate.push({ url, opts });
+    return { ok: true, status: 200, json: async () => ({ value: { ciao: 'mondo' } }) };
+  };
+  const store = createRemoteStore('TOKEN123', { fetchImpl: fetchFinto });
+  const valore = await store.get('prefs');
+  assert.deepEqual(valore, { ciao: 'mondo' });
+  assert.equal(chiamate.length, 1);
+  assert.equal(chiamate[0].url, '/api/store/prefs');
+  assert.equal(chiamate[0].opts.headers.Authorization, 'Bearer TOKEN123');
+});
+
+test('createRemoteStore restituisce null su una chiave assente (404), non un errore', async () => {
+  const fetchFinto = async () => ({ ok: false, status: 404 });
+  const store = createRemoteStore('TOKEN123', { fetchImpl: fetchFinto });
+  assert.equal(await store.get('assente'), null);
+});
+
+test('createRemoteStore scrive un valore, serializzato nel corpo della richiesta', async () => {
+  const chiamate = [];
+  const fetchFinto = async (url, opts) => { chiamate.push({ url, opts }); return { ok: true, status: 200 }; };
+  const store = createRemoteStore('TOKEN123', { fetchImpl: fetchFinto });
+  await store.set('jobs', [{ id: 1 }]);
+  assert.equal(chiamate[0].url, '/api/store/jobs');
+  assert.equal(chiamate[0].opts.method, 'PUT');
+  assert.equal(chiamate[0].opts.headers.Authorization, 'Bearer TOKEN123');
+  assert.deepEqual(JSON.parse(chiamate[0].opts.body), { value: [{ id: 1 }] });
+});
+
+test('createRemoteStore elimina una chiave', async () => {
+  const chiamate = [];
+  const fetchFinto = async (url, opts) => { chiamate.push({ url, opts }); return { ok: true, status: 200 }; };
+  const store = createRemoteStore('TOKEN123', { fetchImpl: fetchFinto });
+  await store.remove('jobs');
+  assert.equal(chiamate[0].url, '/api/store/jobs');
+  assert.equal(chiamate[0].opts.method, 'DELETE');
+});
+
+test('createRemoteStore lancia un errore su una risposta non-ok diversa da 404: mai dati vecchi in silenzio', async () => {
+  const fetchFinto = async () => ({ ok: false, status: 401 });
+  const store = createRemoteStore('TOKEN123', { fetchImpl: fetchFinto });
+  await assert.rejects(() => store.get('prefs'), /bridge-store-error-401/);
+});
+
+test('createRemoteStore si dichiara secure, come il Keystore: la UI non deve trattarlo come un ripiego meno sicuro', () => {
+  const store = createRemoteStore('TOKEN123', { fetchImpl: async () => ({ ok: true, status: 200 }) });
+  assert.equal(store.secure, true);
 });

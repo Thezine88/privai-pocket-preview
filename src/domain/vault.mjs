@@ -71,6 +71,46 @@ export function createSecureStore({ fallback = globalThis.localStorage, plugin =
   };
 }
 
+/**
+ * Magazzino per la modalità ponte: il computer non tiene mai una copia
+ * della cassaforte, ogni lettura/scrittura è una richiesta al telefono in
+ * tempo reale. Percorso relativo di proposito — la pagina è sempre servita
+ * dallo stesso host a cui sta parlando (il telefono), mai un indirizzo
+ * assoluto diverso.
+ *
+ * @param {string} token codice di sessione (lo stesso di pairingCode())
+ * @param {{ fetchImpl?: typeof fetch }} [options]
+ */
+export function createRemoteStore(token, { fetchImpl = fetch } = {}) {
+  const headers = { Authorization: `Bearer ${token}` };
+
+  return {
+    secure: true,
+
+    async get(key) {
+      const response = await fetchImpl(`/api/store/${encodeURIComponent(key)}`, { headers });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error(`bridge-store-error-${response.status}`);
+      const body = await response.json();
+      return body.value;
+    },
+
+    async set(key, value) {
+      const response = await fetchImpl(`/api/store/${encodeURIComponent(key)}`, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value }),
+      });
+      if (!response.ok) throw new Error(`bridge-store-error-${response.status}`);
+    },
+
+    async remove(key) {
+      const response = await fetchImpl(`/api/store/${encodeURIComponent(key)}`, { method: 'DELETE', headers });
+      if (!response.ok && response.status !== 404) throw new Error(`bridge-store-error-${response.status}`);
+    },
+  };
+}
+
 /* ------------------------------------------------------------------ */
 
 /**
