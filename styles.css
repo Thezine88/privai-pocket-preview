@@ -937,7 +937,7 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
 /* --- il contenuto scorre accanto al dock, non più centrato sotto di sé --- */
 [data-context="desktop"] .shell {
   margin: 0 0 0 var(--rail-w);
-  width: min(calc(100% - var(--rail-w)), var(--shell));
+  width: var(--content-w);
   padding: var(--s6);
   border-radius: 0;
   background: var(--paper);
@@ -1026,19 +1026,25 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
   [data-context="desktop"] [data-phase="send"] > .stack-lg > .note {
     grid-column: 2;
   }
-  /* Senza questo, l'ordine del DOM (ricette, domande, dettaglio, POI
-     l'anteprima) fa avanzare il cursore di collocazione automatica fino
-     alla terza riga prima di raggiungere l'anteprima — che finirebbe in
-     basso a destra invece che accanto al compositore, con un vuoto sopra. */
+  /* L'anteprima copre le tre righe della colonna 1 (ricette, domande,
+     dettaglio) invece di stare solo sulla prima: con "grid-row: 1" da solo
+     la riga 1 si dimensiona sull'elemento più alto fra i due lati — qui
+     l'anteprima, molto più alta del blocco ricette — lasciando un vuoto
+     nella colonna 1 fra le ricette e le domande. Coprendo tutte e tre le
+     righe, l'altezza dell'anteprima è soddisfatta dalla loro somma: nessun
+     vuoto, e le note restano subito sotto l'anteprima invece di scendere a
+     riga 3/4. */
   [data-context="desktop"] [data-phase="send"] > .stack-lg > .result {
-    grid-row: 1;
+    grid-row: 1 / span 3;
   }
   [data-context="desktop"] [data-phase="send"] > .stack-lg > div:first-child,
   [data-context="desktop"] [data-phase="send"] > .stack-lg > #questions,
   [data-context="desktop"] [data-phase="send"] > .stack-lg > details {
     grid-column: 1;
   }
-  [data-context="desktop"] [data-phase="send"] .recipes { grid-template-columns: repeat(3, 1fr); }
+  /* Non serve ripetere qui le colonne di .recipes: da 720px in su sono già
+     a 3 colonne (vedi @media min-width:720px sopra), e questa guardia
+     scatta solo da 1000px. */
   [data-context="desktop"] [data-phase="send"] .result textarea { min-height: 320px; }
 
   /* --- impostazioni: le due card principali (ponte desktop, piano) fianco
