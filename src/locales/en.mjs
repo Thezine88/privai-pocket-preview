@@ -68,6 +68,8 @@ export const en = Object.freeze({
   'send.extra': 'Add a detail (optional)',
   'send.extraLabel': 'Something the AI should know',
   'send.extraPlaceholder': 'For example: keep the tone informal',
+  'send.customLabel': 'What do you need?',
+  'send.customPlaceholder': 'Write what you want to get. For example: prepare the questions to ask the client before tomorrow’s call.',
   'send.language': 'Response language',
   'send.preview': 'What actually gets sent',
   'send.openAI': 'Open in an AI',

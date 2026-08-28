@@ -80,6 +80,8 @@ export const it = Object.freeze({
   'send.extra': 'Aggiungi un dettaglio (facoltativo)',
   'send.extraLabel': 'Qualcosa che l’IA deve sapere',
   'send.extraPlaceholder': 'Per esempio: il tono deve restare informale',
+  'send.customLabel': 'Cosa ti serve?',
+  'send.customPlaceholder': 'Scrivi qui cosa vuoi ottenere. Per esempio: prepara le domande da fare al cliente prima della call di domani.',
   'send.language': 'Lingua della risposta',
   'send.preview': 'Cosa parte davvero',
   'send.openAI': 'Apri in un’IA',

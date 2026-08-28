@@ -332,7 +332,9 @@ test('le istruzioni cambiano davvero in base alle chip', () => {
 test('ogni tipo di richiesta è tradotto in entrambe le lingue', () => {
   for (const recipe of RECIPES) {
     assert.ok(recipe.label.it && recipe.label.en, `${recipe.id}: etichetta mancante`);
-    assert.ok(recipe.base.it && recipe.base.en, `${recipe.id}: istruzione base mancante`);
+    // La richiesta personalizzata non ha base fissa di proposito: la scrive
+    // l'utente, non l'app.
+    if (!recipe.custom) assert.ok(recipe.base.it && recipe.base.en, `${recipe.id}: istruzione base mancante`);
     for (const question of recipe.questions ?? []) {
       assert.ok(question.label.it && question.label.en);
       for (const option of question.options) {
@@ -688,9 +690,15 @@ test('la direzione del gesto si blocca una sola volta, verticale se lo scorrimen
 /* Ordine delle richieste in home                                      */
 /* ------------------------------------------------------------------ */
 
-test('le prime tre richieste visibili sono Markdown, Email, Riassumi, nell\'ordine scelto', () => {
+test('le prime richieste visibili sono Markdown, Email, Riassumi, Richiesta personalizzata, nell\'ordine scelto', () => {
   const primarie = RECIPES.filter((recipe) => recipe.primary).map((recipe) => recipe.id);
-  assert.deepEqual(primarie, ['markdown', 'email', 'summary']);
+  assert.deepEqual(primarie, ['markdown', 'email', 'summary', 'custom']);
+});
+
+test('la richiesta personalizzata non ha una base fissa: la scrive l\'utente, non l\'app', () => {
+  const recipe = getRecipe('custom');
+  assert.equal(recipe.custom, true);
+  assert.deepEqual(recipe.questions, []);
 });
 
 test('la richiesta "Scrivi in Markdown" non inventa domande: è un\'unica trasformazione', () => {

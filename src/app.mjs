@@ -47,6 +47,7 @@ const state = {
   jobId: null,
   recipeId: 'markdown',
   answers: {},
+  customRequestText: '',
   showAllRecipes: false,
   view: 'home',
   phase: 'text',
@@ -285,10 +286,12 @@ function updateAction() {
       });
     }
     if (state.phase === 'send') {
+      const recipe = getRecipe(state.recipeId);
       return setAction({
         note: '',
         label: t('send.openAI'),
         onClick: () => shareRequest(),
+        disabled: recipe.custom && !state.customRequestText.trim(),
       });
     }
   }
@@ -564,6 +567,7 @@ function renderRecipes() {
     renderRecipes();
     renderQuestions();
     updateRequest();
+    updateAction();
   }));
 
   const more = $('#recipes-more');
@@ -575,6 +579,21 @@ function renderQuestions() {
   if (!host) return;
   const recipe = getRecipe(state.recipeId);
   if (!Object.keys(state.answers).length) state.answers = defaultAnswers(recipe);
+
+  if (recipe.custom) {
+    host.innerHTML = `
+      <label class="field">
+        <span>${escapeHtml(t('send.customLabel'))}</span>
+        <textarea id="custom-request-input" class="field-text"
+          placeholder="${escapeHtml(t('send.customPlaceholder'))}">${escapeHtml(state.customRequestText)}</textarea>
+      </label>`;
+    $('#custom-request-input').addEventListener('input', (event) => {
+      state.customRequestText = event.target.value;
+      updateRequest();
+      updateAction();
+    });
+    return;
+  }
 
   host.innerHTML = (recipe.questions ?? []).map((question) => `
     <div class="q">
@@ -600,8 +619,11 @@ function renderQuestions() {
 function updateRequest() {
   const recipe = getRecipe(state.recipeId);
   const content = state.masked || state.source;
+  const instructions = recipe.custom
+    ? [state.customRequestText.trim()].filter(Boolean)
+    : instructionsFor(recipe, state.answers, state.locale);
   $('#request').value = buildRequest({
-    instructions: instructionsFor(recipe, state.answers, state.locale),
+    instructions,
     content,
     outputLanguage: $('#out-language').value,
     extra: $('#extra').value,
@@ -1197,6 +1219,7 @@ function setSource(text, { jumpToCheck = false } = {}) {
   state.jobId = null;
   state.masked = '';
   state.mapping = {};
+  state.customRequestText = '';
   $('#source').value = state.source;
   $('#source-clear').hidden = !state.source.trim();
 

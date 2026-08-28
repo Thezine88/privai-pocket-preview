@@ -112,6 +112,18 @@ export const RECIPES = [
     ],
   },
   {
+    id: 'custom',
+    primary: true,
+    custom: true,
+    icon: 'write',
+    label: t('Richiesta personalizzata', 'Custom request'),
+    hint: t('Scrivi tu cosa ti serve', 'Write your own request'),
+    // Nessuna base fissa: il testo lo scrive l'utente. instructionsFor() lo
+    // sa e prende la riga da state.customRequestText invece che da qui.
+    base: t('', ''),
+    questions: [],
+  },
+  {
     id: 'reply',
     icon: 'reply',
     label: t('Rispondi a questo', 'Reply to this'),
