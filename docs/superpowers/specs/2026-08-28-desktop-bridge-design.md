@@ -22,6 +22,8 @@ La promessa esistente ("il controllo avviene qui, niente esce dal telefono") va 
 
 Non cambia: la cassaforte (mapping, chiavi, lavori) vive **solo** nel Keystore del telefono. Il computer non ne tiene mai una copia propria — ogni lettura/scrittura passa dal telefono in tempo reale, tramite un permesso che scade da solo.
 
+**Modello di minaccia, dichiarato esplicitamente (decisione del 28/08/2026):** "un'estensione del tuo telefono sulla tua rete" descrive *dove* i dati si fermano, non *come* viaggiano — e va detto anche questo. Il traffico fra telefono e computer (`/api/store/:key`, token incluso) è HTTP semplice, senza cifratura di trasporto: il vincolo "solo browser, zero installazioni" esclude un certificato TLS (richiederebbe di installarlo o di accettare un avviso del browser). Il ponte assume quindi una **rete fidata** — la propria rete domestica o l'hotspot del telefono — non una rete pubblica o condivisa con estranei: su un Wi-Fi di bar, coworking, hotel o aeroporto, chiunque sulla stessa rete può leggere passivamente il traffico, inclusa la mappa segnaposto→dato reale. Questo va comunicato all'utente nel dialogo "Continua sul computer", non solo qui.
+
 ## Architettura
 
 ```

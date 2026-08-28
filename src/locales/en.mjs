@@ -163,6 +163,7 @@ export const en = Object.freeze({
   'desktop.sessionExpired': 'The connection to the phone has expired. Reopen it from the phone.',
   'bridge.share': 'Share the link',
   'bridge.shareTitle': 'Connect this computer to PrivAI Pocket',
+  'bridge.networkWarning': 'Only works on your own Wi-Fi (or the phone’s hotspot): avoid public or shared networks.',
 
   'manual.title': 'Hide something else',
   'manual.body': 'Type the word or phrase to hide: I replace it everywhere it appears in the text.',

@@ -180,6 +180,7 @@ export const it = Object.freeze({
   'desktop.sessionExpired': 'La sessione con il telefono è scaduta. Riapri il collegamento dal telefono.',
   'bridge.share': 'Condividi il link',
   'bridge.shareTitle': 'Collega questo computer a PrivAI Pocket',
+  'bridge.networkWarning': 'Funziona solo sulla tua rete Wi-Fi (o l’hotspot del telefono): evita reti pubbliche o condivise con estranei.',
 
   /* --- nascondi altro --- */
   'manual.title': 'Nascondi altro',
