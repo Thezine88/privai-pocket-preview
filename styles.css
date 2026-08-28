@@ -702,21 +702,26 @@ dialog::backdrop { background: rgba(20, 12, 4, .45); backdrop-filter: blur(3px);
 /* Onboarding                                                            */
 /* ===================================================================== */
 
+/* Le tre righe (slide, pulsante, puntini) si dimensionano sul proprio
+   contenuto e il gruppo INTERO si centra verticalmente: il pulsante resta
+   attaccato al testo perché nessuna riga si allarga a prendersi lo spazio
+   libero. Il tentativo precedente dava alla slide una riga "1fr" (alta
+   quanto tutto lo spazio) e poi ancorava il contenuto in fondo: il
+   pulsante saliva sì, ma trascinando Willy e il testo in basso con sé,
+   lasciando un vuoto in cima. Qui lo spazio avanza sopra E sotto il
+   gruppo, in parti uguali, e niente viene spinto da nessuna parte. */
 .onboarding {
   position: fixed; inset: 0; z-index: 80;
-  display: grid; grid-template-rows: 1fr auto auto;
+  display: grid; grid-template-rows: auto auto auto;
+  align-content: center;
   gap: var(--s4);
   padding: max(var(--s5), env(safe-area-inset-top)) var(--s5) max(var(--s5), env(safe-area-inset-bottom));
   background: linear-gradient(160deg, var(--brand) 0%, var(--brand-strong) 60%, #C94E00 100%);
   color: #fff;
+  overflow-y: auto;   /* se una slide è più alta dello schermo, scorre invece di uscire dai bordi */
 }
 .onboarding[hidden] { display: none; }
-/* justify-content: flex-end, non center — la riga è alta quanto lo spazio
-   libero (grid-template-rows: 1fr auto auto), e centrare il contenuto al
-   suo interno lascia un vuoto invisibile fra l'ultima riga di testo e il
-   pulsante "Avanti" sotto. Ancorando in fondo, il pulsante sta subito
-   dopo il testo, non dopo lo spazio vuoto della riga. */
-.onb-slide { display: none; flex-direction: column; align-items: center; justify-content: flex-end; gap: var(--s4); text-align: center; }
+.onb-slide { display: none; flex-direction: column; align-items: center; justify-content: center; gap: var(--s4); text-align: center; }
 .onb-slide[data-active] { display: flex; animation: slide-in var(--base) var(--ease); }
 .onb-slide img { width: min(58vw, 230px); height: auto; }
 .onb-slide h2 { font-size: 28px; }
