@@ -222,3 +222,8 @@ test('il ponte desktop non nomina più un dominio finto, e sa condividere un lin
   assert.doesNotMatch(html, /privai\.app\/desk/);
   assert.match(html, /id="desktop-share"/);
 });
+
+test('esiste un layout dedicato per la modalità ponte, non solo il telefono allargato', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\[data-context="desktop"\]/);
+});
