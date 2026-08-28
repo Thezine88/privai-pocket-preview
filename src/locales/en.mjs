@@ -17,9 +17,9 @@ export const en = Object.freeze({
 
   'onb.skip': 'Skip',
   'onb.title1': 'Hi, I’m Willy',
-  'onb.body1': 'I help you use ChatGPT and other AIs without handing over your clients’ data.',
-  'onb.title2': 'Share it, and leave the rest to me',
-  'onb.body2': 'Got a document? Share it with PrivAI from any app. I find the sensitive bits straight away and show them to you.',
+  'onb.body1': 'I help you use AI by hiding sensitive data.',
+  'onb.title2': 'You share it, I take care of the rest',
+  'onb.body2': 'Working with a chatbot on a document? Send it to me first: I’ll go through it for you.',
   'onb.title3': 'Here’s what happens',
   'onb.body3': 'The originals stay on your phone. When you come back with the AI’s answer, I put them back.',
   'onb.next': 'Next',

@@ -24,9 +24,9 @@ export const it = Object.freeze({
   /* --- onboarding --- */
   'onb.skip': 'Salta',
   'onb.title1': 'Ciao, io sono Willy',
-  'onb.body1': 'Ti aiuto a usare ChatGPT e le altre IA senza consegnare i dati dei tuoi clienti.',
-  'onb.title2': 'Condividi, e ci penso io',
-  'onb.body2': 'Ricevi un documento? Condividilo con PrivAI da qualsiasi app. Trovo subito i dati delicati e te li mostro.',
+  'onb.body1': 'Ti aiuto a usare l’IA nascondendo i dati sensibili.',
+  'onb.title2': 'Tu condividi, al resto penso io',
+  'onb.body2': 'Devi lavorare con un chatbot su un documento? Mandamelo prima: lo analizzerò per te.',
   'onb.title3': 'Guarda cosa succede',
   'onb.body3': 'Gli originali restano sul telefono. Quando torni con la risposta dell’IA, li rimetto al loro posto.',
   'onb.next': 'Avanti',
