@@ -20,6 +20,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(OutboundSharePlugin.class);
         registerPlugin(ShareTargetPlugin.class);
         registerPlugin(SecureStorePlugin.class);
+        registerPlugin(BridgeServerPlugin.class);
         super.onCreate(savedInstanceState);
         ShareTargetPlugin.deliver(getIntent(), getBridge());
     }

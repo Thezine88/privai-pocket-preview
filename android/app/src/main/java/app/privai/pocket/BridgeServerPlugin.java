@@ -44,8 +44,8 @@ public class BridgeServerPlugin extends Plugin {
     private static final String PREFIX = "privai:";
 
     private Server server;
-    private String activeToken;
-    private long activeEndsAt;
+    private volatile String activeToken;
+    private volatile long activeEndsAt;
 
     private class Server extends NanoHTTPD {
 
@@ -97,7 +97,7 @@ public class BridgeServerPlugin extends Plugin {
                     case PUT: {
                         String body = readBody(session);
                         org.json.JSONObject json = new org.json.JSONObject(body);
-                        secureStore.writeRaw(prefixedKey, json.get("value").toString());
+                        secureStore.writeRaw(prefixedKey, org.json.JSONObject.valueToString(json.get("value")));
                         return newFixedLengthResponse(Response.Status.OK, "application/json", "{}");
                     }
                     case DELETE: {
@@ -112,14 +112,24 @@ public class BridgeServerPlugin extends Plugin {
             }
         }
 
-        private String readBody(IHTTPSession session) throws IOException, ResponseException {
-            java.util.Map<String, String> files = new java.util.HashMap<>();
-            session.parseBody(files);
-            return files.get("postData");
+        private String readBody(IHTTPSession session) throws IOException {
+            String contentLength = session.getHeaders().get("content-length");
+            int len = contentLength != null ? Integer.parseInt(contentLength) : 0;
+            byte[] buffer = new byte[len];
+            int offset = 0;
+            while (offset < len) {
+                int read = session.getInputStream().read(buffer, offset, len - offset);
+                if (read < 0) break;
+                offset += read;
+            }
+            return new String(buffer, 0, offset, java.nio.charset.StandardCharsets.UTF_8);
         }
 
         private Response serveStatic(String uri) {
             String path = "public" + (uri.equals("/") ? "/index.html" : uri);
+            if (path.contains("..")) {
+                return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/plain", "non trovato");
+            }
             try {
                 AssetManager assets = getContext().getAssets();
                 InputStream input = assets.open(path);
@@ -173,8 +183,8 @@ public class BridgeServerPlugin extends Plugin {
     public void start(PluginCall call) {
         String token = call.getString("token");
         Long endsAt = call.getLong("endsAt");
-        if (token == null || endsAt == null) {
-            call.reject("token o endsAt mancanti");
+        if (token == null || token.isEmpty() || endsAt == null || endsAt <= System.currentTimeMillis()) {
+            call.reject("token o endsAt non validi");
             return;
         }
         String ip = localIpAddress();
@@ -203,5 +213,13 @@ public class BridgeServerPlugin extends Plugin {
         activeToken = null;
         activeEndsAt = 0;
         call.resolve();
+    }
+
+    @Override
+    public void handleOnDestroy() {
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
     }
 }
