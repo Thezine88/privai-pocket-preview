@@ -1019,6 +1019,12 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
   [data-context="desktop"] [data-phase="send"] > .stack-lg {
     display: grid;
     grid-template-columns: 1fr 380px;
+    /* L'ultima riga (il dettaglio facoltativo) assorbe l'eccesso quando
+       l'anteprima, che copre tutte e tre le righe della colonna 1, è più
+       alta della loro somma — invece di spargere lo scarto in parti uguali
+       su tutte e tre, cosa che aprirebbe uno spiraglio visibile fra le
+       ricette e le domande sopra. */
+    grid-template-rows: auto auto 1fr;
     gap: var(--s5);
     align-items: start;
   }
@@ -1027,13 +1033,17 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
     grid-column: 2;
   }
   /* L'anteprima copre le tre righe della colonna 1 (ricette, domande,
-     dettaglio) invece di stare solo sulla prima: con "grid-row: 1" da solo
-     la riga 1 si dimensiona sull'elemento più alto fra i due lati — qui
-     l'anteprima, molto più alta del blocco ricette — lasciando un vuoto
-     nella colonna 1 fra le ricette e le domande. Coprendo tutte e tre le
-     righe, l'altezza dell'anteprima è soddisfatta dalla loro somma: nessun
-     vuoto, e le note restano subito sotto l'anteprima invece di scendere a
-     riga 3/4. */
+     dettaglio): senza questo finirebbe da sola in riga 1, che si
+     dimensiona sul più alto fra i due lati — qui l'anteprima, molto più
+     alta del solo blocco ricette — lasciando un vuoto fra le ricette e le
+     domande sotto di lei. Coprendo tutte e tre le righe, l'eventuale
+     eccesso della sua altezza rispetto alla somma delle tre finisce
+     nell'ultima riga (grid-template-rows sopra), non distribuito su tutte:
+     quello scarto, se c'è, sta sotto al dettaglio (ultimo elemento della
+     colonna, dove non si vede) invece che fra le ricette e le domande. Le
+     note restano comunque subito sotto l'anteprima, non scendono a
+     riga 3/4. Accoppiato al numero di figli di colonna 1 (oggi 3): un
+     quarto elemento lì richiederebbe di allargare anche questo span. */
   [data-context="desktop"] [data-phase="send"] > .stack-lg > .result {
     grid-row: 1 / span 3;
   }
