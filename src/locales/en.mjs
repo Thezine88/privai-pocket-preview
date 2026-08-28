@@ -92,6 +92,7 @@ export const en = Object.freeze({
   'vault.restored': 'Already restored',
 
   'resume.found': 'I recognised the AI’s answer: {count} items to put back.',
+  'resume.sent': 'When you come back with the AI’s answer, put the real data back from here.',
   'resume.foundOne': 'I recognised the AI’s answer: 1 item to put back.',
   'resume.action': 'Put them back',
   'restore.title': 'Put the data back',
@@ -160,6 +161,7 @@ export const en = Object.freeze({
   'desktop.active': 'Session running: {minutes} minutes left.',
   'desktop.timer': 'The session closes itself in {minutes}:{seconds}.',
   'desktop.unavailable': 'Connecting to a computer is not available on this device.',
+  'desktop.noWifi': 'Connect the phone to Wi-Fi first: the computer must be on the same network.',
   'desktop.sessionExpired': 'The connection to the phone has expired. Reopen it from the phone.',
   'bridge.share': 'Share the link',
   'bridge.shareTitle': 'Connect this computer to PrivAI Pocket',

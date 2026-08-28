@@ -15,6 +15,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -167,20 +168,57 @@ public class BridgeServerPlugin extends Plugin {
      *  già visibili all'app, valido sia su Wi-Fi sia sull'hotspot del
      *  telefono. */
     private static String localIpAddress() {
+        String ripiego = null;
         try {
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
             while (ifaces.hasMoreElements()) {
                 NetworkInterface iface = ifaces.nextElement();
                 if (iface.isLoopback() || !iface.isUp()) continue;
-                Enumeration<InetAddress> addrs = iface.getInetAddresses();
-                while (addrs.hasMoreElements()) {
-                    InetAddress addr = addrs.nextElement();
-                    if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
-                        return addr.getHostAddress();
-                    }
-                }
+
+                String nome = iface.getName() == null ? "" : iface.getName().toLowerCase(Locale.US);
+                if (datiMobiliOVpn(nome)) continue;
+
+                String ipv4 = primoIpv4(iface);
+                if (ipv4 == null) continue;
+
+                // wlan0 e simili: il caso normale, i due dispositivi sulla
+                // stessa rete Wi-Fi. Vince sempre, appena lo si trova.
+                if (nome.startsWith("wlan")) return ipv4;
+
+                // Altrimenti teniamo da parte la prima interfaccia buona
+                // (hotspot del telefono, ethernet USB) e continuiamo a
+                // cercare il Wi-Fi, che ha comunque la precedenza.
+                if (ripiego == null) ripiego = ipv4;
             }
         } catch (Exception ignored) { }
+        return ripiego;
+    }
+
+    /**
+     * Dati mobili e VPN: indirizzi che esistono, rispondono a isUp() e sono
+     * pure in un intervallo privato (10.x.x.x), ma dal computer non sono
+     * raggiungibili in nessun modo. Scartarli per nome è l'unico modo
+     * affidabile: isSiteLocalAddress() dice "sì" anche al 10.x.x.x
+     * dell'operatore, quindi non distingue nulla.
+     */
+    private static boolean datiMobiliOVpn(String nome) {
+        return nome.startsWith("rmnet")   // Qualcomm, la maggior parte degli Android
+            || nome.startsWith("ccmni")   // MediaTek
+            || nome.startsWith("pdp")     // dati mobili, nomenclatura vecchia
+            || nome.startsWith("clat")    // traduzione 464XLAT sopra i dati mobili
+            || nome.startsWith("tun")     // VPN
+            || nome.startsWith("ppp")     // VPN / tethering seriale
+            || nome.startsWith("ipsec");  // VPN
+    }
+
+    private static String primoIpv4(NetworkInterface iface) {
+        Enumeration<InetAddress> addrs = iface.getInetAddresses();
+        while (addrs.hasMoreElements()) {
+            InetAddress addr = addrs.nextElement();
+            if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                return addr.getHostAddress();
+            }
+        }
         return null;
     }
 
@@ -194,7 +232,10 @@ public class BridgeServerPlugin extends Plugin {
         }
         String ip = localIpAddress();
         if (ip == null) {
-            call.reject("nessuna rete locale disponibile");
+            // Codice riconoscibile dal lato JS: è l'unico errore che l'utente
+            // può risolvere da solo, e merita un messaggio suo invece del
+            // generico "non disponibile su questo dispositivo".
+            call.reject("NO_WIFI");
             return;
         }
         try {

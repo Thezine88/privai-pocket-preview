@@ -49,6 +49,18 @@
   #puntini span:nth-child(2) { animation-delay: .15s; }
   #puntini span:nth-child(3) { animation-delay: .3s; }
   #errore { display: none; margin-top: 20px; font-size: 14px; }
+  #aiuto {
+    display: none; margin-top: 26px; max-width: 40ch; text-align: left;
+    background: rgba(0, 0, 0, .18); border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 16px; padding: 16px 18px;
+    animation: entra-testo 400ms ease forwards;
+  }
+  #aiuto p { font-size: 14px; line-height: 1.5; opacity: 1; transform: none; margin: 0 0 10px; }
+  #aiuto p:last-child { margin-bottom: 0; }
+  #aiuto code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: rgba(0, 0, 0, .3); padding: 2px 7px; border-radius: 6px; font-size: 13px;
+  }
 
   @keyframes entra-mascotte { to { opacity: 1; transform: scale(1) translateY(0); } }
   @keyframes respira { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.04) translateY(-3px); } }
@@ -69,6 +81,11 @@
     <p id="sottotitolo">Ti porto sul telefono che ha generato questo link…</p>
     <div id="puntini" aria-hidden="true"><span></span><span></span><span></span></div>
     <p id="errore">Non riesco a raggiungerlo. Controlla che computer e telefono siano sulla stessa rete Wi-Fi (o collegati all'hotspot del telefono), poi riprova dal telefono.</p>
+    <div id="aiuto">
+      <p><strong>Il telefono non risponde.</strong></p>
+      <p>Sto bussando a <code id="dove"></code>, ma da qui non arriva nessuna risposta.</p>
+      <p>Quasi sempre è perché il telefono sta usando i <strong>dati mobili</strong> invece del Wi-Fi. Collegalo alla stessa rete Wi-Fi del computer e rigenera il codice dal telefono.</p>
+    </div>
   </div>
   <script>
     (function () {
@@ -85,16 +102,24 @@
         return;
       }
       var destinazione = 'http://' + ip + ':' + porta + '/?token=' + encodeURIComponent(token);
+
       // 1400ms invece dei 700 originali: lascia respirare la sequenza
       // (mascotte, titolo, sottotitolo, puntini) prima di saltare via —
       // ancora rapido, non un'attesa vera.
+      setTimeout(function () { location.href = destinazione; }, 1400);
+
+      // Rete di sicurezza. Se il telefono non risponde a quell'indirizzo, il
+      // browser resta in attesa e questa pagina rimarrebbe muta per sempre
+      // ("si sta collegando" e poi niente, all'infinito). Dopo qualche
+      // secondo diciamo cosa sta succedendo e dove stavamo bussando: senza
+      // questo, l'unico modo di scoprirlo è leggere il link a mano dal
+      // telefono. La causa più comune è il telefono sui dati mobili invece
+      // che sul Wi-Fi, e in quel caso l'indirizzo mostrato qui lo rivela.
       setTimeout(function () {
-        location.href = destinazione;
-        // Se il computer non è sulla stessa rete, la navigazione fallisce
-        // silenziosamente dal punto di vista di questa pagina (il browser
-        // mostra il proprio errore di connessione) — non c'è modo di
-        // intercettarlo da qui per mostrare il messaggio sopra invece.
-      }, 1400);
+        var aiuto = document.getElementById('aiuto');
+        document.getElementById('dove').textContent = ip + ':' + porta;
+        aiuto.style.display = 'block';
+      }, 6000);
     })();
   </script>
 </body>

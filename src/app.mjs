@@ -402,14 +402,45 @@ function runScan() {
  */
 let resumeText = '';
 
+/**
+ * La barra del rientro ha due motivi per comparire, e il pulsante fa una cosa
+ * diversa nei due casi:
+ *  - 'appunti': negli appunti c'è la risposta dell'IA coi nostri segnaposto,
+ *    quindi possiamo incollarla noi e ripristinare subito;
+ *  - 'inviato': l'utente ha appena copiato o mandato il testo a un'IA. La
+ *    risposta non esiste ancora, ma il ripristino è il passo successivo
+ *    garantito: mostrarlo qui evita di dover passare dalla cassaforte per
+ *    ritrovarlo. Il pulsante porta alla schermata di ripristino invece di
+ *    incollare qualcosa che non c'è.
+ */
+let resumeMode = 'appunti';
+
 async function checkClipboardOnResume() {
   const mapping = await vault.combinedMapping();
   const clip = Object.keys(mapping).length ? await readClipboard() : null;
   const { offer, count } = shouldOfferRestore(clip, mapping);
-  if (!offer) return hideResume();
+  if (!offer) {
+    // Il promemoria "hai appena inviato" non va spazzato via da un rientro
+    // senza risposta negli appunti: è proprio mentre si va e si torna
+    // dall'IA che deve restare lì.
+    if (resumeMode !== 'inviato') hideResume();
+    return;
+  }
 
   resumeText = clip;
+  resumeMode = 'appunti';
   $('#resume-text').textContent = t(count === 1 ? 'resume.foundOne' : 'resume.found', { count });
+  $('#resume-bar').hidden = false;
+  document.body.setAttribute('data-resume', 'on');
+}
+
+/** Il testo è appena uscito verso un'IA (copiato o condiviso): il ripristino
+ *  diventa raggiungibile da subito, senza passare dalla cassaforte. */
+function offerRestoreAfterSend() {
+  if (!state.jobId) return;   // niente lavoro in cassaforte, niente da ripristinare
+  resumeMode = 'inviato';
+  resumeText = '';
+  $('#resume-text').textContent = t('resume.sent');
   $('#resume-bar').hidden = false;
   document.body.setAttribute('data-resume', 'on');
 }
@@ -418,9 +449,20 @@ function hideResume() {
   $('#resume-bar').hidden = true;
   document.body.removeAttribute('data-resume');
   resumeText = '';
+  resumeMode = 'appunti';
 }
 
 async function resumeRestore() {
+  // Modalità "hai appena inviato": la risposta dell'IA non c'è ancora, quindi
+  // non c'è niente da incollare. Portiamo solo alla schermata giusta, col
+  // lavoro corrente già selezionato, pronta per incollarci la risposta.
+  if (resumeMode === 'inviato') {
+    state.restoreJob = state.jobId;
+    hideResume();
+    goto('restore', 'fwd');
+    return;
+  }
+
   if (!resumeText) return;
   $('#reply').value = resumeText;
   hideResume();
@@ -708,6 +750,7 @@ async function shareRequest() {
     } else if (result?.fallback) {
       toast(t('toast.noAIApps'));
     }
+    offerRestoreAfterSend();
   } catch (error) {
     if (error?.name !== 'AbortError') toast(t('toast.shareFailed'));
   }
@@ -724,6 +767,11 @@ async function copyFrom(selector, button) {
       setTimeout(() => { button.textContent = original; }, 1300);
     }
     toast(t('toast.copied'));
+    // Copiare la richiesta protetta significa che sta per uscire verso
+    // un'IA, esattamente come "Apri in un'IA": stesso passo successivo,
+    // stessa scorciatoia. Copiare il RISULTATO ripristinato no: lì il
+    // ciclo è già chiuso.
+    if (selector === '#request') offerRestoreAfterSend();
   } catch {
     toast(t('toast.copyFailed'));
   }
@@ -1161,9 +1209,13 @@ async function startDesktop() {
   let native;
   try {
     native = await bridgePlugin.start({ token, endsAt: nativeEndsAt });
-  } catch {
+  } catch (error) {
     await desktop.stop();
-    return toast(t('desktop.unavailable'));
+    // Il nativo segnala NO_WIFI quando non trova un'interfaccia Wi-Fi: è
+    // l'unico caso che l'utente può risolvere da solo, e dirgli "non
+    // disponibile su questo dispositivo" sarebbe falso oltre che inutile.
+    const senzaWifi = String(error?.message || error).includes('NO_WIFI');
+    return toast(t(senzaWifi ? 'desktop.noWifi' : 'desktop.unavailable'));
   }
 
   const link = `https://thezine88.github.io/privai-pocket-preview/bridge/?ip=${encodeURIComponent(native.ip)}&porta=${native.port}&token=${encodeURIComponent(token)}`;

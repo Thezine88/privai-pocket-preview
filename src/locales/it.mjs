@@ -106,6 +106,7 @@ export const it = Object.freeze({
 
   /* --- ripristino --- */
   'resume.found': 'Ho riconosciuto la risposta dell’IA: {count} dati da rimettere.',
+  'resume.sent': 'Quando torni con la risposta dell’IA, rimetti i dati veri da qui.',
   'resume.foundOne': 'Ho riconosciuto la risposta dell’IA: 1 dato da rimettere.',
   'resume.action': 'Rimetti i dati',
   'restore.title': 'Rimetti i dati',
@@ -177,6 +178,7 @@ export const it = Object.freeze({
   'desktop.active': 'Sessione attiva: {minutes} minuti rimasti.',
   'desktop.timer': 'La sessione si chiude da sola fra {minutes}:{seconds}.',
   'desktop.unavailable': 'Il collegamento al computer non è disponibile su questo dispositivo.',
+  'desktop.noWifi': 'Collega prima il telefono al Wi-Fi: il computer deve stare sulla stessa rete.',
   'desktop.sessionExpired': 'La sessione con il telefono è scaduta. Riapri il collegamento dal telefono.',
   'bridge.share': 'Condividi il link',
   'bridge.shareTitle': 'Collega questo computer a PrivAI Pocket',
