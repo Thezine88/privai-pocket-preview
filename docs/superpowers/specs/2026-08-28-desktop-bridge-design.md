@@ -75,7 +75,8 @@ Il telefono mostra "PC collegato" finché la sessione è attiva.
 **Pubblico, statico, gratuito** (GitHub Pages):
 
 - **Ripuntare la pubblicazione di Pages dal ramo `main` al ramo `lavoro-locale-v2`** (impostazione del repository, non un commit — reversibile con un clic, non tocca la cronologia di `main`). Deciso esplicitamente in sessione: la pagina pubblica passa a mostrare il lavoro di questa sessione invece della vecchia versione.
-- Una paginetta dedicata (es. `/bridge/index.html`) che legge `ip`/`porta`/`token` dalla propria query string e reindirizza subito a `http://<ip>:<porta>/?token=<token>` — nessun dato, nessuna logica, solo instradamento. Metadati Open Graph (titolo, icona) perché condividerla come link mostri una card pulita invece di un URL nudo.
+- Una paginetta dedicata (es. `/bridge/index.html`) che legge `ip`/`porta`/`token` dalla propria query string e reindirizza a `http://<ip>:<porta>/?token=<token>` — nessun dato, nessuna logica di dominio, solo instradamento. Metadati Open Graph (titolo, icona) perché condividerla come link mostri una card pulita invece di un URL nudo.
+  **Momento di apertura**: prima del salto, una schermata di benvenuto breve (stesso sfondo/font/mascotte dell'onboarding — non un componente esterno, nessuna dipendenza nuova, nessun video) con il testo "Eccoti, iniziamo!" e una piccola animazione d'ingresso via CSS (rispetta `prefers-reduced-motion`, come il resto dell'app). Dura una frazione di secondo, poi il reindirizzamento parte comunque — è un momento di calore, non un ostacolo: la pagina esiste per portare al telefono, non per trattenere.
 
 ## Piano e limiti
 
