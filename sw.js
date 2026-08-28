@@ -8,7 +8,7 @@ const SHELL = [
   './src/app.mjs', './src/icons.mjs',
   './src/domain/greeting.mjs', './src/domain/i18n.mjs', './src/domain/intake.mjs',
   './src/domain/markdown.mjs', './src/domain/pdf.mjs', './src/domain/pii.mjs',
-  './src/domain/plan.mjs', './src/domain/quickProtect.mjs', './src/domain/recipes.mjs',
+  './src/domain/plan.mjs', './src/domain/qr.mjs', './src/domain/quickProtect.mjs', './src/domain/recipes.mjs',
   './src/domain/share.mjs', './src/domain/swipe.mjs', './src/domain/vault.mjs',
   './src/locales/it.mjs', './src/locales/en.mjs',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
