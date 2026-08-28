@@ -14,7 +14,7 @@
 import { detectSensitiveData, maskFindings, restoreProtectedText, displaySensitiveType,
          groupFindings, contextAround, countKnownPlaceholders, shouldOfferRestore } from './domain/pii.mjs';
 import { buildRequest, titleFromText } from './domain/markdown.mjs';
-import { createSecureStore, createVault, DEFAULT_RETENTION, retentionLabel, clampRetention } from './domain/vault.mjs';
+import { createSecureStore, createRemoteStore, createVault, DEFAULT_RETENTION, retentionLabel, clampRetention } from './domain/vault.mjs';
 import { RECIPES, getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor } from './domain/recipes.mjs';
 import { planOf, PRO_BENEFITS, createDesktopSessions, pairingCode, isUnlimited } from './domain/plan.mjs';
 import { createTranslator, normalizeLocale } from './domain/i18n.mjs';
@@ -29,8 +29,21 @@ import { decideQuickProtect } from './domain/quickProtect.mjs';
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-const store = createSecureStore();
+/**
+ * L'app gira in modalità ponte quando il computer l'ha caricata dal
+ * server locale del telefono (vedi BridgeServerPlugin) invece che dalla
+ * WebView nativa. Il segnale è il token nell'URL: solo quel server lo
+ * aggiunge, e solo quando serve la pagina a un browser esterno — mai in
+ * un avvio nativo normale.
+ */
+function bridgeToken() {
+  if (globalThis.Capacitor?.isNativePlatform?.()) return null;
+  return new URLSearchParams(location.search).get('token');
+}
+
+const store = bridgeToken() ? createRemoteStore(bridgeToken()) : createSecureStore();
 const vault = createVault(store);
+if (bridgeToken()) document.documentElement.dataset.context = 'desktop';
 const desktop = createDesktopSessions(store);
 const outbound = createOutbound();
 

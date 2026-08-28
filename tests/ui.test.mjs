@@ -205,3 +205,10 @@ test('intake icons match what the buttons actually do', async () => {
   const intake = html.slice(html.indexOf('id="intake-paste"'), html.indexOf('id="intake-file"') + 400);
   assert.match(intake, /<svg/);
 });
+
+test('bridge mode: un token nell\'URL senza bridge nativo significa il magazzino remoto, non il Keystore', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(app, /createRemoteStore/);
+  assert.match(app, /function bridgeToken/);
+  assert.match(app, /dataset\.context\s*=\s*'desktop'/);
+});
