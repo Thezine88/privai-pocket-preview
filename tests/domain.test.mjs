@@ -12,6 +12,7 @@ import { createVault, RETENTION, retentionLabel, clampRetention, WIPED_KEYS, cre
 import { getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor, RECIPES } from '../src/domain/recipes.mjs';
 import { planOf, createDesktopSessions, pairingCode, isUnlimited } from '../src/domain/plan.mjs';
 import { createTranslator, normalizeLocale } from '../src/domain/i18n.mjs';
+import { renderQrSvg } from '../src/domain/qr.mjs';
 import { it as itDict } from '../src/locales/it.mjs';
 import { en as enDict } from '../src/locales/en.mjs';
 import { CASI } from './banco-di-prova.mjs';
@@ -768,4 +769,26 @@ test('createRemoteStore lancia un errore su una risposta non-ok diversa da 404: 
 test('createRemoteStore si dichiara secure, come il Keystore: la UI non deve trattarlo come un ripiego meno sicuro', () => {
   const store = createRemoteStore('TOKEN123', { fetchImpl: async () => ({ ok: true, status: 200 }) });
   assert.equal(store.secure, true);
+});
+
+/* ------------------------------------------------------------------ */
+/* Ponte desktop: il QR vero                                           */
+/* ------------------------------------------------------------------ */
+
+test('renderQrSvg produce un vero SVG scansionabile, non un disegno decorativo a griglia fissa', () => {
+  const svg = renderQrSvg('https://esempio.test/bridge?token=ABC123');
+  assert.match(svg, /^<svg/);
+  assert.match(svg, /<\/svg>\s*$/);
+  assert.match(svg, /viewBox="0 0 \d+ \d+"/);
+});
+
+test('renderQrSvg gestisce un link lungo (indirizzo + porta + token) senza lanciare', () => {
+  const lungo = 'https://thezine88.github.io/privai-pocket-preview/bridge/?ip=192.168.1.42&porta=45231&token=AB3XK9QZLM';
+  assert.doesNotThrow(() => renderQrSvg(lungo));
+});
+
+test('renderQrSvg produce contenuto diverso per testi diversi (non è un placeholder statico)', () => {
+  const uno = renderQrSvg('https://esempio.test/a');
+  const due = renderQrSvg('https://esempio.test/completamente-diverso-e-piu-lungo-di-prima');
+  assert.notEqual(uno, due);
 });
