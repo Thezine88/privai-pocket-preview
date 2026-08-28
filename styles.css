@@ -911,6 +911,11 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
   --bar-h: 0px;   /* nessuna barra in fondo: la navigazione vive di lato */
   --rail-w: 100px;
   --shell: 1040px;
+  /* La stessa larghezza che occupa .shell — usata per centrare le barre
+     ancorate (azione, rientro, notifica) DENTRO quella colonna, non nello
+     spazio pieno a destra del dock: le due formule devono combaciare, non
+     solo assomigliarsi, altrimenti lo scarto cresce con la finestra. */
+  --content-w: min(calc(100% - var(--rail-w)), var(--shell));
 }
 
 /* --- il dock: la barra di navigazione diventata una colonna --- */
@@ -940,11 +945,11 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
 [data-context="desktop"] .action-bar,
 [data-context="desktop"] .resume-bar,
 [data-context="desktop"] #toast {
-  left: calc(var(--rail-w) + (100% - var(--rail-w)) / 2);
+  left: calc(var(--rail-w) + var(--content-w) / 2);
 }
 [data-context="desktop"] .action-bar,
 [data-context="desktop"] .resume-bar {
-  width: min(calc(100% - var(--rail-w) - var(--s6) * 2), var(--shell));
+  width: calc(var(--content-w) - var(--s6) * 2);
 }
 
 /* --- home: le schede di ingresso restano leggibili, non si allargano
@@ -954,64 +959,16 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
   justify-content: start;
 }
 
-/* --- lavoro, fase 1: l'editor a sinistra, il riscontro dello scan e
-   l'avviso di privacy raccolti in una colonna a lato, sempre visibili
-   mentre si scrive, invece che sotto il testo fuori vista --- */
-[data-context="desktop"] [data-phase="text"] > .stack {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: var(--s5);
-  align-items: start;
-}
-[data-context="desktop"] [data-phase="text"] > .stack > .editor { grid-column: 1; }
-[data-context="desktop"] [data-phase="text"] > .stack > #scan-status,
-[data-context="desktop"] [data-phase="text"] > .stack > .note { grid-column: 2; }
-[data-context="desktop"] [data-phase="text"] .field-text { min-height: 380px; }
-
 /* --- lavoro, fase 2: l'elenco dei riscontri resta una colonna di lettura,
    non una riga che si stira da un bordo all'altro dello schermo --- */
 [data-context="desktop"] [data-phase="check"] > .stack {
   max-width: 640px;
 }
 
-/* --- ripristino: la risposta incollata a sinistra, il risultato rimesso
-   a posto a destra — la stessa coppia editor/anteprima della fase 3 --- */
-[data-context="desktop"] [data-view="restore"] > .stack {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--s5);
-  align-items: start;
-}
-[data-context="desktop"] [data-view="restore"] > .stack > #restore-job,
-[data-context="desktop"] [data-view="restore"] > .stack > #restore-missing {
-  grid-column: 1 / -1;
-}
-[data-context="desktop"] [data-view="restore"] .field-text { min-height: 340px; }
-[data-context="desktop"] [data-view="restore"] .result textarea { min-height: 340px; }
-
-/* --- lavoro, fase 3: composizione della richiesta a sinistra, anteprima
-   di cosa parte davvero fissata a destra — come un compositore/anteprima,
-   non un modulo che scorre dall'alto in basso --- */
-[data-context="desktop"] [data-phase="send"] > .stack-lg {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: var(--s5);
-  align-items: start;
-}
-[data-context="desktop"] [data-phase="send"] > .stack-lg > .result,
-[data-context="desktop"] [data-phase="send"] > .stack-lg > .note {
-  grid-column: 2;
-}
-[data-context="desktop"] [data-phase="send"] > .stack-lg > div:first-child,
-[data-context="desktop"] [data-phase="send"] > .stack-lg > #questions,
-[data-context="desktop"] [data-phase="send"] > .stack-lg > details {
-  grid-column: 1;
-}
-[data-context="desktop"] [data-phase="send"] .recipes { grid-template-columns: repeat(3, 1fr); }
-[data-context="desktop"] [data-phase="send"] .result textarea { min-height: 320px; }
-
 /* --- cassaforte: le liste diventano una griglia, non una colonna che
-   scorre all'infinito su uno schermo che ha spazio a sufficienza --- */
+   scorre all'infinito su uno schermo che ha spazio a sufficienza. Colonne
+   elastiche (auto-fill/minmax): degradano da sole a una sola colonna se la
+   finestra del ponte viene ristretta, non serve una guardia di larghezza. --- */
 [data-context="desktop"] [data-view="vault"] #vault-jobs,
 [data-context="desktop"] [data-view="vault"] #vault-entries,
 [data-context="desktop"] [data-view="vault"] #vault-recent {
@@ -1020,16 +977,81 @@ body[data-resume="on"] .action-bar { bottom: calc(var(--bar-h) + 76px + env(safe
   gap: var(--s3);
 }
 
-/* --- impostazioni: le due card principali (ponte desktop, piano) fianco
-   a fianco invece che una sopra l'altra --- */
-[data-context="desktop"] [data-view="settings"] > .stack-lg {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--s5);
-  align-items: start;
-}
-[data-context="desktop"] [data-view="settings"] > .stack-lg > .stack {
-  grid-column: 1 / -1;
+/* Le griglie a due colonne qui sotto hanno invece una colonna a larghezza
+   fissa (300/380px) o paritaria: sotto i 1000px di finestra utile
+   spremerebbero il contenuto invece di darci respiro. Il ponte gira in una
+   finestra di computer ridimensionabile a piacere, non in un formato
+   fisso — sotto quella soglia questi elementi tornano semplicemente al
+   flusso normale (una colonna), il dock e il resto restano comunque. */
+@media (min-width: 1000px) {
+  /* --- lavoro, fase 1: l'editor a sinistra, il riscontro dello scan e
+     l'avviso di privacy raccolti in una colonna a lato, sempre visibili
+     mentre si scrive, invece che sotto il testo fuori vista --- */
+  [data-context="desktop"] [data-phase="text"] > .stack {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--s5);
+    align-items: start;
+  }
+  [data-context="desktop"] [data-phase="text"] > .stack > .editor { grid-column: 1; }
+  [data-context="desktop"] [data-phase="text"] > .stack > #scan-status,
+  [data-context="desktop"] [data-phase="text"] > .stack > .note { grid-column: 2; }
+  [data-context="desktop"] [data-phase="text"] .field-text { min-height: 380px; }
+
+  /* --- ripristino: la risposta incollata a sinistra, il risultato rimesso
+     a posto a destra — la stessa coppia editor/anteprima della fase 3 --- */
+  [data-context="desktop"] [data-view="restore"] > .stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s5);
+    align-items: start;
+  }
+  [data-context="desktop"] [data-view="restore"] > .stack > #restore-job,
+  [data-context="desktop"] [data-view="restore"] > .stack > #restore-missing {
+    grid-column: 1 / -1;
+  }
+  [data-context="desktop"] [data-view="restore"] .field-text { min-height: 340px; }
+  [data-context="desktop"] [data-view="restore"] .result textarea { min-height: 340px; }
+
+  /* --- lavoro, fase 3: composizione della richiesta a sinistra, anteprima
+     di cosa parte davvero fissata a destra — come un compositore/anteprima,
+     non un modulo che scorre dall'alto in basso --- */
+  [data-context="desktop"] [data-phase="send"] > .stack-lg {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--s5);
+    align-items: start;
+  }
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > .result,
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > .note {
+    grid-column: 2;
+  }
+  /* Senza questo, l'ordine del DOM (ricette, domande, dettaglio, POI
+     l'anteprima) fa avanzare il cursore di collocazione automatica fino
+     alla terza riga prima di raggiungere l'anteprima — che finirebbe in
+     basso a destra invece che accanto al compositore, con un vuoto sopra. */
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > .result {
+    grid-row: 1;
+  }
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > div:first-child,
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > #questions,
+  [data-context="desktop"] [data-phase="send"] > .stack-lg > details {
+    grid-column: 1;
+  }
+  [data-context="desktop"] [data-phase="send"] .recipes { grid-template-columns: repeat(3, 1fr); }
+  [data-context="desktop"] [data-phase="send"] .result textarea { min-height: 320px; }
+
+  /* --- impostazioni: le due card principali (ponte desktop, piano) fianco
+     a fianco invece che una sopra l'altra --- */
+  [data-context="desktop"] [data-view="settings"] > .stack-lg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s5);
+    align-items: start;
+  }
+  [data-context="desktop"] [data-view="settings"] > .stack-lg > .stack {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Il chip che dice la cosa più importante dell'app, in una riga. */
