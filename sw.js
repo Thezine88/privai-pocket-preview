@@ -11,6 +11,7 @@ const SHELL = [
   './src/domain/plan.mjs', './src/domain/qr.mjs', './src/domain/quickProtect.mjs', './src/domain/recipes.mjs',
   './src/domain/share.mjs', './src/domain/swipe.mjs', './src/domain/vault.mjs',
   './src/locales/it.mjs', './src/locales/en.mjs',
+  './vendor/qrcode.mjs',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
   './assets/willy-welcome.webp', './assets/willy-protect-v3.webp',
   './assets/fonts/willy-rounded.otf',

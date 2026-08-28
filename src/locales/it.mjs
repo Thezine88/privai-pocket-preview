@@ -177,6 +177,7 @@ export const it = Object.freeze({
   'desktop.active': 'Sessione attiva: {minutes} minuti rimasti.',
   'desktop.timer': 'La sessione si chiude da sola fra {minutes}:{seconds}.',
   'desktop.unavailable': 'Il collegamento al computer non è disponibile su questo dispositivo.',
+  'desktop.sessionExpired': 'La sessione con il telefono è scaduta. Riapri il collegamento dal telefono.',
   'bridge.share': 'Condividi il link',
   'bridge.shareTitle': 'Collega questo computer a PrivAI Pocket',
 

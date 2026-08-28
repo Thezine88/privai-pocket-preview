@@ -160,6 +160,7 @@ export const en = Object.freeze({
   'desktop.active': 'Session running: {minutes} minutes left.',
   'desktop.timer': 'The session closes itself in {minutes}:{seconds}.',
   'desktop.unavailable': 'Connecting to a computer is not available on this device.',
+  'desktop.sessionExpired': 'The connection to the phone has expired. Reopen it from the phone.',
   'bridge.share': 'Share the link',
   'bridge.shareTitle': 'Connect this computer to PrivAI Pocket',
 

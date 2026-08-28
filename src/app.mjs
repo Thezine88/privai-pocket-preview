@@ -45,6 +45,23 @@ function bridgeToken() {
 const store = bridgeToken() ? createRemoteStore(bridgeToken()) : createSecureStore();
 const vault = createVault(store);
 if (bridgeToken()) document.documentElement.dataset.context = 'desktop';
+
+/**
+ * In modalità ponte, createRemoteStore(...).get/set/remove lanciano un
+ * errore quando il token di sessione è scaduto o rifiutato dal telefono
+ * (bridge-store-error-401). Nessun chiamante lo intercetta oggi: senza
+ * questo gestore diventerebbe una promise rifiutata silenziosa, e il
+ * computer non saprebbe mai che la sessione è finita.
+ */
+if (bridgeToken()) {
+  window.addEventListener('unhandledrejection', (event) => {
+    if (String(event.reason?.message || '').includes('bridge-store-error-401')) {
+      event.preventDefault();
+      alert(t('desktop.sessionExpired'));
+    }
+  });
+}
+
 const desktop = createDesktopSessions(store);
 const outbound = createOutbound();
 
@@ -1132,13 +1149,18 @@ async function startDesktop() {
   const bridgePlugin = globalThis.Capacitor?.Plugins?.BridgeServer;
   if (!bridgePlugin) return toast(t('desktop.unavailable'));
 
-  const token = pairingCode();
-  const result = await desktop.start(state.plan, token);
+  const richiesto = pairingCode();
+  const result = await desktop.start(state.plan, richiesto);
   if (!result.ok) return toast(t('desktop.none'));
+  const token = result.session.code;
+
+  const nativeEndsAt = Number.isFinite(result.session.endsAt)
+    ? result.session.endsAt
+    : Date.now() + 24 * 60 * 60 * 1000;
 
   let native;
   try {
-    native = await bridgePlugin.start({ token, endsAt: result.session.endsAt });
+    native = await bridgePlugin.start({ token, endsAt: nativeEndsAt });
   } catch {
     await desktop.stop();
     return toast(t('desktop.unavailable'));

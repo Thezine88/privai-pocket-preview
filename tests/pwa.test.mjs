@@ -55,7 +55,7 @@ test('service worker precaches the complete app shell, module by module', async 
     }
   }
 
-  const attesi = ['./index.html', './styles.css', './manifest.webmanifest', ...moduli];
+  const attesi = ['./index.html', './styles.css', './manifest.webmanifest', './vendor/qrcode.mjs', ...moduli];
   const mancanti = attesi.filter((asset) => !shell.includes(asset));
   assert.deepEqual(mancanti, [], `moduli assenti dal precache del service worker: ${mancanti.join(', ')}`);
 });

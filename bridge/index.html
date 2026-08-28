@@ -53,6 +53,10 @@
         document.getElementById('errore').style.display = 'block';
         return;
       }
+      if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip) || !/^\d{1,5}$/.test(porta)) {
+        document.getElementById('errore').style.display = 'block';
+        return;
+      }
       var destinazione = 'http://' + ip + ':' + porta + '/?token=' + encodeURIComponent(token);
       setTimeout(function () {
         location.href = destinazione;
