@@ -1076,27 +1076,10 @@ function renderNavBadge() {
 /* =================================================================== */
 
 async function renderHome() {
+  // La cassaforte NON si duplica qui: ha la sua sezione nella barra di
+  // navigazione, e ripeterla in home rendeva la schermata iniziale un
+  // riassunto di un'altra invece del punto da cui si comincia.
   const jobs = (await vault.listJobs()).filter((job) => !job.restoredAt);
-  const block = $('#home-jobs');
-  const list = $('#home-jobs-list');
-
-  block.hidden = jobs.length === 0;
-  list.innerHTML = jobs.slice(0, 3).map((job) => {
-    const count = Object.keys(job.mapping).length;
-    return `
-      <button class="job" type="button" data-home-job="${job.id}">
-        <span class="lock" aria-hidden="true">${iconSvg('lock')}</span>
-        <span class="job-main"><strong>${escapeHtml(job.title)}</strong>
-          <small>${escapeHtml(t(count === 1 ? 'vault.itemsCountOne' : 'vault.itemsCount', { count }))} · ${
-            escapeHtml(retentionLabel(job, state.locale))}</small></span>
-        <span class="chev" aria-hidden="true">›</span>
-      </button>`;
-  }).join('');
-
-  $$('[data-home-job]', list).forEach((button) => button.addEventListener('click', () => {
-    state.restoreJob = button.dataset.homeJob;
-    goto('restore', 'fwd');
-  }));
 
   const recent = (await store.get('recent')) ?? [];
   $('#home-willy').hidden = jobs.length > 0 || recent.length > 0;
@@ -1175,7 +1158,14 @@ async function renderSettings() {
     node.textContent = t(status.remaining === 1 ? 'desktop.remainingOne' : 'desktop.remaining',
       { count: status.remaining, minutes: status.minutes });
   }
-  $('#desktop-start').disabled = !status.unlimited && status.remaining === 0 && !status.active;
+  // Con un collegamento attivo il pulsante deve poterlo FERMARE: il server
+  // ora sopravvive alla chiusura della finestra del QR, quindi senza questo
+  // non ci sarebbe più nessun modo di spegnerlo prima della scadenza.
+  const avvio = $('#desktop-start');
+  avvio.textContent = status.active ? t('desktop.stop') : t('settings.desktopAction');
+  avvio.classList.toggle('btn-danger', Boolean(status.active));
+  avvio.classList.toggle('btn-dark', !status.active);
+  avvio.disabled = !status.active && !status.unlimited && status.remaining === 0;
 }
 
 function renderProBenefits() {
@@ -1234,8 +1224,19 @@ async function startDesktop() {
   tickDesktop(result.session);
   await ask('#dlg-desktop');
 
+  // La finestra si chiude, il collegamento NO. Legarli insieme era un errore
+  // di progetto: si chiude quella finestra proprio per andare al computer, e
+  // il server moriva un attimo prima che il computer bussasse — dal PC si
+  // vedeva solo un timeout. Il collegamento vive finché scade la sessione o
+  // finché lo si interrompe da Impostazioni.
+  renderSettings();
+}
+
+/** Ferma il collegamento: chiude il server nativo e la sessione logica. */
+async function stopDesktop() {
   clearInterval(desktopTimer);
-  await bridgePlugin.stop?.();
+  desktopTimer = null;
+  await globalThis.Capacitor?.Plugins?.BridgeServer?.stop?.();
   await desktop.stop();
   renderSettings();
 }
@@ -1249,7 +1250,10 @@ function tickDesktop(session) {
     const minutes = Math.floor(left / 60000);
     const seconds = String(Math.floor((left % 60000) / 1000)).padStart(2, '0');
     node.textContent = t('desktop.timer', { minutes, seconds });
-    if (left <= 0) { clearInterval(desktopTimer); $('#dlg-desktop').close(); }
+    // Alla scadenza si spegne davvero: il server non deve sopravvivere alla
+    // sessione che l'ha autorizzato, altrimenti resterebbe una porta aperta
+    // sulla rete locale senza che nessuno l'abbia più chiesto.
+    if (left <= 0) { $('#dlg-desktop').close(); stopDesktop(); }
   };
   update();
   desktopTimer = setInterval(update, 1000);
@@ -1365,6 +1369,9 @@ function showOnboarding(index = 0) {
   });
   $$('.onb-dots span').forEach((dot, position) => dot.toggleAttribute('data-active', position === onbIndex));
   $('#onb-next').textContent = t(onbIndex === 2 ? 'onb.start' : 'onb.next');
+  // Indietro solo dove ha senso: sulla prima schermata non c'è nulla dietro,
+  // e un pulsante che non fa niente è peggio di un pulsante assente.
+  $('#onb-back').hidden = onbIndex === 0;
   if (onbIndex === 2) playDemo();
 }
 
@@ -1687,7 +1694,11 @@ $('#retention').addEventListener('change', async (event) => {
   await store.set('prefs', { ...prefs, retention: state.retention });
 });
 
-$('#desktop-start').addEventListener('click', startDesktop);
+$('#desktop-start').addEventListener('click', async () => {
+  const status = await desktop.status(state.plan);
+  if (status.active) return stopDesktop();
+  return startDesktop();
+});
 
 $('#wipe').addEventListener('click', async () => {
   if (!(await confirmAction('confirm.wipeTitle', 'confirm.wipeBody', 'confirm.wipeOk'))) return;
@@ -1706,6 +1717,7 @@ $('#resume-close').addEventListener('click', hideResume);
 $('#pro-interest').addEventListener('click', () => toast(t('toast.proInterest')));
 $('#replay-onboarding').addEventListener('click', () => showOnboarding(0));
 $('#onb-skip').addEventListener('click', closeOnboarding);
+$('#onb-back').addEventListener('click', () => { haptic(); showOnboarding(onbIndex - 1); });
 $('#onb-next').addEventListener('click', () => {
   if (onbIndex === 2) closeOnboarding(); else showOnboarding(onbIndex + 1);
 });

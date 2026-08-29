@@ -23,6 +23,7 @@ export const en = Object.freeze({
   'onb.title3': 'Here’s what happens',
   'onb.body3': 'The originals stay on your phone. When you come back with the AI’s answer, I put them back.',
   'onb.next': 'Next',
+  'onb.back': 'Back',
   'onb.start': 'Let’s go',
 
   'home.deviceOnly': 'On your device only',
@@ -162,6 +163,7 @@ export const en = Object.freeze({
   'desktop.timer': 'The session closes itself in {minutes}:{seconds}.',
   'desktop.unavailable': 'Connecting to a computer is not available on this device.',
   'desktop.noWifi': 'Connect the phone to Wi-Fi first: the computer must be on the same network.',
+  'desktop.stop': 'Stop the connection',
   'desktop.sessionExpired': 'The connection to the phone has expired. Reopen it from the phone.',
   'bridge.share': 'Share the link',
   'bridge.shareTitle': 'Connect this computer to PrivAI Pocket',

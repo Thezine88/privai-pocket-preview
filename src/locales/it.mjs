@@ -25,11 +25,12 @@ export const it = Object.freeze({
   'onb.skip': 'Salta',
   'onb.title1': 'Ciao, io sono Willy',
   'onb.body1': 'Ti aiuto a usare l’IA nascondendo i dati sensibili.',
-  'onb.title2': 'Tu condividi, al resto penso io',
+  'onb.title2': 'Tu condividi, al resto penso io',
   'onb.body2': 'Devi lavorare con un chatbot su un documento? Mandamelo prima: lo analizzerò per te.',
   'onb.title3': 'Guarda cosa succede',
   'onb.body3': 'Gli originali restano sul telefono. Quando torni con la risposta dell’IA, li rimetto al loro posto.',
   'onb.next': 'Avanti',
+  'onb.back': 'Indietro',
   'onb.start': 'Iniziamo',
 
   /* --- home --- */
@@ -179,6 +180,7 @@ export const it = Object.freeze({
   'desktop.timer': 'La sessione si chiude da sola fra {minutes}:{seconds}.',
   'desktop.unavailable': 'Il collegamento al computer non è disponibile su questo dispositivo.',
   'desktop.noWifi': 'Collega prima il telefono al Wi-Fi: il computer deve stare sulla stessa rete.',
+  'desktop.stop': 'Interrompi il collegamento',
   'desktop.sessionExpired': 'La sessione con il telefono è scaduta. Riapri il collegamento dal telefono.',
   'bridge.share': 'Condividi il link',
   'bridge.shareTitle': 'Collega questo computer a PrivAI Pocket',

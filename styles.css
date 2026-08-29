@@ -143,7 +143,10 @@ body {
    delle lettere più del necessario — il 700 resta ben distinto dal corpo
    del testo (400) senza perdere leggibilità. */
 h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
-p { margin: 0; }
+/* "pretty" chiede al motore di evitare le righe finali con una parola sola.
+   Non basta da solo per gli articoli isolati (li' serve lo spazio
+   indivisibile nel testo), ma migliora ogni a capo dell'app gratis. */
+p { margin: 0; text-wrap: pretty; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 

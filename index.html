@@ -37,7 +37,7 @@
 
   <article class="onb-slide" data-slide="1">
     <img src="assets/willy-protect-v3.webp" alt="" class="willy-live">
-    <h2 data-i18n="onb.title2">Tu condividi, al resto penso io</h2>
+    <h2 data-i18n="onb.title2">Tu condividi, al resto penso io</h2>
     <p data-i18n="onb.body2">Devi lavorare con un chatbot su un documento? Mandamelo prima: lo analizzerò per te.</p>
   </article>
 
@@ -48,6 +48,7 @@
   </article>
 
   <div class="onb-controls">
+    <button class="btn btn-soft" id="onb-back" type="button" data-i18n="onb.back" hidden>Indietro</button>
     <button class="btn btn-primary btn-full" id="onb-next" type="button" data-i18n="onb.next">Avanti</button>
   </div>
   <div class="onb-dots" aria-hidden="true">
@@ -74,11 +75,6 @@
 
     <div class="stack-lg">
       <!-- Lavori aperti: se ci sono, sono la prima cosa che si vede -->
-      <div id="home-jobs" hidden>
-        <p class="eyebrow" data-i18n="home.openJobs">IN CASSAFORTE</p>
-        <div class="stack" id="home-jobs-list"></div>
-      </div>
-
       <div>
         <p class="eyebrow" data-i18n="home.startEyebrow">DA DOVE PARTIAMO</p>
         <div class="intake">
