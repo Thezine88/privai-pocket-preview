@@ -89,15 +89,23 @@
   </div>
   <script>
     (function () {
-      // I parametri arrivano dopo il "#": il browser non lo manda mai al
-      // server, quindi indirizzo del telefono e codice di sessione non
-      // finiscono nei registri di GitHub, che ospita questa pagina.
-      // La query string resta accettata come ripiego per i link generati
-      // dalle versioni precedenti dell'app.
-      var parametri = new URLSearchParams(location.hash.slice(1) || location.search);
-      var ip = parametri.get('ip');
-      var porta = parametri.get('porta');
-      var token = parametri.get('token');
+      // Formato compatto: "#indirizzo:porta:codice". Cosi' corto perche' ogni
+      // carattere in meno rende il QR meno denso, quindi piu' leggibile.
+      // Sta dopo il "#" e non dopo il "?": il browser non manda mai al server
+      // la parte dopo il cancelletto, quindi indirizzo e codice di sessione
+      // non finiscono nei registri di GitHub, che ospita questa pagina.
+      var ip, porta, token;
+      var compatto = location.hash.slice(1);
+      if (compatto.indexOf(':') > -1 && compatto.indexOf('=') === -1) {
+        var pezzi = compatto.split(':');
+        ip = pezzi[0]; porta = pezzi[1]; token = pezzi[2];
+      } else {
+        // Ripiego per i link generati dalle versioni precedenti dell'app.
+        var parametri = new URLSearchParams(compatto || location.search);
+        ip = parametri.get('ip');
+        porta = parametri.get('porta');
+        token = parametri.get('token');
+      }
       if (!ip || !porta || !token) {
         document.getElementById('errore').style.display = 'block';
         return;

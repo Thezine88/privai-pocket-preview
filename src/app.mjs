@@ -1208,16 +1208,17 @@ async function startDesktop() {
     return toast(t(senzaWifi ? 'desktop.noWifi' : 'desktop.unavailable'));
   }
 
-  // I parametri stanno dopo il "#", non dopo il "?", ed è una scelta di
-  // sostanza: la parte dopo il cancelletto NON viene inviata al server dal
-  // browser, mai. Nella query string finirebbero invece nei registri di
-  // GitHub, che ospita la paginetta — cioè il codice di sessione e
-  // l'indirizzo del telefono passerebbero da un terzo, in un'app che
-  // promette che non esce nulla. Così il computer li legge in locale e
-  // nessun server li vede.
-  const parametri = new URLSearchParams({ ip: native.ip, porta: String(native.port), token });
-  const link = `https://thezine88.github.io/privai-pocket-preview/bridge/#${parametri}`;
-  $('#qr-holder').innerHTML = renderQrSvg(link);
+  // Tre valori separati da ":" invece di "ip=..&porta=..&token=..": ogni
+  // carattere in meno accorcia il QR di moduli, e un QR meno denso si legge
+  // meglio da lontano e con la fotocamera storta. Qui sono 15 caratteri
+  // risparmiati, che valgono 8 moduli di lato in meno.
+  // Restano dopo il "#" e non dopo il "?": la parte dopo il cancelletto NON
+  // viene inviata al server dal browser, mai. Nella query finirebbero nei
+  // registri di GitHub, che ospita la paginetta — cioè il codice di sessione
+  // e l'indirizzo del telefono passerebbero da un terzo, in un'app che
+  // promette che non esce nulla.
+  const link = `https://thezine88.github.io/privai-pocket-preview/bridge/#${native.ip}:${native.port}:${token}`;
+  $('#qr-holder').innerHTML = renderQrSvg(link, { logo: 'assets/willy-welcome.webp' });
   $('#desktop-link').textContent = link;
   $('#desktop-share').onclick = () => outbound.shareAnywhere(link, t('bridge.shareTitle'));
 
