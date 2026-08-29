@@ -783,7 +783,7 @@ test('renderQrSvg produce un vero SVG scansionabile, non un disegno decorativo a
 });
 
 test('renderQrSvg gestisce un link lungo (indirizzo + porta + token) senza lanciare', () => {
-  const lungo = 'https://thezine88.github.io/privai-pocket-preview/bridge/?ip=192.168.1.42&porta=45231&token=AB3XK9QZLM';
+  const lungo = 'https://thezine88.github.io/privai-pocket-preview/bridge/#ip=192.168.1.42&porta=45231&token=AB3XK9QZLM';
   assert.doesNotThrow(() => renderQrSvg(lungo));
 });
 

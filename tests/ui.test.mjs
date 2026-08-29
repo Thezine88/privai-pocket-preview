@@ -227,3 +227,16 @@ test('esiste un layout dedicato per la modalità ponte, non solo il telefono all
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-context="desktop"\]/);
 });
+
+test('il codice di sessione viaggia dopo il "#", mai nella query: non deve finire nei registri di GitHub', async () => {
+  const app = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  const riga = app.split('\n').find((r) => r.includes('privai-pocket-preview/bridge/'));
+  assert.ok(riga, 'link del ponte non trovato in app.mjs');
+  // La parte dopo il cancelletto non viene inviata al server dal browser.
+  // Con "?" invece indirizzo del telefono e token passerebbero da GitHub.
+  assert.match(riga, /bridge\/#\$\{/);
+  assert.doesNotMatch(riga, /bridge\/\?/);
+
+  const pagina = await readFile(new URL('../bridge/index.html', import.meta.url), 'utf8');
+  assert.match(pagina, /location\.hash/);
+});

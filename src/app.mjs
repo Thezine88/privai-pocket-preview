@@ -1218,7 +1218,15 @@ async function startDesktop() {
     return toast(t(senzaWifi ? 'desktop.noWifi' : 'desktop.unavailable'));
   }
 
-  const link = `https://thezine88.github.io/privai-pocket-preview/bridge/?ip=${encodeURIComponent(native.ip)}&porta=${native.port}&token=${encodeURIComponent(token)}`;
+  // I parametri stanno dopo il "#", non dopo il "?", ed è una scelta di
+  // sostanza: la parte dopo il cancelletto NON viene inviata al server dal
+  // browser, mai. Nella query string finirebbero invece nei registri di
+  // GitHub, che ospita la paginetta — cioè il codice di sessione e
+  // l'indirizzo del telefono passerebbero da un terzo, in un'app che
+  // promette che non esce nulla. Così il computer li legge in locale e
+  // nessun server li vede.
+  const parametri = new URLSearchParams({ ip: native.ip, porta: String(native.port), token });
+  const link = `https://thezine88.github.io/privai-pocket-preview/bridge/#${parametri}`;
   $('#qr-holder').innerHTML = renderQrSvg(link);
   $('#desktop-link').textContent = link;
   $('#desktop-share').onclick = () => outbound.shareAnywhere(link, t('bridge.shareTitle'));
