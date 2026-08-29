@@ -216,6 +216,7 @@ export const en = Object.freeze({
   'toast.limitEntries': 'The free plan saves {count} words. Go Pro for no limits.',
 
   /* --- quick settings tile --- */
+  'quickProtect.masked': 'Hidden: {list}',
   'quickProtect.restored': 'Restored',
   'quickProtect.nothing': 'Nothing to hide',
   'quickProtect.empty': 'Nothing to protect on the clipboard',

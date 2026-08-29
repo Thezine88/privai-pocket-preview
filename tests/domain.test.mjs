@@ -4,8 +4,7 @@ import assert from 'node:assert/strict';
 import {
   detectSensitiveData, maskFindings, restoreProtectedText, groupFindings,
   countKnownPlaceholders, contextAround, riskOf, shouldOfferRestore,
-  isValidFiscalCode, isValidIban, isValidVatNumber, isValidCard,
-} from '../src/domain/pii.mjs';
+  isValidFiscalCode, isValidIban, isValidVatNumber, isValidCard, summariseMapping } from '../src/domain/pii.mjs';
 import { decideQuickProtect } from '../src/domain/quickProtect.mjs';
 import { normalizeToMarkdown, buildRequest, titleFromText, containsPlaceholders } from '../src/domain/markdown.mjs';
 import { createVault, RETENTION, retentionLabel, clampRetention, WIPED_KEYS, createRemoteStore } from '../src/domain/vault.mjs';
@@ -791,4 +790,42 @@ test('renderQrSvg produce contenuto diverso per testi diversi (non è un placeho
   const uno = renderQrSvg('https://esempio.test/a');
   const due = renderQrSvg('https://esempio.test/completamente-diverso-e-piu-lungo-di-prima');
   assert.notEqual(uno, due);
+});
+
+/* ------------------------------------------------------------------ */
+/* Riquadro impostazioni rapide: dire COSA e' stato nascosto            */
+/* ------------------------------------------------------------------ */
+
+test('summariseMapping dice quali tipi sono stati nascosti, non solo quanti', () => {
+  const mapping = { '[NOME_1]': 'Mario Rossi', '[EMAIL_1]': 'm@x.it', '[EMAIL_2]': 'a@y.it', '[TEL_1]': '333' };
+  const riassunto = summariseMapping(mapping, 'it');
+  assert.match(riassunto, /2 email/);
+  assert.match(riassunto, /1 nome/);
+  assert.match(riassunto, /1 telefono/);
+});
+
+test('summariseMapping mette per primo il tipo piu' + String.fromCharCode(32) + 'frequente', () => {
+  const mapping = { '[NOME_1]': 'a', '[EMAIL_1]': 'b', '[EMAIL_2]': 'c', '[EMAIL_3]': 'd' };
+  assert.ok(summariseMapping(mapping, 'it').startsWith('3 email'));
+});
+
+test('summariseMapping non espone mai i valori nascosti, solo i tipi', () => {
+  const mapping = { '[NOME_1]': 'Mario Rossi', '[EMAIL_1]': 'mario@example.com' };
+  const riassunto = summariseMapping(mapping, 'it');
+  assert.doesNotMatch(riassunto, /Mario|example/);
+});
+
+test('summariseMapping regge un segnaposto con suffisso ([NOME_1A]) e uno sconosciuto', () => {
+  const mapping = { '[NOME_1A]': 'x', '[SCONOSCIUTO_1]': 'y' };
+  assert.equal(summariseMapping(mapping, 'it'), '1 nome');
+});
+
+test('summariseMapping su mappa vuota non lancia e non inventa nulla', () => {
+  assert.equal(summariseMapping({}, 'it'), '');
+  assert.equal(summariseMapping(null, 'it'), '');
+});
+
+test('summariseMapping non abbassa gli acronimi: "1 IBAN", non "1 iban"', () => {
+  assert.match(summariseMapping({ '[IBAN_1]': 'x' }, 'it'), /1 IBAN/);
+  assert.match(summariseMapping({ '[NOME_1]': 'x' }, 'it'), /1 nome/);
 });

@@ -237,6 +237,7 @@ export const it = Object.freeze({
   'toast.limitEntries': 'Nel piano gratuito puoi salvare {count} parole. Passa a Pro per non avere limiti.',
 
   /* --- riquadro impostazioni rapide --- */
+  'quickProtect.masked': 'Nascosti: {list}',
   'quickProtect.restored': 'Ripristinato',
   'quickProtect.nothing': 'Niente da nascondere',
   'quickProtect.empty': 'Niente da proteggere negli appunti',

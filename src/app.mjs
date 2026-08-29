@@ -12,7 +12,7 @@
  */
 
 import { detectSensitiveData, maskFindings, restoreProtectedText, displaySensitiveType,
-         groupFindings, contextAround, countKnownPlaceholders, shouldOfferRestore } from './domain/pii.mjs';
+         groupFindings, contextAround, countKnownPlaceholders, shouldOfferRestore , summariseMapping} from './domain/pii.mjs';
 import { buildRequest, titleFromText } from './domain/markdown.mjs';
 import { createSecureStore, createRemoteStore, createVault, DEFAULT_RETENTION, retentionLabel, clampRetention } from './domain/vault.mjs';
 import { RECIPES, getRecipe, defaultAnswers, toggleAnswer, isAnswerActive, instructionsFor } from './domain/recipes.mjs';
@@ -1518,8 +1518,16 @@ async function runQuickProtect() {
         findingsCount: decision.count,
         retention: clampRetention(prefs.retention ?? DEFAULT_RETENTION, limits.maxRetention),
       });
-      const base = t(decision.count === 1 ? 'vault.itemsCountOne' : 'vault.itemsCount', { count: decision.count });
-      const message = limited ? `${base} · ${t('toast.limitJobs', { count: limits.openJobs })}` : base;
+      // Non solo QUANTI dati, ma QUALI: il riquadro agisce senza aprire
+      // niente, quindi questo avviso e' l'unico momento in cui si puo'
+      // capire cosa e' successo. Un numero da solo non lascia accorgersi
+      // che ha preso la cosa sbagliata o che ne ha mancata una. I tipi si
+      // possono mostrare, i valori no: comparirebbero sopra qualunque app.
+      const tipi = summariseMapping(decision.mapping, state.locale);
+      const base = tipi || t(decision.count === 1 ? 'vault.itemsCountOne' : 'vault.itemsCount', { count: decision.count });
+      const message = limited
+        ? `${t('quickProtect.masked', { list: base })} · ${t('toast.limitJobs', { count: limits.openJobs })}`
+        : t('quickProtect.masked', { list: base });
       await plugin?.toast?.({ message });
     } else if (decision.action === 'nothing') {
       await plugin?.toast?.({ message: t('quickProtect.nothing') });

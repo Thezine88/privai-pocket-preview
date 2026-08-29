@@ -216,6 +216,45 @@ export function displaySensitiveType(type, locale = 'it') {
   return LABELS[language][type] ?? String(type ?? '');
 }
 
+/**
+ * Riassunto leggibile di COSA e' stato nascosto: "1 nome, 2 email".
+ *
+ * Serve al riquadro delle impostazioni rapide, che agisce senza aprire
+ * nulla: un numero da solo ("3 dati nascosti") non permette di accorgersi
+ * che ha preso la cosa sbagliata, o che ne ha mancata una. I TIPI si
+ * possono mostrare, i valori no: comparirebbero sopra qualunque app.
+ *
+ * @param {Record<string,string>} mapping segnaposto -> valore originale
+ * @param {string} locale
+ * @returns {string} elenco separato da virgole, gia' pronto da mostrare
+ */
+export function summariseMapping(mapping, locale = 'it') {
+  const perTag = new Map();
+  for (const [type, info] of Object.entries(SENSITIVE_TYPES)) perTag.set(info.tag, type);
+
+  const conteggi = new Map();
+  for (const segnaposto of Object.keys(mapping ?? {})) {
+    // I segnaposto hanno forma [TAG_1], a volte [TAG_1A] quando il testo
+    // conteneva gia' quella stringa: in entrambi i casi il tag e' la parte
+    // prima del primo trattino basso.
+    const tag = /^\[([A-Z]+)_/.exec(segnaposto)?.[1];
+    const type = tag && perTag.get(tag);
+    if (!type) continue;
+    conteggi.set(type, (conteggi.get(type) ?? 0) + 1);
+  }
+
+  return [...conteggi.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([type, quanti]) => {
+      const etichetta = displaySensitiveType(type, locale);
+      // "1 nome" ma "1 IBAN": gli acronimi restano maiuscoli, abbassarli
+      // ("1 iban", "1 partita iva") si legge come un refuso.
+      const leggibile = etichetta === etichetta.toUpperCase() ? etichetta : etichetta.toLowerCase();
+      return `${quanti} ${leggibile}`;
+    })
+    .join(', ');
+}
+
 export function riskOf(type) {
   return SENSITIVE_TYPES[type]?.risk ?? 'high';
 }
