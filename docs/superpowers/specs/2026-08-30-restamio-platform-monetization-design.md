@@ -49,9 +49,14 @@ L'applicazione deve usare una singola interfaccia astratta per determinare il pi
 - `free`
 - `pro`
 - `beta_pro_preview` esclusivamente per test autorizzati
+- `owner` per la build personale del proprietario
+- `creator_gift` per i partner selezionati
 
 Le implementazioni future saranno:
 
+- build Android proprietaria firmata e non distribuibile, con application ID separato;
+- build beta Android con acquisti disattivati;
+- licenze beta firmate per creator, senza chiavi segrete incorporate nell'app;
 - Google Play Billing su Android;
 - StoreKit su iOS;
 - modalità beta senza transazione;
@@ -66,6 +71,52 @@ La fonte autorevole dell'acquisto resta lo store. Una cache locale può migliora
 Nella prima versione commerciale, Android e iOS hanno acquisti separati, legati al rispettivo account dello store. Non viene introdotto un account RestaMio soltanto per sincronizzare gli acquisti.
 
 Un telefono con Pro può abilitare la modalità desktop secondo il protocollo di associazione previsto. I dettagli tecnici del pairing desktop saranno definiti in una specifica separata prima dell'implementazione.
+
+
+## Build Android e accessi speciali
+
+La prima consegna eseguibile deve essere un APK Android installabile direttamente, indipendente da Play Store.
+
+Sono previste tre build:
+
+1. **Owner/Dev:** destinata esclusivamente al proprietario, con Pro sempre attivo, firma e application ID separati. Non può essere distribuita pubblicamente.
+2. **Beta:** riproduce il piano Free reale, consente test Pro autorizzati e non contiene pagamenti attivi.
+3. **Production:** distribuita dallo store, con entitlement verificati tramite Google Play Billing.
+
+Non devono esistere scorciatoie basate su nome, email, numero di telefono o valore facilmente modificabile. L'accesso Owner non deve diventare una backdoor nella build Production.
+
+## Programma Creator Partner
+
+Il piano Creator Partner usa le stesse funzionalità di Pro. La differenza riguarda provenienza dell'accesso e strumenti di collaborazione.
+
+### Vantaggi del creator
+
+- Pro permanente per collaborazioni approvate;
+- accesso anticipato alle nuove funzioni;
+- canale diretto per assistenza e feedback;
+- Demo Mode con dati fittizi, già predisposti per registrare video senza mostrare dati personali reali;
+- media kit con schermate, clip, logo e messaggi verificati;
+- link, QR o codice personale per la propria community;
+- possibilità di offrire alla community codici o condizioni promozionali quando supportati dal publisher e dagli store;
+- riconoscimento facoltativo come partner, previo consenso.
+
+Pro gratuito da solo non deve essere presentato come compenso equivalente a una collaborazione professionale. Eventuali commissioni, compensi o programmi di affiliazione saranno definiti e gestiti dal futuro publisher mediante contratto. Prima di allora non vengono promessi pagamenti.
+
+### Accesso durante la beta
+
+Prima degli store, un creator selezionato può ricevere una licenza beta firmata e temporalmente limitata, raccomandata a 90 giorni. La firma privata resta fuori dal repository e dall'app. La verifica avviene localmente mediante chiave pubblica.
+
+Senza un server, una licenza offline già emessa non può essere revocata in modo affidabile. Per questo le licenze beta devono avere scadenza.
+
+### Accesso dopo la pubblicazione
+
+Dopo la pubblicazione si usano preferibilmente codici ufficiali monouso di Google Play o Apple per concedere gratuitamente il prodotto non consumabile Pro. Lo store diventa la fonte autorevole e consente reinstallazione e ripristino.
+
+### Attribuzione rispettosa della privacy
+
+RestaMio può conservare localmente un identificatore campagna o creator, senza associarlo ai documenti, ai testi o ai dati sensibili dell'utente. Qualunque misurazione server-side futura richiederà una specifica privacy separata, consenso ove necessario e configurazione del publisher.
+
+Il creator non può accedere ai lavori, ai dati, alla Cassaforte o all'attività degli utenti provenienti dalla propria campagna.
 
 ## Esperienza dei limiti
 
@@ -128,6 +179,8 @@ Questa specifica non stabilisce:
 - prezzo finale di Pro;
 - contratto con il publisher;
 - protocollo definitivo della modalità desktop;
+- quantità, durata e criteri delle collaborazioni Creator Partner;
+- compensi o affiliazione dei creator;
 - backend commerciale;
 - politiche promozionali;
 - grafica definitiva della schermata Pro.
