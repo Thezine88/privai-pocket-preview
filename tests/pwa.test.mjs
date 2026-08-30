@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 test('manifest provides standalone Android install metadata', async () => {
   const manifest = JSON.parse(await readFile(new URL('../manifest.webmanifest', import.meta.url), 'utf8'));
   assert.equal(manifest.display, 'standalone');
-  assert.equal(manifest.theme_color, '#FFF8F1');
+  assert.equal(manifest.theme_color, '#F4511E');
   assert.equal(manifest.share_target, undefined);
   assert.ok(manifest.icons.some((icon) => icon.sizes === '512x512'));
 });
@@ -17,14 +17,14 @@ test('service worker never caches query-bearing requests and only falls back for
   assert.match(sw, /cache\.put\(url\.pathname/);
 });
 
-test('service worker cache is advanced for the complete localization release', async () => {
+test('service worker cache is rebranded for RestaMio', async () => {
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(worker, /privai-pocket-v17/);
+  assert.match(worker, /restamio-v1/);
 });
 
 test('service worker precaches the complete app shell', async () => {
   const worker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
-  assert.match(worker, /privai-pocket-v17/);
+  assert.match(worker, /restamio-v1/);
   for (const asset of ['./index.html', './styles.css', './src/app.mjs', './src/domain/workflow.mjs', './src/domain/share.mjs', './src/domain/pdf.mjs', './vendor/pdf.mjs', './vendor/pdf.worker.mjs', './src/locales/it.mjs', './src/locales/en.mjs', './manifest.webmanifest', './assets/reward-token.webp', './assets/tool-markdown.webp', './assets/tool-protect.webp', './assets/tool-prepare.webp', './assets/tool-history.webp']) {
     assert.match(worker, new RegExp(asset.replaceAll('.', '\\.')));
   }

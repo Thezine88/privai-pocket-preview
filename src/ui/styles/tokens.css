@@ -1,0 +1,20 @@
+:root {
+  --color-brand: #F4511E;
+  --color-brand-pressed: #D94113;
+  --color-brand-soft: #FFF0EA;
+  --color-background: #FFFCFA;
+  --color-surface: #FFFFFF;
+  --color-surface-warm: #FFF9F6;
+  --color-text: #171515;
+  --color-text-secondary: #6E6967;
+  --color-border: #E5DEDA;
+  --color-icon: #777270;
+  --color-success: #15945F;
+  --radius-card: 20px;
+  --radius-control: 16px;
+  --radius-pill: 999px;
+  --shadow-card: 0 8px 24px rgb(74 45 33 / 7%);
+  --shadow-cta: 0 10px 24px rgb(244 81 30 / 20%);
+  --page-inline: max(20px, calc((100vw - 390px) / 2));
+  --bottom-nav-space: 104px;
+}

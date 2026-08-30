@@ -3,8 +3,9 @@ apply plugin: 'com.android.application'
 android {
     namespace = "app.privai.pocket"
     compileSdk = rootProject.ext.compileSdkVersion
+    flavorDimensions += "edition"
     defaultConfig {
-        applicationId "app.privai.pocket"
+        applicationId "app.restamio.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -14,6 +15,20 @@ android {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    productFlavors {
+        owner {
+            dimension "edition"
+            applicationId "app.restamio.owner"
+            resValue "string", "app_name", "RestaMio Owner"
+            resValue "string", "title_activity_main", "RestaMio Owner"
+        }
+        production {
+            dimension "edition"
+            applicationId "app.restamio.mobile"
+            resValue "string", "app_name", "RestaMio"
+            resValue "string", "title_activity_main", "RestaMio"
         }
     }
     buildTypes {

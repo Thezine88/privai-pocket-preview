@@ -1,14 +1,14 @@
 {
-  "name": "PrivAI Pocket",
-  "short_name": "PrivAI",
-  "description": "Converti, proteggi e prepara contenuti per qualsiasi IA.",
+  "name": "RestaMio",
+  "short_name": "RestaMio",
+  "description": "Usa l’AI senza condividere dati sensibili.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#FFF8F1",
-  "theme_color": "#FFF8F1",
+  "theme_color": "#F4511E",
   "categories": ["productivity", "utilities"],
   "icons": [
     { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },

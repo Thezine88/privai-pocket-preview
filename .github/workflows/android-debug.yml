@@ -26,8 +26,8 @@ jobs:
         run: npm ci
       - name: Run tests
         run: node --test tests/*.test.mjs
-      - name: Build local web bundle
-        run: npm run build:web
+      - name: Build local Owner web bundle
+        run: npm run build:web:owner
       - name: Check packaged credentials
         run: |
           node --input-type=module <<'NODE'
@@ -40,11 +40,11 @@ jobs:
           NODE
       - name: Sync Capacitor Android
         run: CAPACITOR_TELEMETRY_DISABLED=1 ./node_modules/.bin/cap sync android
-      - name: Assemble debug APK
-        run: cd android && ./gradlew assembleDebug
+      - name: Assemble Owner debug APK
+        run: cd android && ./gradlew assembleOwnerDebug
       - uses: actions/upload-artifact@v7
         with:
-          name: privai-pocket-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: restamio-owner-debug-apk
+          path: android/app/build/outputs/apk/owner/debug/app-owner-debug.apk
           if-no-files-found: error
           retention-days: 7

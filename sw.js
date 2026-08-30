@@ -1,9 +1,16 @@
-const CACHE = 'privai-pocket-v17';
+const CACHE = 'restamio-v1';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
+  './src/ui/styles/tokens.css',
+  './src/ui/styles/base.css',
+  './src/ui/styles/components.css',
+  './src/ui/styles/screens.css',
   './src/app.mjs',
+  './src/ui/router.mjs',
+  './src/ui/render.mjs',
+  './src/ui/screens/home.mjs',
   './src/domain/markdown.mjs',
   './src/domain/pii.mjs',
   './src/domain/storage.mjs',
@@ -17,6 +24,7 @@ const APP_SHELL = [
   './src/locales/it.mjs',
   './src/locales/en.mjs',
   './manifest.webmanifest',
+  './build-meta.json',
   './assets/icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',

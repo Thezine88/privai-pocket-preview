@@ -25,3 +25,20 @@ test('builds only the web application files into the output directory', async ()
   assert.equal(await readFile(join(output, 'vendor', 'pdf.mjs'), 'utf8'), 'pdf');
   await assert.rejects(readFile(join(output, 'tests', 'secret.txt')));
 });
+
+test('writes owner build metadata into the web bundle', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'restamio-owner-build-'));
+  const output = join(root, 'www');
+  await mkdir(join(root, 'src'), { recursive: true });
+  await mkdir(join(root, 'assets'));
+  await mkdir(join(root, 'vendor'));
+  for (const file of ['index.html', 'styles.css', 'manifest.webmanifest', 'sw.js']) await writeFile(join(root, file), file);
+
+  await buildWeb({ sourceRoot: root, outputRoot: output, channel: 'owner' });
+
+  assert.deepEqual(JSON.parse(await readFile(join(output, 'build-meta.json'), 'utf8')), {
+    channel: 'owner',
+    entitlement: 'owner',
+    billingEnabled: false,
+  });
+});
