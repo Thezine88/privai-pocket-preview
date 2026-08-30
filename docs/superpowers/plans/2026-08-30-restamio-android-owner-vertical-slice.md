@@ -89,11 +89,11 @@
 - Create: `tests/home-screen.test.mjs`
 - Modify: locali IT/EN e composition root.
 
-- [ ] Testare Home vuota, un lavoro, più lavori, errore locale e attesa risposta AI.
-- [ ] Implementare onboarding Willy in tre passaggi secondo la specifica.
-- [ ] Implementare Home approvata con badge Pro nella build Owner.
-- [ ] Implementare Cassaforte mostrando metadata non sensibili prima dell’apertura.
-- [ ] Eseguire test e commit.
+- [x] Testare Home vuota, un lavoro, più lavori, errore locale e attesa risposta AI.
+- [x] Implementare onboarding Willy in tre passaggi secondo la specifica.
+- [x] Implementare Home approvata con badge Pro nella build Owner.
+- [x] Implementare Cassaforte mostrando metadata non sensibili prima dell’apertura.
+- [x] Eseguire test e commit.
 
 ### Task 6: Flusso testuale completo
 
