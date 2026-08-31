@@ -39,3 +39,18 @@ test('screen changes move accessibility focus to the visible title', async () =>
   assert.match(app, /querySelector\('h1'\)/);
   assert.match(app, /\.focus\(\{ preventScroll: true \}\)/);
 });
+
+test('UI and app icon do not reintroduce unapproved orange values', async () => {
+  const screens = await readFile(new URL('../src/ui/styles/screens.css', import.meta.url), 'utf8');
+  const icon = await readFile(new URL('../assets/icon.svg', import.meta.url), 'utf8');
+  assert.match(icon, /#F4511E/i);
+  assert.doesNotMatch(`${screens}\n${icon}`, /#FF6B00|#fff0ea/i);
+});
+
+test('restore reveal is staged and reduced motion shows the final state immediately', async () => {
+  const screens = await readFile(new URL('../src/ui/styles/screens.css', import.meta.url), 'utf8');
+  const base = await readFile(new URL('../src/ui/styles/base.css', import.meta.url), 'utf8');
+  assert.match(screens, /restore-demo--reveal[\s\S]*restore-reveal/);
+  assert.match(screens, /prefers-reduced-motion:\s*reduce[\s\S]*restore-demo--reveal/);
+  assert.match(base, /\.screen h1:focus\s*\{\s*outline:\s*none/);
+});

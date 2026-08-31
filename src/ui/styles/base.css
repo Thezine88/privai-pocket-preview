@@ -18,6 +18,7 @@ body {
 button, input, textarea, select { font: inherit; }
 button { min-width: 44px; min-height: 44px; border: 0; color: inherit; cursor: pointer; }
 button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid rgb(244 81 30 / 28%); outline-offset: 2px; }
+.screen h1:focus { outline: none; }
 h1, h2, h3, p { margin: 0; }
 .icon { width: 24px; height: 24px; flex: 0 0 auto; }
 .screen { min-height: calc(100vh - env(safe-area-inset-top, 0px)); min-height: calc(100dvh - env(safe-area-inset-top, 0px)); }

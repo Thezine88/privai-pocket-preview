@@ -8,6 +8,7 @@ test('empty Home leads with the two immediate starting points', () => {
   assert.match(html, /Scrivi un testo/);
   assert.doesNotMatch(html, /Incolla o scrivi un testo/);
   assert.match(html, /Importa un file/);
+  assert.match(html, /type="file"[^>]*accept="\.pdf,\.txt,\.md,text\/plain,text\/markdown,application\/pdf"/);
   assert.doesNotMatch(html, /Nessun lavoro/);
   assert.doesNotMatch(html, /Hai un lavoro da completare/);
 });

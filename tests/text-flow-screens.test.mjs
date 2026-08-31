@@ -29,6 +29,14 @@ test('text entry has one privacy promise and an inline protected CTA', () => {
   assert.doesNotMatch(html, /bottom-nav/);
 });
 
+test('text entry reports live findings without applying protection', () => {
+  const html = renderContentInput('mario@example.it', { findingsCount: 1 });
+  assert.match(html, /1 dato trovato/);
+  assert.match(html, /Controlla prima di proteggere/);
+  assert.match(html, /Proteggi il testo/);
+  assert.doesNotMatch(html, /\[EMAIL_1\]/);
+});
+
 test('findings use switches and the approved plain-language CTA', () => {
   const html = renderFindings(job);
   assert.match(html, /Dati da proteggere/);
@@ -41,10 +49,20 @@ test('action choice shows four compact quick actions and final check is editable
   const choice = renderActionChoice(job);
   for (const label of ['Scrivi un’email', 'Riassumi', 'Migliora il CV', 'Personalizza']) assert.match(choice, new RegExp(label.replace('’', '’')));
   assert.match(choice, /action-grid/);
+  assert.match(choice, /data-action="open-quick-actions"/);
   const final = renderFinalCheck(job);
   assert.match(final, /Controllo finale/);
   assert.match(final, /textarea/);
   assert.match(final, /Apri nell’AI/);
+});
+
+test('configured alternative actions stay visible and Personalizza remains fourth', () => {
+  const choice = renderActionChoice(job, {}, ['translate', 'checklist', 'clarify']);
+  for (const label of ['Traduci', 'Crea una lista', 'Rendi più chiaro', 'Personalizza']) assert.match(choice, new RegExp(label));
+  assert.ok(choice.indexOf('Rendi più chiaro') < choice.indexOf('Personalizza'));
+  assert.match(choice, /data-value="translate"[^>]*aria-pressed="true"/);
+  assert.match(choice, /In quale lingua\?/);
+  for (const language of ['Italiano', 'Inglese', 'Spagnolo']) assert.match(choice, new RegExp(language));
 });
 
 test('awaiting and result screens provide the next obvious action', () => {

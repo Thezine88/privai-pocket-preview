@@ -52,3 +52,23 @@ test('updates individual finding selections before protection', async () => {
   assert.equal(job.protectedCount, 1);
   assert.match(job.protectedText, /12\/06\/1985/);
 });
+
+test('reuses reviewed live findings when creating the text job', async () => {
+  const service = createJobService(createJobStore(createMemoryVault()), { now: () => NOW, createId: () => 'job-L1VE' });
+  const findings = [{ id: 'email-0-16', type: 'EMAIL', value: 'mario@example.it', start: 0, end: 16, selected: true }];
+
+  const job = await service.createTextJob('mario@example.it', { findings });
+
+  assert.deepEqual(job.findings, findings);
+});
+
+test('prepares requests for every configurable quick action', async () => {
+  for (const action of ['translate', 'checklist', 'clarify']) {
+    const service = createJobService(createJobStore(createMemoryVault()), { now: () => NOW, createId: () => `job-${action}` });
+    let job = await service.createTextJob('Testo senza dati sensibili');
+    job = await service.protect(job.id);
+    job = await service.prepareRequest(job.id, { action });
+    assert.equal(job.action, action);
+    assert.match(job.requestText, /Testo senza dati sensibili/);
+  }
+});

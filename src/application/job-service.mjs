@@ -5,6 +5,9 @@ const ACTION_PROMPTS = {
   email: 'Scrivi un’email usando questo testo:',
   summary: 'Riassumi questo testo:',
   cv: 'Migliora questo CV:',
+  translate: 'Traduci questo testo nella lingua indicata nel contesto, mantenendo significato e tono:',
+  checklist: 'Trasforma questo testo in una lista chiara e operativa:',
+  clarify: 'Rendi questo testo più chiaro senza cambiarne il significato:',
 };
 
 function scopeFrom(id) {
@@ -31,7 +34,7 @@ export function createJobService(store, {
     open: (id) => store.open(id),
     listIds: () => store.listIds(),
 
-    async createTextJob(text, { title = 'Nuovo testo' } = {}) {
+    async createTextJob(text, { title = 'Nuovo testo', findings } = {}) {
       const originalText = String(text ?? '');
       if (!originalText.trim()) throw new TypeError('Inserisci un testo');
       const stamp = now();
@@ -39,7 +42,7 @@ export function createJobService(store, {
       return save({
         ...transitionJob(draft, 'reviewing', { now: stamp }),
         originalText,
-        findings: detectSensitiveData(originalText),
+        findings: Array.isArray(findings) ? findings : detectSensitiveData(originalText),
       });
     },
 

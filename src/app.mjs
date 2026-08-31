@@ -13,17 +13,53 @@ import { createJobService } from './application/job-service.mjs';
 import { createJobStore } from './domain/storage.mjs';
 import { createSessionVault } from './platform/vault-port.mjs';
 import { createAndroidVault } from './platform/android-vault.mjs';
+import { detectSensitiveData } from './domain/pii.mjs';
+import { createLiveDetection, inputDetectionState } from './application/live-detection.mjs';
+import { readImportedContent } from './application/content-import.mjs';
+import { createHaptics } from './platform/haptics.mjs';
+import { renderSettings } from './ui/screens/settings.mjs';
+import { renderQuickActions } from './ui/screens/quick-actions.mjs';
+import { DEFAULT_QUICK_ACTIONS, moveQuickAction, normalizeQuickActions, resolveQuickAction, toggleQuickAction } from './domain/quick-actions.mjs';
 
 const app = document.querySelector('#app');
 const ONBOARDING_KEY = 'restamio:onboarding-complete';
 const SHARE_HELP_KEY = 'restamio:share-help-seen';
+const QUICK_ACTIONS_KEY = 'restamio:quick-actions';
 const router = createRouter(initialRoute(localStorage.getItem(ONBOARDING_KEY) === 'true'));
 const nativeVault = window.Capacitor?.Plugins?.RestaMioVault;
 const jobs = createJobService(createJobStore(nativeVault ? createAndroidVault(nativeVault) : createSessionVault(sessionStorage)));
+const haptics = createHaptics(navigator.vibrate?.bind(navigator));
 let build = { channel: 'production', entitlement: 'free', billingEnabled: false };
 let allJobs = [];
 let swipeStart = null;
 let feedback = '';
+let quickActions = (() => {
+  try { return normalizeQuickActions(JSON.parse(localStorage.getItem(QUICK_ACTIONS_KEY))); }
+  catch { return [...DEFAULT_QUICK_ACTIONS]; }
+})();
+let liveInput = { text: '', findings: [], pending: false };
+
+function updateLiveInputUi() {
+  const state = inputDetectionState(liveInput.text, liveInput.findings, liveInput.pending);
+  const count = app.querySelector('[data-live-count]');
+  if (count) count.textContent = state.label;
+  app.querySelector('[data-action="protect-text"]')?.toggleAttribute('disabled', state.ctaDisabled);
+}
+
+const liveDetection = createLiveDetection({
+  detect: detectSensitiveData,
+  onResult(result) {
+    if (result.text !== liveInput.text) return;
+    liveInput = { ...result, pending: false };
+    updateLiveInputUi();
+  },
+});
+
+function detectInput(text) {
+  liveInput = { text: String(text ?? ''), findings: [], pending: Boolean(String(text ?? '').trim()) };
+  updateLiveInputUi();
+  liveDetection.update(liveInput.text);
+}
 
 async function loadBuild() {
   try { const response = await fetch('./build-meta.json', { cache: 'no-store' }); if (response.ok) build = await response.json(); } catch { /* Free preview. */ }
@@ -37,12 +73,18 @@ async function render() {
   if (route.name === 'onboarding') html = renderOnboarding(route.state.step ?? 0);
   else if (route.name === 'home') { await loadJobs(); html = renderHome({ plan: build.entitlement, jobs: allJobs }); }
   else if (route.name === 'vault') { await loadJobs(); html = renderVault({ jobs: allJobs }); }
-  else if (route.name === 'content-input') html = renderContentInput(route.state.text ?? '', { error: feedback });
+  else if (route.name === 'settings') html = renderSettings();
+  else if (route.name === 'quick-actions') html = renderQuickActions(quickActions);
+  else if (route.name === 'content-input') {
+    const text = route.state.text ?? liveInput.text;
+    const current = text === liveInput.text ? liveInput : { findings: [], pending: Boolean(String(text).trim()) };
+    html = renderContentInput(text, { error: feedback, findingsCount: current.findings.length, detectionPending: current.pending });
+  }
   else {
     const job = await currentJob();
     if (!job) { router.replace({ name: 'home' }); return; }
     if (route.name === 'findings') html = renderFindings(job);
-    else if (route.name === 'action-choice') html = renderActionChoice(job, route.state);
+    else if (route.name === 'action-choice') html = renderActionChoice(job, route.state, quickActions);
     else if (route.name === 'final-check') html = renderFinalCheck(job);
     else if (route.name === 'awaiting-response') html = renderAwaitingResponse(job, { error: feedback });
     else if (route.name === 'result') html = renderRestoredResult(job);
@@ -62,12 +104,28 @@ async function readClipboard(message) {
 }
 
 app.addEventListener('input', (event) => {
-  if (event.target.id === 'content-text') app.querySelector('[data-action="protect-text"]')?.toggleAttribute('disabled', !event.target.value.trim());
+  if (event.target.id === 'content-text') detectInput(event.target.value);
+});
+
+app.addEventListener('change', async (event) => {
+  if (!event.target.matches('[data-file-input]')) return;
+  const [file] = event.target.files ?? [];
+  if (!file) return;
+  try {
+    const text = await readImportedContent(file);
+    detectInput(text);
+    router.push({ name: 'content-input', state: { text } });
+  } catch {
+    feedback = 'Non riesco a leggere questo file. Usa PDF, TXT o Markdown con testo selezionabile.';
+    detectInput('');
+    router.push({ name: 'content-input' });
+  }
 });
 
 app.addEventListener('click', async (event) => {
   const target = event.target.closest('button, [data-nav]');
   if (!target) return;
+  haptics.tap();
   feedback = '';
   const nav = target.closest('[data-nav]');
   if (nav) { router.push({ name: nav.dataset.nav }); return; }
@@ -76,24 +134,32 @@ app.addEventListener('click', async (event) => {
   if (action === 'onboarding-next') { router.replace(onboardingRoute((router.current().state.step ?? 0) + 1)); return; }
   if (action === 'onboarding-back') { const step = router.current().state.step ?? 0; if (step > 0) router.replace(onboardingRoute(step - 1)); return; }
   if (action === 'finish-onboarding') { localStorage.setItem(ONBOARDING_KEY, 'true'); router.replace({ name: 'home' }); return; }
-  if (action === 'new-text') { router.push({ name: 'content-input' }); return; }
-  if (action === 'paste-input') { const text = await readClipboard('Negli appunti non c’è del testo.'); if (text) router.replace({ name: 'content-input', state: { text } }); return; }
+  if (action === 'new-text') { detectInput(''); router.push({ name: 'content-input' }); return; }
+  if (action === 'new-file') { app.querySelector('[data-file-input]')?.click(); return; }
+  if (action === 'open-quick-actions') { router.push({ name: 'quick-actions' }); return; }
+  if (action === 'toggle-quick-action') { quickActions = toggleQuickAction(quickActions, target.dataset.value); localStorage.setItem(QUICK_ACTIONS_KEY, JSON.stringify(quickActions)); await render(); return; }
+  if (action === 'move-quick-action') { quickActions = moveQuickAction(quickActions, target.dataset.value, Number(target.dataset.direction)); localStorage.setItem(QUICK_ACTIONS_KEY, JSON.stringify(quickActions)); await render(); return; }
+  if (action === 'reset-quick-actions') { quickActions = [...DEFAULT_QUICK_ACTIONS]; localStorage.setItem(QUICK_ACTIONS_KEY, JSON.stringify(quickActions)); await render(); return; }
+  if (action === 'paste-input') { const text = await readClipboard('Negli appunti non c’è del testo.'); if (text) { detectInput(text); router.replace({ name: 'content-input', state: { text } }); } return; }
   if (action === 'protect-text') {
-    const job = await jobs.createTextJob(app.querySelector('#content-text')?.value ?? '');
+    const text = app.querySelector('#content-text')?.value ?? '';
+    const findings = liveInput.text === text && !liveInput.pending ? liveInput.findings : detectSensitiveData(text);
+    const job = await jobs.createTextJob(text, { findings });
     if (job.findings.length) router.push({ name: 'findings', state: { jobId: job.id } });
-    else { const protectedJob = await jobs.protect(job.id); router.push({ name: 'action-choice', state: { jobId: protectedJob.id, action: 'email' } }); }
+    else { const protectedJob = await jobs.protect(job.id); router.push({ name: 'action-choice', state: { jobId: protectedJob.id, action: quickActions[0] } }); }
     return;
   }
   if (action === 'toggle-finding-selection' || action === 'toggle-category-selection') { await setSelections(target.dataset.findingIds.split(','), target.getAttribute('aria-checked') !== 'true'); return; }
   if (action === 'select-all' || action === 'select-none') { const job = await currentJob(); await setSelections(job.findings.map((item) => item.id), action === 'select-all'); return; }
   if (action === 'toggle-category') { target.closest('.finding-card')?.classList.toggle('is-open'); return; }
-  if (action === 'confirm-protection') { const job = await jobs.protect(router.current().state.jobId); router.push({ name: 'action-choice', state: { jobId: job.id, action: 'email' } }); return; }
+  if (action === 'confirm-protection') { const job = await jobs.protect(router.current().state.jobId); router.push({ name: 'action-choice', state: { jobId: job.id, action: quickActions[0] } }); return; }
   if (action === 'choose-action') { router.replace({ name: 'action-choice', state: { ...router.current().state, action: target.dataset.value } }); return; }
   if (target.dataset.choice) { app.querySelectorAll(`[data-choice="${target.dataset.choice}"]`).forEach((item) => item.classList.toggle('is-selected', item === target)); return; }
   if (action === 'continue-action') {
     const state = router.current().state;
-    const context = { recipient: app.querySelector('[data-choice="recipient"].is-selected')?.dataset.value, goal: app.querySelector('[data-choice="goal"].is-selected')?.dataset.value, role: app.querySelector('[data-field="role"]')?.value };
-    const job = await jobs.prepareRequest(state.jobId, { action: state.action, customPrompt: app.querySelector('[data-field="custom-prompt"]')?.value, context });
+    const selectedAction = resolveQuickAction(state.action, quickActions);
+    const context = { recipient: app.querySelector('[data-choice="recipient"].is-selected')?.dataset.value, goal: app.querySelector('[data-choice="goal"].is-selected')?.dataset.value, language: app.querySelector('[data-choice="language"].is-selected')?.dataset.value, role: app.querySelector('[data-field="role"]')?.value };
+    const job = await jobs.prepareRequest(state.jobId, { action: selectedAction, customPrompt: app.querySelector('[data-field="custom-prompt"]')?.value, context });
     router.push({ name: 'final-check', state: { jobId: job.id } }); return;
   }
   if (action === 'open-ai') {

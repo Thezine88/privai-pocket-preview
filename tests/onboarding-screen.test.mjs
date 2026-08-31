@@ -14,11 +14,20 @@ test('onboarding explains the value in exactly three steps', () => {
   assert.match(third, /\[NOME_1\][\s\S]*\[EMAIL_1\]/);
   assert.match(third, /Luca[\s\S]*luca@email\.it/);
   assert.equal((third.match(/class="restore-demo__state /g) ?? []).length, 2);
+  assert.match(third, /restore-demo--reveal/);
+  assert.match(third, /restore-demo__state--protected[^>]*data-reveal-phase="1"/);
+  assert.match(third, /restore-demo__arrow[^>]*data-reveal-phase="2"/);
+  assert.match(third, /restore-demo__state--restored[^>]*data-reveal-phase="3"/);
   assert.match(third, /restore-demo__arrow/);
   assert.match(third, /restore-demo__icon/);
   assert.match(first, /Passaggio 1 di 3/);
   assert.match(second, /Passaggio 2 di 3/);
   assert.match(third, /Passaggio 3 di 3/);
+});
+
+test('programmatic onboarding title focus is marked separately from interactive focus', () => {
+  const html = renderOnboarding(0);
+  assert.match(html, /<h1 class="screen-title"/);
 });
 
 test('each onboarding step has one lower primary action and no app navigation', () => {

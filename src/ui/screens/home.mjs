@@ -30,6 +30,7 @@ function startActions(hasJob) {
     <button class="start-card" data-action="new-file" aria-label="Importa un file PDF, di testo o Markdown.">
       <span class="start-card__icon">${icon('file')}</span><span><strong>Importa un file</strong><small>PDF, testo, Markdown</small></span>${icon('chevron', 'chevron')}
     </button>
+    <input class="visually-hidden" data-file-input type="file" accept=".pdf,.txt,.md,text/plain,text/markdown,application/pdf" tabindex="-1" aria-hidden="true">
   </section>`;
 }
 
