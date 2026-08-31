@@ -103,13 +103,13 @@
 - Create: `tests/job-service.test.mjs`
 - Modify: `src/domain/pii.mjs`, `tests/pii.test.mjs`, composition root.
 
-- [ ] Migrare i nuovi placeholder a `[[RESTAMIO_<scope>_<type>_<n>]]` preservando il ripristino dei job legacy.
-- [ ] Raggruppare valori duplicati e occorrenze per categoria.
-- [ ] Testare un lavoro protetto, persistito, riaperto dopo riavvio e ripristinato.
-- [ ] Implementare le schermate §14–§17 della specifica con copia esatta.
-- [ ] Persistire `awaiting_ai` prima di uscire verso il menu di condivisione.
-- [ ] Implementare risultato completo e `Testo quasi pronto` senza inventare sostituzioni.
-- [ ] Eseguire `npm test` e commit.
+- [x] Migrare i nuovi placeholder a `[[RESTAMIO_<scope>_<type>_<n>]]` preservando il ripristino dei job legacy.
+- [x] Raggruppare valori duplicati e occorrenze per categoria.
+- [x] Testare un lavoro protetto, persistito, riaperto dopo riavvio e ripristinato.
+- [x] Implementare le schermate §14–§17 della specifica con copia esatta.
+- [x] Persistire `awaiting_ai` prima di uscire verso il menu di condivisione.
+- [x] Implementare risultato completo e `Testo quasi pronto` senza inventare sostituzioni.
+- [x] Eseguire `npm test` e commit.
 
 ### Task 7: APK e accettazione sul telefono
 

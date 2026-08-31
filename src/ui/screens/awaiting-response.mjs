@@ -1,0 +1,5 @@
+import { escapeHtml, flowHeader } from './flow-shared.mjs';
+
+export function renderAwaitingResponse(job, { error = '' } = {}) {
+  return `<div class="screen flow-screen awaiting-screen">${flowHeader('', { wordmark: true })}<main class="flow-content"><h1 class="flow-title">Ora recupera<br>la risposta</h1><p class="flow-helper flow-helper--center">Invia al chatbot il testo protetto. Quando ricevi la risposta, copiala o condividila con RestaMio.</p><div class="stepper" aria-label="Passaggio 3 di 3, ripristina i dati"><span>✓<small>Protetto</small></span><span>✓<small>Inviato</small></span><span class="is-current">3<small>Ripristina</small></span></div><section class="awaiting-card"><span>↗</span><p><strong>${escapeHtml(job.title)}</strong><small>In attesa della risposta dell’AI</small></p></section><button class="button button--primary inline-cta" data-action="paste-response">Incolla la risposta dell’AI</button>${error ? `<p class="inline-error">${escapeHtml(error)}</p>` : ''}<button class="secondary-link" data-action="return-final">Non ho ancora inviato il testo</button></main></div>`;
+}

@@ -16,6 +16,11 @@ const ICONS = {
   settings: '<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a8 8 0 0 0-1.7-1L14.5 3h-5L9 6a8 8 0 0 0-1.7 1L5 6 3 9.5 5.1 11a7 7 0 0 0 0 2L3 14.5 5 18l2.3-1a8 8 0 0 0 1.7 1l.5 3h5l.5-3a8 8 0 0 0 1.7-1l2.3 1 2-3.5-2.1-1.5a7 7 0 0 0 .1-1Z"/>',
   clipboard: '<path d="M9 5h6v3H9zM7 6H5v16h14V6h-2M8 12h8M8 16h8"/>',
   chevron: '<path d="m9 5 7 7-7 7"/>',
+  back: '<path d="m15 5-7 7 7 7"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+  list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  cv: '<path d="M6 2h9l4 4v16H6zM15 2v5h5M9 12h7M9 16h7"/><circle cx="10" cy="8" r="1.5"/>',
+  sliders: '<path d="M4 6h16M4 12h16M4 18h16M8 4v4M16 10v4M11 16v4"/>',
 };
 
 export function icon(name, className = '') {

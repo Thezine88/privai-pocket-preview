@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { detectSensitiveData, displaySensitiveType, maskFindings, restoreProtectedText } from '../src/domain/pii.mjs';
+import { detectSensitiveData, displaySensitiveType, groupFindings, maskFindings, restoreProtectedText } from '../src/domain/pii.mjs';
 
 test('detects Italian and common structured sensitive values', () => {
   const text = [
@@ -28,10 +28,10 @@ test('uses friendly labels for technical sensitive-data types', () => {
   assert.equal(displaySensitiveType('EMAIL', 'it'), 'Email');
 });
 
-test('uses a readable phone label in protected placeholders', () => {
+test('uses a readable phone label in RestaMio placeholders', () => {
   const text = 'Chiama +39 333 123 4567';
   const masked = maskFindings(text, detectSensitiveData(text), { scope: 'A7F2' });
-  assert.equal(masked.text, 'Chiama [[PRIVAI_A7F2_PHONE_1]]');
+  assert.equal(masked.text, 'Chiama [[RESTAMIO_A7F2_PHONE_1]]');
   assert.doesNotMatch(masked.text, /TELEPHONENUM/);
 });
 
@@ -61,11 +61,23 @@ test('masks selected findings with stable typed placeholders and a reversible ma
 test('uses job-scoped placeholders and restores only exact known placeholders', () => {
   const text = 'Email mario@example.it';
   const masked = maskFindings(text, detectSensitiveData(text), { scope: 'A7F2' });
-  assert.equal(masked.text, 'Email [[PRIVAI_A7F2_EMAIL_1]]');
-  assert.deepEqual(restoreProtectedText('Risposta per [[PRIVAI_A7F2_EMAIL_1]].', masked.mapping), {
+  assert.equal(masked.text, 'Email [[RESTAMIO_A7F2_EMAIL_1]]');
+  assert.deepEqual(restoreProtectedText('Risposta per [[RESTAMIO_A7F2_EMAIL_1]].', masked.mapping), {
     text: 'Risposta per mario@example.it.',
     restoredCount: 1,
     missingPlaceholders: [],
   });
   assert.equal(restoreProtectedText('Segnaposto [[PRIVAI_OTHER_EMAIL_1]]', masked.mapping).restoredCount, 0);
+});
+
+test('groups duplicate values by friendly category and occurrence count', () => {
+  const findings = detectSensitiveData('mario@example.it e ancora mario@example.it, 333 123 4567');
+  assert.deepEqual(groupFindings(findings), [
+    { type: 'EMAIL', label: 'Email', occurrenceCount: 2, selectedCount: 2, values: [{ value: 'mario@example.it', occurrenceCount: 2, selectedCount: 2, findingIds: findings.slice(0, 2).map((item) => item.id) }] },
+    { type: 'TELEPHONENUM', label: 'Telefono', occurrenceCount: 1, selectedCount: 1, values: [{ value: '333 123 4567', occurrenceCount: 1, selectedCount: 1, findingIds: [findings[2].id] }] },
+  ]);
+});
+
+test('restores legacy PrivAI mappings exactly', () => {
+  assert.equal(restoreProtectedText('Ciao [[PRIVAI_A7F2_NAME_1]]', { '[[PRIVAI_A7F2_NAME_1]]': 'Luca' }).text, 'Ciao Luca');
 });

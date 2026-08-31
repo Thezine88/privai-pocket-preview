@@ -45,6 +45,32 @@ export function displaySensitiveType(type, locale = 'it') {
   return sensitiveTypeLabels[language][type] ?? String(type ?? '');
 }
 
+export function groupFindings(findings, locale = 'it') {
+  const categories = new Map();
+  for (const finding of findings ?? []) {
+    if (!categories.has(finding.type)) categories.set(finding.type, new Map());
+    const values = categories.get(finding.type);
+    const key = String(finding.value).trim().toLocaleLowerCase(locale);
+    if (!values.has(key)) values.set(key, { value: finding.value, items: [] });
+    values.get(key).items.push(finding);
+  }
+  return [...categories].map(([type, values]) => {
+    const groupedValues = [...values.values()].map(({ value, items }) => ({
+      value,
+      occurrenceCount: items.length,
+      selectedCount: items.filter((item) => item.selected !== false).length,
+      findingIds: items.map((item) => item.id),
+    }));
+    return {
+      type,
+      label: displaySensitiveType(type, locale),
+      occurrenceCount: groupedValues.reduce((sum, value) => sum + value.occurrenceCount, 0),
+      selectedCount: groupedValues.reduce((sum, value) => sum + value.selectedCount, 0),
+      values: groupedValues,
+    };
+  });
+}
+
 export function detectSensitiveData(text) {
   const source = String(text ?? '');
   const candidates = [];
@@ -86,7 +112,7 @@ export function maskFindings(text, findings, { scope = '' } = {}) {
       const next = (counters.get(finding.type) ?? 0) + 1;
       counters.set(finding.type, next);
       const placeholderType = finding.type === 'TELEPHONENUM' ? 'PHONE' : finding.type;
-      placeholders.set(identity, scope ? `[[PRIVAI_${scope}_${placeholderType}_${next}]]` : `[${placeholderType}_${next}]`);
+      placeholders.set(identity, scope ? `[[RESTAMIO_${scope}_${placeholderType}_${next}]]` : `[${placeholderType}_${next}]`);
     }
     const placeholder = placeholders.get(identity);
     mapping[placeholder] = finding.value;
