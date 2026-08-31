@@ -26,6 +26,7 @@ test('uses friendly labels for technical sensitive-data types', () => {
   assert.equal(displaySensitiveType('TELEPHONENUM', 'it'), 'Telefono');
   assert.equal(displaySensitiveType('TELEPHONENUM', 'en'), 'Phone');
   assert.equal(displaySensitiveType('EMAIL', 'it'), 'Email');
+  assert.equal(displaySensitiveType('NAME', 'it'), 'Nomi e cognomi');
 });
 
 test('uses a readable phone label in RestaMio placeholders', () => {

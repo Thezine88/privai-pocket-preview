@@ -53,6 +53,24 @@ test('updates individual finding selections before protection', async () => {
   assert.match(job.protectedText, /12\/06\/1985/);
 });
 
+test('adds a manually selected local finding without changing the original text', async () => {
+  const service = createJobService(createJobStore(createMemoryVault()), { now: () => NOW, createId: () => 'job-MAN1' });
+  let job = await service.createTextJob('Contatta Mario Bianchi domani');
+  job = await service.addManualFinding(job.id, { start: 9, end: 22, type: 'NAME' });
+  assert.equal(job.originalText, 'Contatta Mario Bianchi domani');
+  assert.deepEqual(job.findings.at(-1), {
+    id: 'NAME-9-13-manual', type: 'NAME', value: 'Mario Bianchi', start: 9, end: 22, selected: true, manual: true,
+  });
+});
+
+test('rejects empty, invalid, and overlapping manual selections', async () => {
+  const service = createJobService(createJobStore(createMemoryVault()), { now: () => NOW, createId: () => 'job-MAN2' });
+  const job = await service.createTextJob('Email mario@example.it');
+  await assert.rejects(service.addManualFinding(job.id, { start: 0, end: 0, type: 'NAME' }), /seleziona/i);
+  await assert.rejects(service.addManualFinding(job.id, { start: 6, end: 22, type: 'NAME' }), /già rilevato/i);
+  await assert.rejects(service.addManualFinding(job.id, { start: 0, end: 5, type: 'UNKNOWN' }), /tipo/i);
+});
+
 test('reuses reviewed live findings when creating the text job', async () => {
   const service = createJobService(createJobStore(createMemoryVault()), { now: () => NOW, createId: () => 'job-L1VE' });
   const findings = [{ id: 'email-0-16', type: 'EMAIL', value: 'mario@example.it', start: 0, end: 16, selected: true }];

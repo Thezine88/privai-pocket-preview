@@ -10,6 +10,8 @@ const ACTION_PROMPTS = {
   clarify: 'Rendi questo testo più chiaro senza cambiarne il significato:',
 };
 
+const MANUAL_TYPES = new Set(['NAME', 'EMAIL', 'TELEPHONENUM', 'CF', 'IBAN', 'DATE', 'URL']);
+
 function scopeFrom(id) {
   const cleaned = String(id).replace(/[^a-z0-9]/giu, '').toUpperCase();
   return cleaned.slice(-4) || 'JOB1';
@@ -50,6 +52,18 @@ export function createJobService(store, {
       const job = await requireJob(id);
       if (job.status !== 'reviewing') throw new Error('Il lavoro non è in revisione');
       return save({ ...job, findings: job.findings.map((item) => item.id === findingId ? { ...item, selected: Boolean(selected) } : item), updatedAt: now() });
+    },
+
+    async addManualFinding(id, { start, end, type } = {}) {
+      const job = await requireJob(id);
+      if (job.status !== 'reviewing') throw new Error('Il lavoro non è in revisione');
+      if (!MANUAL_TYPES.has(type)) throw new TypeError('Scegli un tipo di dato');
+      if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end > job.originalText.length || start >= end || !job.originalText.slice(start, end).trim()) {
+        throw new TypeError('Seleziona una parte del testo');
+      }
+      if (job.findings.some((finding) => start < finding.end && end > finding.start)) throw new Error('Questo dato è già rilevato');
+      const finding = { id: `${type}-${start}-${end - start}-manual`, type, value: job.originalText.slice(start, end), start, end, selected: true, manual: true };
+      return save({ ...job, findings: [...job.findings, finding].sort((a, b) => a.start - b.start), updatedAt: now() });
     },
 
     async protect(id) {

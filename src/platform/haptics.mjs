@@ -1,6 +1,6 @@
 const successfulPrimaryActions = new Set([
   'onboarding-next', 'finish-onboarding', 'protect-text', 'confirm-protection',
-  'continue-action', 'open-ai', 'paste-response', 'copy-result', 'share-result',
+  'continue-action', 'save-manual-finding', 'open-ai', 'paste-response', 'copy-result', 'share-result',
 ]);
 
 export function createHaptics(vibrate) {

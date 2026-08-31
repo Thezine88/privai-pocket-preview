@@ -7,8 +7,9 @@ test('successful primary actions request one short tactile pulse when supported'
   const haptics = createHaptics((duration) => pulses.push(duration));
 
   assert.equal(haptics.success('protect-text'), true);
+  assert.equal(haptics.success('save-manual-finding'), true);
   assert.equal(haptics.success('toggle-category'), false);
-  assert.deepEqual(pulses, [12]);
+  assert.deepEqual(pulses, [12, 12]);
 });
 
 test('haptics remain a safe no-op when vibration is unavailable', () => {

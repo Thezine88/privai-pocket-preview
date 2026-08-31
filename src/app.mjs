@@ -153,6 +153,19 @@ app.addEventListener('click', async (event) => {
   if (action === 'toggle-finding-selection' || action === 'toggle-category-selection') { await setSelections(target.dataset.findingIds.split(','), target.getAttribute('aria-checked') !== 'true'); return; }
   if (action === 'select-all' || action === 'select-none') { const job = await currentJob(); await setSelections(job.findings.map((item) => item.id), action === 'select-all'); return; }
   if (action === 'toggle-category') { target.closest('.finding-card')?.classList.toggle('is-open'); return; }
+  if (action === 'add-finding') { router.replace({ name: 'findings', state: { ...router.current().state, addingFinding: true } }); return; }
+  if (action === 'cancel-manual-finding') { router.replace({ name: 'findings', state: { ...router.current().state, addingFinding: false, manualError: '' } }); return; }
+  if (action === 'save-manual-finding') {
+    const editor = app.querySelector('[data-manual-text]');
+    try {
+      await jobs.addManualFinding(router.current().state.jobId, { start: editor.selectionStart, end: editor.selectionEnd, type: app.querySelector('[data-manual-type]').value });
+      router.replace({ name: 'findings', state: { jobId: router.current().state.jobId } });
+      haptics.success(action);
+    } catch (error) {
+      router.replace({ name: 'findings', state: { ...router.current().state, addingFinding: true, manualError: error.message } });
+    }
+    return;
+  }
   if (action === 'confirm-protection') {
     const current = await currentJob();
     if (!current.findings.some((finding) => finding.selected !== false) && !router.current().state.confirmUnprotected) {

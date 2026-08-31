@@ -36,8 +36,8 @@ const detectors = [
 ];
 
 const sensitiveTypeLabels = {
-  it: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Telefono', CF: 'Codice fiscale', IBAN: 'IBAN', DATE: 'Data' },
-  en: { EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Phone', CF: 'Tax code', IBAN: 'IBAN', DATE: 'Date' },
+  it: { NAME: 'Nomi e cognomi', EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Telefono', CF: 'Codice fiscale', IBAN: 'IBAN', DATE: 'Data' },
+  en: { NAME: 'Names', EMAIL: 'Email', URL: 'Link', TELEPHONENUM: 'Phone', CF: 'Tax code', IBAN: 'IBAN', DATE: 'Date' },
 };
 
 export function displaySensitiveType(type, locale = 'it') {

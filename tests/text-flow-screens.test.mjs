@@ -77,6 +77,17 @@ test('zero selected findings require an inline confirmation before continuing', 
   assert.match(confirmed, /Conferma e continua/);
 });
 
+test('manual finding mode stays inline and exposes native text selection', () => {
+  const html = renderFindings(job, { addingFinding: true });
+  assert.match(html, /Seleziona nel testo il dato che vuoi proteggere/);
+  assert.match(html, /textarea[^>]+data-manual-text/);
+  assert.match(html, /select[^>]+data-manual-type/);
+  assert.match(html, /Nomi e cognomi/);
+  assert.match(html, /data-action="save-manual-finding"/);
+  assert.match(html, /data-action="cancel-manual-finding"/);
+  assert.match(html, /class="finding-list"/);
+});
+
 test('configured alternative actions stay visible and Personalizza remains fourth', () => {
   const choice = renderActionChoice(job, {}, ['translate', 'checklist', 'clarify']);
   for (const label of ['Traduci', 'Crea una lista', 'Rendi più chiaro', 'Personalizza']) assert.match(choice, new RegExp(label));
