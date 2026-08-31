@@ -24,8 +24,8 @@ function jobCard(job) {
 function startActions(hasJob) {
   return `<section class="start-work ${hasJob ? '' : 'start-work--empty'}">
     <h2>${hasJob ? 'Inizia un nuovo lavoro' : 'Da dove vuoi iniziare?'}</h2>
-    <button class="start-card ${hasJob ? '' : 'start-card--primary'}" data-action="new-text" aria-label="Incolla o scrivi un testo. Email, messaggi o appunti.">
-      <span class="start-card__icon">${icon('pencil')}</span><span><strong>Incolla o scrivi un testo</strong><small>Email, messaggi, appunti</small></span>${icon('chevron', 'chevron')}
+    <button class="start-card ${hasJob ? '' : 'start-card--primary'}" data-action="new-text" aria-label="Scrivi un testo. Email, messaggi o appunti.">
+      <span class="start-card__icon">${icon('pencil')}</span><span><strong>Scrivi un testo</strong><small>Email, messaggi, appunti</small></span>${icon('chevron', 'chevron')}
     </button>
     <button class="start-card" data-action="new-file" aria-label="Importa un file PDF, di testo o Markdown.">
       <span class="start-card__icon">${icon('file')}</span><span><strong>Importa un file</strong><small>PDF, testo, Markdown</small></span>${icon('chevron', 'chevron')}
@@ -43,7 +43,7 @@ export function renderHome({ plan = 'free', jobs = [], loadError = false } = {})
       ${loadError ? '<section class="load-error"><p>Non riesco ad aprire questo lavoro.</p><button data-action="retry-jobs">Riprova</button></section>' : job ? jobCard(job) : ''}
       ${multiple ? '<button class="vault-link" data-action="open-vault">Vedi tutti in Cassaforte</button>' : ''}
       ${startActions(Boolean(job))}
-      <aside class="share-hint">${icon('share')}<p>Oppure condividi un documento con<br>RestaMio dal menu del telefono.</p></aside>
+      <aside class="share-hint">${icon('share')}<p>Oppure condividi un documento con<br>RestaMio dal menu del telefono.</p><img class="share-hint__willy" src="assets/willy-wave.png" alt="" aria-hidden="true"></aside>
     </main>
     ${renderBottomNav('home', jobs.filter((item) => item.status === 'awaiting_ai').length)}
   </div>`;

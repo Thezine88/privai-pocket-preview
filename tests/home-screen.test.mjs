@@ -5,7 +5,8 @@ import { renderHome } from '../src/ui/screens/home.mjs';
 test('empty Home leads with the two immediate starting points', () => {
   const html = renderHome({ plan: 'owner', jobs: [] });
   assert.match(html, /Da dove vuoi iniziare\?/);
-  assert.match(html, /Incolla o scrivi un testo/);
+  assert.match(html, /Scrivi un testo/);
+  assert.doesNotMatch(html, /Incolla o scrivi un testo/);
   assert.match(html, /Importa un file/);
   assert.doesNotMatch(html, /Nessun lavoro/);
   assert.doesNotMatch(html, /Hai un lavoro da completare/);
@@ -34,5 +35,10 @@ test('Home keeps new-work actions available after a local loading error', () => 
   const html = renderHome({ loadError: true });
   assert.match(html, /Non riesco ad aprire questo lavoro/);
   assert.match(html, /Riprova/);
-  assert.match(html, /Incolla o scrivi un testo/);
+  assert.match(html, /Scrivi un testo/);
+});
+
+test('Home shows the approved Willy beside the sharing hint', () => {
+  const html = renderHome();
+  assert.match(html, /<img class="share-hint__willy" src="assets\/willy-wave\.png" alt="" aria-hidden="true">/);
 });

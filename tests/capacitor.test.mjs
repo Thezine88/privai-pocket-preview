@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 test('packages the local web bundle without a remote server URL', async () => {
@@ -20,6 +21,11 @@ test('keeps the generated Android project at the approved SDK levels', async () 
   assert.match(manifest, /android:allowBackup="false"/);
   assert.match(appGradle, /applicationId "app\.restamio\.owner"/);
   assert.match(appGradle, /resValue "string", "app_name", "RestaMio Owner"/);
+});
+
+test('bundles the exact approved RestaMio launcher artwork', async () => {
+  const icon = await readFile(new URL('../assets/logoapp.png', import.meta.url));
+  assert.equal(createHash('sha256').update(icon).digest('hex'), 'cf6b18e1e5278b17a4fd2a76953bab52e0e9c10187e134458c19d25f9c2fcae2');
 });
 
 test('builds a debug APK in CI without runtime service credentials', async () => {

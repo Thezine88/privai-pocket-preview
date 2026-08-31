@@ -1,5 +1,5 @@
 .home-header { display: flex; align-items: center; justify-content: space-between; height: 76px; padding: 8px var(--page-inline) 0; }
-.home-content { width: 100%; max-width: 430px; margin: 0 auto; padding: 8px 20px; padding-bottom: calc(var(--bottom-nav-space) + env(safe-area-inset-bottom, 0px)); }
+.home-content { width: 100%; max-width: 360px; margin: 0 auto; padding: 8px 20px; padding-bottom: calc(var(--bottom-nav-space) + env(safe-area-inset-bottom, 0px)); }
 .promise > p { margin-top: 3px; color: var(--color-brand); font-size: 15px; font-weight: 550; }
 .promise h1 { margin-top: 12px; font-size: clamp(25px, 7.4vw, 30px); line-height: 1.18; letter-spacing: -1px; }
 .promise > span { display: block; margin-top: 10px; color: var(--color-text-secondary); font-size: 14px; line-height: 1.45; }
@@ -15,8 +15,8 @@
 .vault-link { display: block; margin: 4px auto 0; padding: 0 8px; background: transparent; color: var(--color-brand); }
 .start-work { margin-top: 28px; }
 .start-work--empty { margin-top: 54px; }
-.start-work h2 { margin-bottom: 12px; font-size: 20px; letter-spacing: -.4px; }
-.start-card { display: flex; align-items: center; width: 100%; min-height: 72px; margin-top: 8px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); text-align: left; }
+.start-work h2 { margin-bottom: 8px; font-size: 18px; letter-spacing: -.2px; }
+.start-card { display: flex; align-items: center; width: 100%; min-height: 64px; margin-top: 7px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); text-align: left; }
 .start-work--empty .start-card { min-height: 82px; }
 .start-card__icon { display: grid; width: 48px; height: 48px; place-items: center; margin-right: 14px; border-radius: 14px; background: var(--color-brand-soft); color: var(--color-brand); }
 .start-card > span:nth-child(2) { display: grid; flex: 1; gap: 4px; }
@@ -26,9 +26,10 @@
 .start-card--primary .start-card__icon { background: rgb(255 255 255 / 12%); color: white; }
 .start-card--primary small { color: rgb(255 255 255 / 88%); }
 .start-card--primary .chevron { color: white; }
-.share-hint { display: flex; align-items: center; min-height: 64px; margin-top: 22px; color: var(--color-text-secondary); }
-.share-hint .icon { width: 32px; height: 32px; margin: 0 18px 0 8px; }
+.share-hint { display: grid; min-height: 64px; grid-template-columns: 44px 1fr 64px; align-items: center; gap: 8px; margin-top: 22px; color: var(--color-text-secondary); }
+.share-hint .icon { width: 32px; height: 32px; justify-self: center; }
 .share-hint p { font-size: 12px; line-height: 1.5; }
+.share-hint__willy { width: 64px; height: 64px; object-fit: contain; object-position: center; }
 .load-error { display: flex; align-items: center; justify-content: space-between; margin-top: 26px; padding: 14px 0; color: var(--color-text-secondary); }
 .load-error button { background: transparent; color: var(--color-brand); font-weight: 600; }
 .bottom-nav { position: fixed; z-index: 20; right: max(13px, calc((100vw - 420px) / 2)); bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); left: max(13px, calc((100vw - 420px) / 2)); display: grid; grid-template-columns: repeat(3, 1fr); height: 68px; border: 1px solid var(--color-border); border-radius: 18px; background: rgb(255 255 255 / 94%); box-shadow: var(--shadow-card); backdrop-filter: blur(14px); }
