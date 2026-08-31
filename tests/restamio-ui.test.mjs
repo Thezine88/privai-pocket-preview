@@ -25,6 +25,11 @@ test('the approved Poppins family is bundled and used without a remote font', as
   assert.match(base, /@font-face[\s\S]*Poppins-Medium\.ttf/);
   assert.match(base, /@font-face[\s\S]*Poppins-SemiBold\.ttf/);
   assert.match(base, /font-family:\s*Poppins/);
+  assert.match(base, /Poppins-SemiBold\.ttf'\) format\('truetype'\);[^}]*font-weight:\s*600;/);
+  assert.doesNotMatch(base, /font-weight:\s*600\s+700/);
+  const screens = await readFile(new URL('../src/ui/styles/screens.css', import.meta.url), 'utf8');
+  const components = await readFile(new URL('../src/ui/styles/components.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(`${screens}\n${components}`, /font-weight:\s*(?:550|650)\b/);
   assert.doesNotMatch(base, /https?:\/\//);
 });
 

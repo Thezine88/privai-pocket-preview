@@ -1,6 +1,6 @@
 .wordmark { display: flex; align-items: baseline; font-size: 30px; font-weight: 600; letter-spacing: -1.4px; }
 .wordmark span:last-child { color: var(--color-brand); }
-.plan-badge { min-width: 58px; min-height: 44px; padding: 0 13px; border-radius: var(--radius-pill); background: #F0EEED; font-size: 12px; font-weight: 650; }
+.plan-badge { min-width: 58px; min-height: 44px; padding: 0 13px; border-radius: var(--radius-pill); background: #F0EEED; font-size: 12px; font-weight: 600; }
 .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border-radius: var(--radius-pill); font-weight: 600; }
 .button--primary { background: var(--color-brand); color: white; box-shadow: var(--shadow-cta); }
 .button--primary:active { background: var(--color-brand-pressed); transform: scale(.985); }
