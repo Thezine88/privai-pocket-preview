@@ -56,6 +56,27 @@ test('action choice shows four compact quick actions and final check is editable
   assert.match(final, /Apri nell’AI/);
 });
 
+test('findings expose duplicate occurrences for individual review', () => {
+  const duplicate = { ...job, findings: [
+    { id: 'email-1', type: 'EMAIL', value: 'mario@example.it', selected: true },
+    { id: 'email-2', type: 'EMAIL', value: 'mario@example.it', selected: false },
+  ] };
+  const html = renderFindings(duplicate);
+  assert.match(html, /Occorrenza 1/);
+  assert.match(html, /Occorrenza 2/);
+  assert.match(html, /data-finding-ids="email-2"/);
+});
+
+test('zero selected findings require an inline confirmation before continuing', () => {
+  const none = { ...job, findings: job.findings.map((finding) => ({ ...finding, selected: false })) };
+  const first = renderFindings(none);
+  assert.match(first, /Continua senza proteggere/);
+  assert.doesNotMatch(first, /Il testo potrebbe contenere dati personali/);
+  const confirmed = renderFindings(none, { confirmUnprotected: true });
+  assert.match(confirmed, /Il testo potrebbe contenere dati personali/);
+  assert.match(confirmed, /Conferma e continua/);
+});
+
 test('configured alternative actions stay visible and Personalizza remains fourth', () => {
   const choice = renderActionChoice(job, {}, ['translate', 'checklist', 'clarify']);
   for (const label of ['Traduci', 'Crea una lista', 'Rendi più chiaro', 'Personalizza']) assert.match(choice, new RegExp(label));

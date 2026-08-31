@@ -60,6 +60,7 @@ export function groupFindings(findings, locale = 'it') {
       occurrenceCount: items.length,
       selectedCount: items.filter((item) => item.selected !== false).length,
       findingIds: items.map((item) => item.id),
+      occurrences: items.map(({ id, selected }) => ({ id, selected: selected !== false })),
     }));
     return {
       type,

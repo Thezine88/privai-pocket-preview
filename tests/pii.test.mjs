@@ -73,8 +73,8 @@ test('uses job-scoped placeholders and restores only exact known placeholders', 
 test('groups duplicate values by friendly category and occurrence count', () => {
   const findings = detectSensitiveData('mario@example.it e ancora mario@example.it, 333 123 4567');
   assert.deepEqual(groupFindings(findings), [
-    { type: 'EMAIL', label: 'Email', occurrenceCount: 2, selectedCount: 2, values: [{ value: 'mario@example.it', occurrenceCount: 2, selectedCount: 2, findingIds: findings.slice(0, 2).map((item) => item.id) }] },
-    { type: 'TELEPHONENUM', label: 'Telefono', occurrenceCount: 1, selectedCount: 1, values: [{ value: '333 123 4567', occurrenceCount: 1, selectedCount: 1, findingIds: [findings[2].id] }] },
+    { type: 'EMAIL', label: 'Email', occurrenceCount: 2, selectedCount: 2, values: [{ value: 'mario@example.it', occurrenceCount: 2, selectedCount: 2, findingIds: findings.slice(0, 2).map((item) => item.id), occurrences: findings.slice(0, 2).map(({ id, selected }) => ({ id, selected })) }] },
+    { type: 'TELEPHONENUM', label: 'Telefono', occurrenceCount: 1, selectedCount: 1, values: [{ value: '333 123 4567', occurrenceCount: 1, selectedCount: 1, findingIds: [findings[2].id], occurrences: [{ id: findings[2].id, selected: findings[2].selected }] }] },
   ]);
 });
 

@@ -16,6 +16,7 @@ import { createAndroidVault } from './platform/android-vault.mjs';
 import { detectSensitiveData } from './domain/pii.mjs';
 import { createLiveDetection, inputDetectionState } from './application/live-detection.mjs';
 import { readImportedContent } from './application/content-import.mjs';
+import { routeForJob } from './application/job-route.mjs';
 import { createHaptics } from './platform/haptics.mjs';
 import { renderSettings } from './ui/screens/settings.mjs';
 import { renderQuickActions } from './ui/screens/quick-actions.mjs';
@@ -83,7 +84,7 @@ async function render() {
   else {
     const job = await currentJob();
     if (!job) { router.replace({ name: 'home' }); return; }
-    if (route.name === 'findings') html = renderFindings(job);
+    if (route.name === 'findings') html = renderFindings(job, route.state);
     else if (route.name === 'action-choice') html = renderActionChoice(job, route.state, quickActions);
     else if (route.name === 'final-check') html = renderFinalCheck(job);
     else if (route.name === 'awaiting-response') html = renderAwaitingResponse(job, { error: feedback });
@@ -125,15 +126,14 @@ app.addEventListener('change', async (event) => {
 app.addEventListener('click', async (event) => {
   const target = event.target.closest('button, [data-nav]');
   if (!target) return;
-  haptics.tap();
   feedback = '';
   const nav = target.closest('[data-nav]');
   if (nav) { router.push({ name: nav.dataset.nav }); return; }
   const action = target.dataset.action;
   if (action === 'back') { router.back() || router.replace({ name: 'home' }); return; }
-  if (action === 'onboarding-next') { router.replace(onboardingRoute((router.current().state.step ?? 0) + 1)); return; }
+  if (action === 'onboarding-next') { router.replace(onboardingRoute((router.current().state.step ?? 0) + 1)); haptics.success(action); return; }
   if (action === 'onboarding-back') { const step = router.current().state.step ?? 0; if (step > 0) router.replace(onboardingRoute(step - 1)); return; }
-  if (action === 'finish-onboarding') { localStorage.setItem(ONBOARDING_KEY, 'true'); router.replace({ name: 'home' }); return; }
+  if (action === 'finish-onboarding') { localStorage.setItem(ONBOARDING_KEY, 'true'); router.replace({ name: 'home' }); haptics.success(action); return; }
   if (action === 'new-text') { detectInput(''); router.push({ name: 'content-input' }); return; }
   if (action === 'new-file') { app.querySelector('[data-file-input]')?.click(); return; }
   if (action === 'open-quick-actions') { router.push({ name: 'quick-actions' }); return; }
@@ -147,12 +147,23 @@ app.addEventListener('click', async (event) => {
     const job = await jobs.createTextJob(text, { findings });
     if (job.findings.length) router.push({ name: 'findings', state: { jobId: job.id } });
     else { const protectedJob = await jobs.protect(job.id); router.push({ name: 'action-choice', state: { jobId: protectedJob.id, action: quickActions[0] } }); }
+    haptics.success(action);
     return;
   }
   if (action === 'toggle-finding-selection' || action === 'toggle-category-selection') { await setSelections(target.dataset.findingIds.split(','), target.getAttribute('aria-checked') !== 'true'); return; }
   if (action === 'select-all' || action === 'select-none') { const job = await currentJob(); await setSelections(job.findings.map((item) => item.id), action === 'select-all'); return; }
   if (action === 'toggle-category') { target.closest('.finding-card')?.classList.toggle('is-open'); return; }
-  if (action === 'confirm-protection') { const job = await jobs.protect(router.current().state.jobId); router.push({ name: 'action-choice', state: { jobId: job.id, action: quickActions[0] } }); return; }
+  if (action === 'confirm-protection') {
+    const current = await currentJob();
+    if (!current.findings.some((finding) => finding.selected !== false) && !router.current().state.confirmUnprotected) {
+      router.replace({ name: 'findings', state: { ...router.current().state, confirmUnprotected: true } });
+      return;
+    }
+    const job = await jobs.protect(current.id);
+    router.push({ name: 'action-choice', state: { jobId: job.id, action: quickActions[0] } });
+    haptics.success(action);
+    return;
+  }
   if (action === 'choose-action') { router.replace({ name: 'action-choice', state: { ...router.current().state, action: target.dataset.value } }); return; }
   if (target.dataset.choice) { app.querySelectorAll(`[data-choice="${target.dataset.choice}"]`).forEach((item) => item.classList.toggle('is-selected', item === target)); return; }
   if (action === 'continue-action') {
@@ -160,7 +171,7 @@ app.addEventListener('click', async (event) => {
     const selectedAction = resolveQuickAction(state.action, quickActions);
     const context = { recipient: app.querySelector('[data-choice="recipient"].is-selected')?.dataset.value, goal: app.querySelector('[data-choice="goal"].is-selected')?.dataset.value, language: app.querySelector('[data-choice="language"].is-selected')?.dataset.value, role: app.querySelector('[data-field="role"]')?.value };
     const job = await jobs.prepareRequest(state.jobId, { action: selectedAction, customPrompt: app.querySelector('[data-field="custom-prompt"]')?.value, context });
-    router.push({ name: 'final-check', state: { jobId: job.id } }); return;
+    router.push({ name: 'final-check', state: { jobId: job.id } }); haptics.success(action); return;
   }
   if (action === 'open-ai') {
     const id = router.current().state.jobId;
@@ -168,20 +179,21 @@ app.addEventListener('click', async (event) => {
     await jobs.updateRequest(id, requestText);
     const job = await jobs.markAwaiting(id, requestText);
     router.replace({ name: 'awaiting-response', state: { jobId: id } });
+    haptics.success(action);
     if (localStorage.getItem(SHARE_HELP_KEY) !== 'true') { alert('Invia al chatbot il testo protetto. Quando ricevi la risposta, copiala o condividila con RestaMio.'); localStorage.setItem(SHARE_HELP_KEY, 'true'); }
     try { if (navigator.share) await navigator.share({ text: job.requestText }); else await navigator.clipboard.writeText(job.requestText); } catch { /* Il lavoro resta recuperabile. */ }
     return;
   }
-  if (action === 'paste-response') { const text = await readClipboard('Non trovo una risposta da incollare.'); if (text) { const id = target.dataset.jobId ?? router.current().state.jobId; const job = await jobs.restore(id, text); router.push({ name: 'result', state: { jobId: job.id } }); } return; }
+  if (action === 'paste-response') { const text = await readClipboard('Non trovo una risposta da incollare.'); if (text) { const id = target.dataset.jobId ?? router.current().state.jobId; const job = await jobs.restore(id, text); router.push({ name: 'result', state: { jobId: job.id } }); haptics.success(action); } return; }
   if (action === 'return-final') { router.push({ name: 'final-check', state: router.current().state }); return; }
   if (action === 'retry-response') { router.push({ name: 'awaiting-response', state: router.current().state }); return; }
   if (action === 'open-job' || action === 'open-result') {
     const job = await jobs.open(target.dataset.jobId);
-    const name = job.status === 'awaiting_ai' ? 'awaiting-response' : job.status === 'restored' || job.status === 'almost_ready' ? 'result' : 'final-check';
+    const name = routeForJob(job);
     router.push({ name, state: { jobId: job.id } }); return;
   }
-  if (action === 'copy-result') { const job = await currentJob(); await navigator.clipboard.writeText(job.resultText); return; }
-  if (action === 'share-result') { const job = await currentJob(); if (navigator.share) await navigator.share({ text: job.resultText }); }
+  if (action === 'copy-result') { const job = await currentJob(); await navigator.clipboard.writeText(job.resultText); haptics.success(action); return; }
+  if (action === 'share-result') { const job = await currentJob(); if (navigator.share) { await navigator.share({ text: job.resultText }); haptics.success(action); } }
 });
 
 app.addEventListener('pointerdown', (event) => { if (router.current().name === 'onboarding') swipeStart = { x: event.clientX, y: event.clientY }; });
