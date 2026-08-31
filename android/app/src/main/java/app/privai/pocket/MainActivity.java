@@ -7,6 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RestaMioVaultPlugin.class);
+        registerPlugin(RestaMioSharePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

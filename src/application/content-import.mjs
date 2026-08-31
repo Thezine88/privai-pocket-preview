@@ -10,3 +10,13 @@ export async function readImportedContent(file, { extractPdf = extractTextFromPd
   if (!text.trim()) throw new TypeError('FILE_SENZA_TESTO');
   return text;
 }
+
+export function readImportedBytes({ name, mimeType, bytes }, options) {
+  const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes ?? []);
+  const file = {
+    name: String(name ?? ''), type: String(mimeType ?? ''), size: data.byteLength,
+    text: async () => new TextDecoder().decode(data),
+    arrayBuffer: async () => data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength),
+  };
+  return readImportedContent(file, options);
+}

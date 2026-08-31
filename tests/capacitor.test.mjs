@@ -28,6 +28,22 @@ test('keeps the generated Android project at the approved SDK levels', async () 
   assert.match(appGradle, /resValue "string", "app_name", "RestaMio Owner"/);
 });
 
+test('keeps incoming shares private, bounded and recoverably cleaned up', async () => {
+  const plugin = await readFile(new URL('../android/app/src/main/java/app/privai/pocket/RestaMioSharePlugin.java', import.meta.url), 'utf8');
+  assert.match(plugin, /MAX_BYTES\s*=\s*20L\s*\*\s*1024L\s*\*\s*1024L/);
+  assert.match(plugin, /getCacheDir\(\).*"incoming-share"/s);
+  assert.match(plugin, /if \(staged != null && staged\.exists\(\)\) staged\.delete\(\)/);
+  assert.match(plugin, /catch \(Exception error\) \{ call\.reject\("Impossibile eliminare il contenuto temporaneo"\); \}/);
+  assert.match(plugin, /name == null \? "contenuto-condiviso" : name/);
+  assert.match(plugin, /Build\.VERSION\.SDK_INT >= Build\.VERSION_CODES\.TIRAMISU/);
+  assert.match(plugin, /getParcelableExtra\(Intent\.EXTRA_STREAM, Uri\.class\)/);
+  assert.match(plugin, /@PluginMethod public void recognize\(PluginCall call\)/);
+  assert.match(plugin, /TextRecognition\.getClient\(TextRecognizerOptions\.DEFAULT_OPTIONS\)/);
+  const appGradle = await readFile(new URL('../android/app/build.gradle', import.meta.url), 'utf8');
+  assert.match(appGradle, /implementation ['"]com\.google\.mlkit:text-recognition:16\.0\.1['"]/);
+  assert.doesNotMatch(plugin, /Log\.|System\.out|printStackTrace/);
+});
+
 test('bundles the exact approved RestaMio launcher artwork', async () => {
   const icon = await readFile(new URL('../assets/logoapp.png', import.meta.url));
   assert.equal(createHash('sha256').update(icon).digest('hex'), 'cf6b18e1e5278b17a4fd2a76953bab52e0e9c10187e134458c19d25f9c2fcae2');

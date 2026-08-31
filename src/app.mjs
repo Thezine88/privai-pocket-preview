@@ -15,11 +15,14 @@ import { createSessionVault } from './platform/vault-port.mjs';
 import { createAndroidVault } from './platform/android-vault.mjs';
 import { detectSensitiveData } from './domain/pii.mjs';
 import { createLiveDetection, inputDetectionState } from './application/live-detection.mjs';
-import { readImportedContent } from './application/content-import.mjs';
+import { readImportedBytes, readImportedContent } from './application/content-import.mjs';
+import { processIncomingContent } from './application/incoming-content.mjs';
 import { routeForJob } from './application/job-route.mjs';
+import { createAndroidIncomingShare } from './platform/android-incoming-share.mjs';
 import { createHaptics } from './platform/haptics.mjs';
 import { renderSettings } from './ui/screens/settings.mjs';
 import { renderQuickActions } from './ui/screens/quick-actions.mjs';
+import { renderIncomingProcessing } from './ui/screens/incoming-processing.mjs';
 import { DEFAULT_QUICK_ACTIONS, moveQuickAction, normalizeQuickActions, resolveQuickAction, toggleQuickAction } from './domain/quick-actions.mjs';
 
 const app = document.querySelector('#app');
@@ -28,6 +31,8 @@ const SHARE_HELP_KEY = 'restamio:share-help-seen';
 const QUICK_ACTIONS_KEY = 'restamio:quick-actions';
 const router = createRouter(initialRoute(localStorage.getItem(ONBOARDING_KEY) === 'true'));
 const nativeVault = window.Capacitor?.Plugins?.RestaMioVault;
+const nativeShare = window.Capacitor?.Plugins?.RestaMioShare;
+const incomingShare = nativeShare ? createAndroidIncomingShare(nativeShare) : null;
 const jobs = createJobService(createJobStore(nativeVault ? createAndroidVault(nativeVault) : createSessionVault(sessionStorage)));
 const haptics = createHaptics(navigator.vibrate?.bind(navigator));
 let build = { channel: 'production', entitlement: 'free', billingEnabled: false };
@@ -39,6 +44,7 @@ let quickActions = (() => {
   catch { return [...DEFAULT_QUICK_ACTIONS]; }
 })();
 let liveInput = { text: '', findings: [], pending: false };
+let incomingState = null;
 
 function updateLiveInputUi() {
   const state = inputDetectionState(liveInput.text, liveInput.findings, liveInput.pending);
@@ -76,6 +82,7 @@ async function render() {
   else if (route.name === 'vault') { await loadJobs(); html = renderVault({ jobs: allJobs }); }
   else if (route.name === 'settings') html = renderSettings();
   else if (route.name === 'quick-actions') html = renderQuickActions(quickActions);
+  else if (route.name === 'incoming-processing') html = renderIncomingProcessing(incomingState ?? route.state);
   else if (route.name === 'content-input') {
     const text = route.state.text ?? liveInput.text;
     const current = text === liveInput.text ? liveInput : { findings: [], pending: Boolean(String(text).trim()) };
@@ -102,6 +109,26 @@ async function setSelections(ids, selected) {
 async function readClipboard(message) {
   try { const text = await navigator.clipboard.readText(); if (!text.trim()) throw new Error(message); return text; }
   catch { feedback = message; await render(); return null; }
+}
+
+function decodeBase64(value) {
+  const binary = atob(value); const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return bytes;
+}
+
+async function handleIncomingShare(item) {
+  if (!item || incomingState?.cacheId === item.cacheId) return;
+  incomingState = item;
+  router.push({ name: 'incoming-processing', state: item });
+  try {
+    const text = await processIncomingContent({ item, port: incomingShare, decodeBase64, importBytes: readImportedBytes });
+    detectInput(text);
+    router.replace({ name: 'content-input', state: { text } });
+  } catch {
+    incomingState = { ...item, error: item.kind === 'image' ? 'Non trovo testo leggibile in questa immagine.' : 'Non trovo testo leggibile in questo documento.' };
+    await render();
+  }
 }
 
 app.addEventListener('input', (event) => {
@@ -131,6 +158,7 @@ app.addEventListener('click', async (event) => {
   if (nav) { router.push({ name: nav.dataset.nav }); return; }
   const action = target.dataset.action;
   if (action === 'back') { router.back() || router.replace({ name: 'home' }); return; }
+  if (action === 'incoming-home') { incomingState = null; router.replace({ name: 'home' }); return; }
   if (action === 'onboarding-next') { router.replace(onboardingRoute((router.current().state.step ?? 0) + 1)); haptics.success(action); return; }
   if (action === 'onboarding-back') { const step = router.current().state.step ?? 0; if (step > 0) router.replace(onboardingRoute(step - 1)); return; }
   if (action === 'finish-onboarding') { localStorage.setItem(ONBOARDING_KEY, 'true'); router.replace({ name: 'home' }); haptics.success(action); return; }
@@ -222,3 +250,7 @@ app.addEventListener('pointerup', (event) => {
 router.subscribe(() => { render(); });
 await loadBuild();
 await render();
+if (incomingShare) {
+  incomingShare.listen((item) => { handleIncomingShare(item); });
+  handleIncomingShare(await incomingShare.pending());
+}

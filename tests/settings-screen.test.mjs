@@ -18,6 +18,7 @@ test('quick-actions panel explains autosave and keeps Personalizza fixed', () =>
   assert.match(html, /3 di 3/);
   assert.match(html, /Personalizza/);
   assert.match(html, /Sempre quarta/);
+  assert.match(html, /<h2 class="quick-actions-other-title">Altre azioni<\/h2>/);
   assert.match(html, /Ripristina predefinite/);
   assert.equal((html.match(/role="switch"/g) ?? []).length, 6);
   assert.match(html, /data-action="move-quick-action"/);
