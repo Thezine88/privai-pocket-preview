@@ -19,6 +19,11 @@ test('keeps the generated Android project at the approved SDK levels', async () 
   assert.match(variables, /compileSdkVersion\s*=\s*36/);
   assert.match(variables, /targetSdkVersion\s*=\s*36/);
   assert.match(manifest, /android:allowBackup="false"/);
+  assert.match(manifest, /android\.intent\.action\.SEND/);
+  assert.match(manifest, /android:mimeType="application\/pdf"/);
+  assert.match(manifest, /android:mimeType="text\/plain"/);
+  assert.match(manifest, /android:mimeType="image\/\*"/);
+  assert.doesNotMatch(manifest, /READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE/);
   assert.match(appGradle, /applicationId "app\.restamio\.owner"/);
   assert.match(appGradle, /resValue "string", "app_name", "RestaMio Owner"/);
 });
