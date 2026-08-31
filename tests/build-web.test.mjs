@@ -2,8 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { buildWeb } from '../scripts/build-web.mjs';
+import { join, posix, win32 } from 'node:path';
+import { buildWeb, isBuildOutputInsideProject } from '../scripts/build-web.mjs';
+
+test('accepts only build outputs inside the project on Windows and POSIX', () => {
+  assert.equal(isBuildOutputInsideProject('C:\\project', 'C:\\project\\www', win32), true);
+  assert.equal(isBuildOutputInsideProject('C:\\project', 'C:\\project-copy\\www', win32), false);
+  assert.equal(isBuildOutputInsideProject('/project', '/project/www', posix), true);
+  assert.equal(isBuildOutputInsideProject('/project', '/project-copy/www', posix), false);
+});
 
 test('builds only the web application files into the output directory', async () => {
   const root = await mkdtemp(join(tmpdir(), 'privai-build-'));
