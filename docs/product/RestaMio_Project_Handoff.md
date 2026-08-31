@@ -6,7 +6,7 @@ Brand di lavoro approvato: **RestaMio** (`Resta` scuro, `Mio` arancione)
 
 ## 1. Fonte autorevole
 
-La specifica tecnica principale è `RestaMio_UI_UX_Spec.md`, versione **1.6**. In caso di conflitto tra questo handoff, un mockup e la specifica, prevale la specifica più recente; se un punto è ancora aperto, chiedere conferma prima di implementarlo.
+La specifica tecnica principale è `RestaMio_UI_UX_Spec.md`, versione **1.7**. Le immagini esplicitamente approvate in chat sono riferimenti visivi vincolanti; in caso di conflitto visivo prevale l’immagine approvata più recente. Se un punto è ancora aperto, chiedere conferma prima di implementarlo.
 
 Metodo concordato:
 
@@ -54,6 +54,7 @@ Non esporre termini come PII, NER, anonimizzazione, token, mapping o modelli. Us
 - Raggi ampi ma non giocattolosi; icone outline coerenti.
 - Target di tocco minimo 44 × 44 dp/pt.
 - Font scalabile fino al 130% senza troncare CTA o informazioni essenziali.
+- Font vincolante: **Poppins**, incorporato nell’app e identico su Android, iOS e desktop; non sostituirlo con Inter o font di sistema negli screen di approvazione.
 
 ## 5. Safe area — vincolo globale
 
@@ -84,6 +85,7 @@ La safe area è una regola di sistema, non una correzione locale.
 - Willy presenta l’app e il flusso protetto → risposta → ripristino.
 - Navigazione compatta; evitare grandi pulsanti `Avanti`/`Indietro` affiancati.
 - La demo prima/dopo può essere animata.
+- Il terzo passaggio mantiene sempre visibili le due schede approvate, con freccia centrale; non convertirlo in una singola scheda.
 - Willy non coincide con la piccola mascotte provvisoria della Home.
 
 ### Inserimento contenuto

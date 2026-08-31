@@ -14,6 +14,8 @@ test('onboarding explains the value in exactly three steps', () => {
   assert.match(third, /\[NOME_1\][\s\S]*\[EMAIL_1\]/);
   assert.match(third, /Luca[\s\S]*luca@email\.it/);
   assert.equal((third.match(/class="restore-demo__state /g) ?? []).length, 2);
+  assert.match(third, /restore-demo__arrow/);
+  assert.match(third, /restore-demo__icon/);
   assert.match(first, /Passaggio 1 di 3/);
   assert.match(second, /Passaggio 2 di 3/);
   assert.match(third, /Passaggio 3 di 3/);

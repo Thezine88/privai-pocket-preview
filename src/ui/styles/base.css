@@ -1,3 +1,6 @@
+@font-face { font-family: Poppins; src: url('../../../assets/fonts/Poppins-Regular.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../../../assets/fonts/Poppins-Medium.ttf') format('truetype'); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../../../assets/fonts/Poppins-SemiBold.ttf') format('truetype'); font-style: normal; font-weight: 600 700; font-display: swap; }
 * { box-sizing: border-box; }
 html { min-height: 100%; background: var(--color-background); }
 body {
@@ -8,7 +11,7 @@ body {
   overflow-x: hidden;
   background: var(--color-background);
   color: var(--color-text);
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Poppins, ui-sans-serif, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }

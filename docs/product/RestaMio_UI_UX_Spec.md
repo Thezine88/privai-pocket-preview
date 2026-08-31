@@ -1,13 +1,13 @@
 # RestaMio — UI/UX Design Specification
 
-Versione: 1.6  
+Versione: 1.7
 Stato: documento vivo  
 Schermate approvate: Home — stato con lavoro da completare; Home — stato iniziale/senza lavori; Home — lavoro in attesa della risposta; Onboarding — 3 passaggi; Inserimento contenuto — stato vuoto; Dati da proteggere; Scelta attività AI; Controllo finale; Rientro dal chatbot — attesa risposta; Testo ripristinato; Testo quasi pronto — segnaposto non riconosciuto; Groq — presentazione trascrizione, configurazione API key e guida; Elaborazione adattiva — audio, documento e screenshot; Risultato trascrizione; Risultato OCR screenshot/immagine  
-Riferimento visivo: `256980.png` (746 × 1536 px)
+Riferimenti visivi vincolanti: Home `256980.png`; onboarding `257108.png`, `257109.png`, `257110.png`; dati da proteggere `257052.jpg`; guida Groq `257064.jpg` con la correzione approvata che elimina `Torna indietro`.
 
 ## 1. Scopo del documento
 
-Questa specifica è la fonte unica per replicare l’interfaccia di RestaMio su iOS, Android e modalità desktop. Ogni valore indicato come **vincolante** deve essere implementato senza reinterpretazioni. Le misure della Home derivano dal riferimento visivo allegato; le regole responsive permettono di mantenere la stessa gerarchia su schermi diversi.
+Questa specifica e le immagini esplicitamente approvate in chat costituiscono insieme la fonte autorevole per replicare l’interfaccia di RestaMio su iOS, Android e modalità desktop. In caso di conflitto visivo prevale l’immagine approvata più recente; testi, accessibilità e comportamento restano regolati dalla specifica. Ogni valore indicato come **vincolante** deve essere implementato senza reinterpretazioni.
 
 Obiettivo UX: permettere anche a chi non conosce l’AI di comprendere immediatamente l’azione successiva e completare il flusso con il minor numero possibile di decisioni e tocchi.
 
@@ -564,7 +564,7 @@ Layout approvato:
 
 - Back in alto a sinistra; wordmark centrato.
 - Titolo 27 sp/600, centrato.
-- La rappresentazione statica di progetto mostra due schede sovrapposte verticalmente per comunicare i due keyframe; nell’app reale usare una singola scheda animata nello stesso spazio per ridurre altezza e movimento o, se si mantengono entrambe, animare l’enfasi tra le due senza spostare il layout.
+- Mostrare sempre le due schede sovrapposte verticalmente come nel riferimento approvato: `Testo protetto`, freccia arancione centrale e `Testo ripristinato`. Non sostituirle con una singola scheda.
 - Scheda: sfondo bianco, bordo `color.border`, raggio 18 dp, padding 18 dp, ombra `shadow.card`.
 - Label protetto: `color.primary`; placeholder in chip `#FFF0EA` con testo `color.primary`.
 - Label ripristinato: `#15945F`; dati ripristinati in chip `#E6F5ED` con testo `#138555`.
@@ -572,13 +572,11 @@ Layout approvato:
 
 Sequenza animata raccomandata, ciclo 4.2 s:
 
-1. 0–500 ms: mostrare il testo protetto; placeholder arancioni stabili.
-2. 500–900 ms: breve bagliore arancione sui placeholder.
-3. 900–1.350 ms: `[NOME_1]` si trasforma in `Luca` con crossfade e morph della larghezza del chip.
-4. 1.450–1.950 ms: `[EMAIL_1]` si trasforma in `luca@email.it`.
-5. 1.950–2.200 ms: label e icona cambiano da `Testo protetto` arancione a `Testo ripristinato` verde.
-6. 2.200–3.500 ms: pausa sul risultato completo.
-7. 3.500–4.200 ms: dissolvenza breve e ritorno allo stato protetto.
+1. Le due schede restano entrambe visibili e il layout non si sposta.
+2. Breve bagliore arancione sui placeholder della prima scheda.
+3. La freccia centrale scende di 3 dp e torna alla posizione iniziale.
+4. Breve enfasi verde sui valori ripristinati della seconda scheda.
+5. Pausa sul risultato completo e ripetizione delicata del ciclo.
 
 Ripetizione automatica finché la schermata è visibile. Interrompere il ciclo quando l’app passa in background. Con Riduci movimento usare dissolvenze da 150 ms senza morph, bagliori o frecce in movimento.
 

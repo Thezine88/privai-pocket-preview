@@ -19,6 +19,15 @@ test('new design tokens keep the approved orange and system safe areas', async (
   assert.match(screens, /prefers-reduced-motion:\s*reduce/);
 });
 
+test('the approved Poppins family is bundled and used without a remote font', async () => {
+  const base = await readFile(new URL('../src/ui/styles/base.css', import.meta.url), 'utf8');
+  assert.match(base, /@font-face[\s\S]*Poppins-Regular\.ttf/);
+  assert.match(base, /@font-face[\s\S]*Poppins-Medium\.ttf/);
+  assert.match(base, /@font-face[\s\S]*Poppins-SemiBold\.ttf/);
+  assert.match(base, /font-family:\s*Poppins/);
+  assert.doesNotMatch(base, /https?:\/\//);
+});
+
 test('fixed navigation reserves content space above Samsung controls', async () => {
   const screens = await readFile(new URL('../src/ui/styles/screens.css', import.meta.url), 'utf8');
   assert.match(screens, /--bottom-nav-space/);
